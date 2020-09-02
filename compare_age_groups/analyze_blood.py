@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
 from statsmodels.stats.multitest import fdrcorrection
+from scipy.stats import ttest_ind
 import pdb
 
 
@@ -47,40 +48,58 @@ def get_ages(sample_sheet, sample_names, agelabel):
 
     return np.array(sample_ages)
 
+def group_by_age(ages):
 
-def corr_probe_to_age(joined_betas, sample_sheet, gene_annotations, outdir):
+    age_indices = []
+    bins = [19,30,40,50,60,70,80,max(ages)+1]
+    for i in range(len(bins)-1):
+        sel = np.where((ages>=bins[i])&(ages<bins[i+1]))
+        age_indices.append(sel[0])
+
+    return age_indices
+
+def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     '''Analyze correaltion of probes to age
     '''
+
 
     #Merge on probe id
     merged = pd.merge(joined_betas, gene_annotations, left_on='Reporter Identifier', right_on='Name')
 
     #Get ages
-    y = get_ages(sample_sheet, joined_betas.columns[2:], agelabel)
+    ages = get_ages(sample_sheet, joined_betas.columns[2:], agelabel)
+    #Get age groups
+    age_indices = group_by_age(ages)
 
-    #Looking at single marker correlations
+    #Looking at single marker comparisons
     markers = merged['Reporter Identifier']
     #Save
+    ages_compared = []
     pvals = []
     genes = []
-    pdb.set_trace()
-    for index, row in merged.iterrows():
-        #Get CpG vals
-        X = np.array(row[merged.columns[2:-34]])
-        pdb.set_trace()
-        R,p = pearsonr(X,y)
-        #Save
-        pvals.append(p)
-        genes.append(row['UCSC_RefGene_Name'])
-        print(index, row['UCSC_RefGene_Name'])
 
-    #Create df with results
-    results = pd.DataFrame()
-    results['Reporter Identifier'] = markers
-    results['pval'] = pvals
-    results['gene'] = genes
-    #Save df
-    results.to_csv(outdir+'single_corr_results.csv')
+    #Methylation values
+    X = np.array(merged[merged.columns[2:-34]])
+
+    for ai in len(age_indices-1):
+        pdb.set_trace()
+        R = np.zeros(X.shape[0])
+        p = np.zeros(X.shape[0])
+        agesel = np.append(age_indices[ai],age_indices[ai+1])
+        Xsel = X[:,agesel]
+
+        for xi in range(X.shape[0]):
+            R[xi], p[xi] = pearsonr(Xsel[xi,:], agesel)
+        pdb.set_trace()
+        #Save
+        df = pd.DataFrame()
+        df['Reporter Identifier']=markers
+        df['R']=R
+        df['p']=p
+        df['UCSC_RefGene_Name'] = merged['UCSC_RefGene_Name']
+
+        #Save df
+        df.to_csv(outdir+str(ai)+'_corr_results.csv')
 
 
     return results
@@ -116,7 +135,7 @@ outdir = args.outdir[0]
 try:
     single_results = pd.read_csv(outdir+'single_corr_results.csv')
 except:
-    single_results = corr_probe_to_age(joined_betas, sample_sheet, gene_annotations, outdir)
+    single_results = compare_probes(joined_betas, sample_sheet, gene_annotations, outdir)
 
 #Set fontsize
 plt.rcParams.update({'font.size': 7})
