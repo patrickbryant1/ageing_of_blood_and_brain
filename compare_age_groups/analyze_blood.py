@@ -93,18 +93,31 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
         print(ai)
         R = np.zeros(X.shape[0])
         p = np.zeros(X.shape[0])
-        agesel = np.append(age_indices[ai],age_indices[ai+1])
-        Xsel = X[:,agesel]
+        i1 = age_indices[ai]
+        i2 = age_indices[ai+1]
+        X1 = X[:,i1]
+        X2 = X[:,i2]
+        stats, pvals = ttest_ind(X1,X2,axis=1)
 
-        for xi in range(X.shape[0]):
-            if xi%1000==0:
-                print(xi)
-            R[xi], p[xi] = pearsonr(Xsel[xi,:], agesel)
+        fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+        sns.distplot(pvals)
+        plt.title(str(len(pvals[pvals<0.05/len(pvals)]))+ ' out of '+str(len(pvals))+' sig on 0.05')
+        plt.xlabel('p-value')
+        plt.tight_layout()
+        plt.savefig(outdir+'pval'+str(ai)+'.png', format='png', dpi=300)
+        plt.close()
+        #agesel = np.append(age_indices[ai],age_indices[ai+1])
+        #Xsel = X[:,agesel]
+
+        # for xi in range(X.shape[0]):
+        #     if xi%1000==0:
+        #         print(xi)
+        #     R[xi], p[xi] = pearsonr(Xsel[xi,:], agesel)
         #Save
         df = pd.DataFrame()
         df['Reporter Identifier']=markers
-        df['R']=R
-        df['p']=p
+        df['stat']=stats
+        df['p']=pvals
         #Save df
         df.to_csv(outdir+str(ai)+'_corr_results.csv')
 
