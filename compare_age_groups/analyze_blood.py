@@ -68,8 +68,16 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
 
     #Get ages
     ages = get_ages(sample_sheet, joined_betas.columns[2:], agelabel)
+    #Save ages
+    age_df = pd.DataFrame()
+    age_df['Sample'] = joined_betas.columns[2:]
+    age_df['Age'] = ages
+    age_df.to_csv(outdir+'ages.csv')
+
     #Get age groups
     age_indices = group_by_age(ages)
+    #Save age groups
+    np.save(outdir+'age_groups.npy',np.array(age_indices))
 
     #Looking at single marker comparisons
     markers = merged['Reporter Identifier']
@@ -81,28 +89,27 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     #Methylation values
     X = np.array(merged[merged.columns[2:-34]])
 
-    for ai in len(age_indices-1):
-        pdb.set_trace()
+    for ai in range(len(age_indices)-1):
+        print(ai)
         R = np.zeros(X.shape[0])
         p = np.zeros(X.shape[0])
         agesel = np.append(age_indices[ai],age_indices[ai+1])
         Xsel = X[:,agesel]
 
         for xi in range(X.shape[0]):
+            if xi%1000==0:
+                print(xi)
             R[xi], p[xi] = pearsonr(Xsel[xi,:], agesel)
-        pdb.set_trace()
         #Save
         df = pd.DataFrame()
         df['Reporter Identifier']=markers
         df['R']=R
         df['p']=p
-        df['UCSC_RefGene_Name'] = merged['UCSC_RefGene_Name']
-
         #Save df
         df.to_csv(outdir+str(ai)+'_corr_results.csv')
 
 
-    return results
+    return None
 
 def adjust_pvals(results, outdir):
     '''Adjust the pvalues
@@ -132,14 +139,5 @@ print('Read betas')
 sample_sheet = pd.read_csv(args.sample_sheet[0], sep = '\t')
 outdir = args.outdir[0]
 
-try:
-    single_results = pd.read_csv(outdir+'single_corr_results.csv')
-except:
-    single_results = compare_probes(joined_betas, sample_sheet, gene_annotations, outdir)
-
-#Set fontsize
-plt.rcParams.update({'font.size': 7})
-#Adjust pvals
-single_results = adjust_pvals(single_results, outdir)
-#Look at the significant markers
-plot_sig(joined_betas, sample_sheet, single_results, agelabel, outdir)
+#Compare probes btw age stratified samples
+compare_probes(joined_betas, sample_sheet, gene_annotations, outdir)
