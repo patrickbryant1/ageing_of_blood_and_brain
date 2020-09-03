@@ -175,3 +175,8 @@ outdir = args.outdir[0]
 
 #Compare probes btw age stratified samples
 compare_probes(joined_betas, sample_sheet, gene_annotations, outdir)
+
+#Plot white box
+fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
+plt.axis('off')
+plt.savefig(outdir+'whitebox.png',format='png',dpi=300)

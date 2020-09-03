@@ -129,4 +129,5 @@ results = pd.DataFrame()
 results['Age group 1']=age1
 results['Age group 2']=age2
 results['Significant markers with fold change >1.5']=num_sig
+results.to_csv(outdir+'num_sig_fc1_5.csv')
 pdb.set_trace()
