@@ -130,9 +130,10 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
 
 def plot_pvals(pvals, ai, bi, outdir):
     #Plot pvalue distribution
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
+    fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
     sns.distplot(pvals)
-    plt.title(str(len(pvals[pvals<0.05/len(pvals)]))+ ' out of '+str(len(pvals))+' sig on 0.05')
+    plt.title(agebins[ai]+' vs '+agebins[bi]+'\n'+str(len(pvals[pvals<0.05/len(pvals)]))+ ' out of '+str(len(pvals))+' sig on 0.05')
     plt.xlabel('p-value')
     plt.tight_layout()
     plt.savefig(outdir+'pval_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
@@ -142,7 +143,7 @@ def volcano_plot(fold_change, pvals, ai, bi, outdir):
     '''Do a volcano plot
     '''
     agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
     log2fc = np.log2(fold_change)
     neglog10pval = -np.log10(pvals)
     plt.scatter(log2fc,neglog10pval, s=0.2, color='lightsteelblue')
