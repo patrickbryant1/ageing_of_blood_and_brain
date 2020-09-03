@@ -94,6 +94,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     print(np.round(100*X[X==0].shape[0]/(X.shape[0]*X.shape[1]),2), '% zeros')
     #Take all samples with less than 10 zeros
     X = X[zero_indices,:][0]
+    print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
     for ai in range(len(age_indices)-1):
         for bi in range(ai+1,len(age_indices)): #Compare all combinations
             print(ai,bi)
@@ -105,11 +106,8 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             X1 = X[:,i1]
             X2 = X[:,i2]
             stats, pvals = ttest_ind(X1,X2,axis=1)
-            pdb.set_trace()
-            fold_change = np.average(X2, axis=1)/np.average(X1, axis=1)
-
             #Volcano plot
-
+            volcano_plot(fold_change, pvals, ai, bi, outdir)
             #Plot pvals
             plot_pvals(pvals, ai, bi, outdir)
             #agesel = np.append(age_indices[ai],age_indices[ai+1])
@@ -137,10 +135,10 @@ def plot_pvals(pvals, ai, bi, outdir):
     plt.title(str(len(pvals[pvals<0.05/len(pvals)]))+ ' out of '+str(len(pvals))+' sig on 0.05')
     plt.xlabel('p-value')
     plt.tight_layout()
-    plt.savefig(outdir+'pval'+str(ai)+str(bi)+'.png', format='png', dpi=300)
+    plt.savefig(outdir+'pval_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
     plt.close()
 
-def volcano_plot():
+def volcano_plot(fold_change, pvals, ai, bi, outdir):
     '''Do a volcano plot
     '''
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
@@ -155,9 +153,11 @@ def volcano_plot():
     plt.scatter(log2fc[high_fc_i[0]],neglog10pval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
     plt.legend()
     plt.title('p-value vs Fold Change')
-    ax.set_xlabel('log2 fold change')
-    ax.set_ylabel('-log10 p-value')
+    plt.xlabel('log2 fold change')
+    plt.set_ylabel('-log10 p-value')
     plt.tight_layout()
+    plt.savefig(outdir+'volcano_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
+    plt.close()
 ###########MAIN###########
 args = parser.parse_args()
 agelabels = {'blood':"Characteristics [age y]"}
