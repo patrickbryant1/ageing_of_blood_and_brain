@@ -39,13 +39,7 @@ def adjust_pvals(corr_df):
     rej, cor_pval = res[0], res[1]
     corr_df['Rejection on 0.05']=rej
     corr_df['qval']=cor_pval
-    num_sig = rej[rej==True].shape[0]
-    print(num_sig, 'out of', len(corr_df))
-
-
-    return corr_df, num_sig
-
-#corr_df[corr_df['Rejection on 0.05']==True]
+    return corr_df
 
 def plot_qvals(qvals, ai, bi, outdir):
     #Plot pvalue distribution
@@ -53,7 +47,7 @@ def plot_qvals(qvals, ai, bi, outdir):
     fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
     sns.distplot(qvals)
     plt.title(agebins[ai]+' vs '+agebins[bi])
-    plt.xlabel('q-value')
+    plt.xlabel('p-value')
     plt.tight_layout()
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -76,12 +70,16 @@ def volcano_plot(fold_change, qvals, ai, bi, outdir):
     plt.scatter(log2fc[high_fc_i[0]],neglog10qval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
     plt.title(agebins[ai]+' vs '+agebins[bi])
     plt.xlabel('log2 fold change')
-    plt.ylabel('-log10 p-value')
+    plt.ylabel('-log10 q-value')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.tight_layout()
     plt.savefig(outdir+'qval_volcano_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
     plt.close()
+
+def find_overlap(joined_dfs):
+    '''Find markers that overlap significantly and have FC>1.5 across comparisons
+    '''
 
 ###########MAIN###########
 #Plt
@@ -98,24 +96,37 @@ outdir = args.outdir[0]
 
 
 #Get age group correlations
-
+agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
 joined_dfs = pd.DataFrame()
-ids1 = []
-ids2 = []
+age1 = []
+age2 = []
 num_sig = []
+
 for i in range(7):
     for j in range(i+1,7):
         corr_df = pd.read_csv(indir+str(i)+'_'+str(j)+'_corr_results.csv')
         #Adjust pvals
-        adjusted_corr_df,sig = adjust_pvals(corr_df)
+        adjusted_corr_df = adjust_pvals(corr_df)
         adjusted_corr_df['id1']=i
         adjusted_corr_df['id2']=j
         #Volcano plot
         volcano_plot(np.array(adjusted_corr_df['fold_change']), np.array(adjusted_corr_df['qval']), i, j, outdir)
         #qval plot
         plot_qvals(np.array(adjusted_corr_df['p']), i, j, outdir)
-        num_sig.append(sig)
-        #adjusted_corr_df['id']=id
-        joined_dfs = joined_dfs.append(adjusted_corr_df)
 
+        sel = adjusted_corr_df[adjusted_corr_df['Rejection on 0.05']==True]
+        sel = sel[np.absolute(sel['fold_change'])>1.5]
+        #Save
+        age1.append(agebins[i])
+        age2.append(agebins[j])
+        num_sig.append(len(sel))
+        print(len(sel),'significant markers with fold change >1.5 out of',len(corr_df),'on FDR<0.05')
+        joined_dfs = joined_dfs.append(sel)
+
+
+#Save
+results = pd.DataFrame()
+results['Age group 1']=age1
+results['Age group 2']=age2
+results['Significant markers with fold change >1.5']=num_sig
 pdb.set_trace()
