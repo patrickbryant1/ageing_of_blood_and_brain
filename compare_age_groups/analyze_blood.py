@@ -82,11 +82,9 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     np.save(outdir+'age_groups.npy',np.array(age_indices))
 
     #Looking at single marker comparisons
-    markers = merged['Reporter Identifier']
-    #Save
-    ages_compared = []
-    pvals = []
-    genes = []
+    markers = np.array(merged['Reporter Identifier'])
+    markers = markers[zero_indices]
+
 
     #Methylation values
     X = np.array(merged[merged.columns[2:-34]])
@@ -107,6 +105,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             X2 = X[:,i2]
             stats, pvals = ttest_ind(X1,X2,axis=1)
             #Volcano plot
+            fold_change = np.average(X2,axis=1)/np.average(X1,axis=1)
             volcano_plot(fold_change, pvals, ai, bi, outdir)
             #Plot pvals
             plot_pvals(pvals, ai, bi, outdir)
@@ -122,6 +121,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             df['Reporter Identifier']=markers
             df['stat']=stats
             df['p']=pvals
+            df['fold_change']=fold_change
             #Save df
             df.to_csv(outdir+str(ai)+'_'+str(bi)+'_corr_results.csv')
 
@@ -141,6 +141,7 @@ def plot_pvals(pvals, ai, bi, outdir):
 def volcano_plot(fold_change, pvals, ai, bi, outdir):
     '''Do a volcano plot
     '''
+    agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     log2fc = np.log2(fold_change)
     neglog10pval = -np.log10(pvals)
@@ -152,13 +153,16 @@ def volcano_plot(fold_change, pvals, ai, bi, outdir):
     high_fc_i = np.where((log2fc<-fc_t)|(log2fc>fc_t))
     plt.scatter(log2fc[high_fc_i[0]],neglog10pval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
     plt.legend()
-    plt.title('p-value vs Fold Change')
+    plt.title(agebins[ai]+' vs '+agebins[bi])
     plt.xlabel('log2 fold change')
-    plt.set_ylabel('-log10 p-value')
+    plt.ylabel('-log10 p-value')
     plt.tight_layout()
     plt.savefig(outdir+'volcano_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
     plt.close()
 ###########MAIN###########
+#Plt
+plt.rcParams.update({'font.size': 7})
+#Args
 args = parser.parse_args()
 agelabels = {'blood':"Characteristics [age y]"}
 agelabel=agelabels[args.agelabel[0]]
