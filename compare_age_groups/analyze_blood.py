@@ -65,7 +65,9 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
 
     #Merge on probe id
     merged = pd.merge(joined_betas, gene_annotations, left_on='Reporter Identifier', right_on='Name')
-
+    #Check how many are zeros (unquantified, beta can't be 0)
+    zeros = (merged[merged.columns[2:-34]] == 0).astype(int).sum(axis=1)
+    zero_indices = np.where(zeros<10)
     #Get ages
     ages = get_ages(sample_sheet, joined_betas.columns[2:], agelabel)
     #Save ages
@@ -88,60 +90,74 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
 
     #Methylation values
     X = np.array(merged[merged.columns[2:-34]])
-
+    #Check how many are zeros (unquantified, beta can't be 0)
+    print(np.round(100*X[X==0].shape[0]/(X.shape[0]*X.shape[1]),2), '% zeros')
+    #Take all samples with less than 10 zeros
+    X = X[zero_indices,:][0]
     for ai in range(len(age_indices)-1):
-        print(ai)
-        R = np.zeros(X.shape[0])
-        p = np.zeros(X.shape[0])
-        i1 = age_indices[ai]
-        i2 = age_indices[ai+1]
-        X1 = X[:,i1]
-        X2 = X[:,i2]
-        stats, pvals = ttest_ind(X1,X2,axis=1)
+        for bi in range(ai+1,len(age_indices)): #Compare all combinations
+            print(ai,bi)
+            #R = np.zeros(X.shape[0])
+            #p = np.zeros(X.shape[0])
 
-        fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-        sns.distplot(pvals)
-        plt.title(str(len(pvals[pvals<0.05/len(pvals)]))+ ' out of '+str(len(pvals))+' sig on 0.05')
-        plt.xlabel('p-value')
-        plt.tight_layout()
-        plt.savefig(outdir+'pval'+str(ai)+'.png', format='png', dpi=300)
-        plt.close()
-        #agesel = np.append(age_indices[ai],age_indices[ai+1])
-        #Xsel = X[:,agesel]
+            i1 = age_indices[ai]
+            i2 = age_indices[bi]
+            X1 = X[:,i1]
+            X2 = X[:,i2]
+            stats, pvals = ttest_ind(X1,X2,axis=1)
+            pdb.set_trace()
+            fold_change = np.average(X2, axis=1)/np.average(X1, axis=1)
 
-        # for xi in range(X.shape[0]):
-        #     if xi%1000==0:
-        #         print(xi)
-        #     R[xi], p[xi] = pearsonr(Xsel[xi,:], agesel)
-        #Save
-        df = pd.DataFrame()
-        df['Reporter Identifier']=markers
-        df['stat']=stats
-        df['p']=pvals
-        #Save df
-        df.to_csv(outdir+str(ai)+'_corr_results.csv')
+            #Volcano plot
+
+            #Plot pvals
+            plot_pvals(pvals, ai, bi, outdir)
+            #agesel = np.append(age_indices[ai],age_indices[ai+1])
+            #Xsel = X[:,agesel]
+
+            # for xi in range(X.shape[0]):
+            #     if xi%1000==0:
+            #         print(xi)
+            #     R[xi], p[xi] = pearsonr(Xsel[xi,:], agesel)
+            #Save
+            df = pd.DataFrame()
+            df['Reporter Identifier']=markers
+            df['stat']=stats
+            df['p']=pvals
+            #Save df
+            df.to_csv(outdir+str(ai)+'_'+str(bi)+'_corr_results.csv')
 
 
     return None
 
-def adjust_pvals(results, outdir):
-    '''Adjust the pvalues
-    '''
-    rej, cor_pval = fdrcorrection(results['pval'], 0.001)
-    results['Rejection on 0.001']=rej
-    results['qval']=cor_pval
-    print(rej[rej==True].shape[0], 'out of', len(results))
+def plot_pvals(pvals, ai, bi, outdir):
+    #Plot pvalue distribution
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    sns.distplot(results['qval'])
-    plt.title(str(rej[rej==True].shape[0])+ ' out of '+str(len(results))+' sig on 0.001')
-    plt.xlabel('qval')
+    sns.distplot(pvals)
+    plt.title(str(len(pvals[pvals<0.05/len(pvals)]))+ ' out of '+str(len(pvals))+' sig on 0.05')
+    plt.xlabel('p-value')
     plt.tight_layout()
-    plt.savefig(outdir+'qval.png', format='png', dpi=300)
+    plt.savefig(outdir+'pval'+str(ai)+str(bi)+'.png', format='png', dpi=300)
     plt.close()
-    return results
 
-
-
+def volcano_plot():
+    '''Do a volcano plot
+    '''
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    log2fc = np.log2(fold_change)
+    neglog10pval = -np.log10(pvals)
+    plt.scatter(log2fc,neglog10pval, s=0.2, color='lightsteelblue')
+    bonferroni_t  =-np.log10(0.05/fold_change.shape[0])
+    plt.axhline(bonferroni_t, min(log2fc),max(log2fc), linewidth=0.3, linestyle ="--", color = 'firebrick', label='bonferroni threshold')
+    #Plot those with fold change less than 2 (log2=1) (or half = -1)
+    fc_t = np.log2(1.5)
+    high_fc_i = np.where((log2fc<-fc_t)|(log2fc>fc_t))
+    plt.scatter(log2fc[high_fc_i[0]],neglog10pval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
+    plt.legend()
+    plt.title('p-value vs Fold Change')
+    ax.set_xlabel('log2 fold change')
+    ax.set_ylabel('-log10 p-value')
+    plt.tight_layout()
 ###########MAIN###########
 args = parser.parse_args()
 agelabels = {'blood':"Characteristics [age y]"}
