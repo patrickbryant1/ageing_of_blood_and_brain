@@ -103,9 +103,10 @@ def group_genes(unique_genes):
     unique_genes_grouped=single_genes
     return unique_genes_grouped
 
-def find_overlap(joined_dfs):
+def find_overlap(joined_dfs, agebins):
     '''Find markers that overlap significantly and have FC>1.5 across comparisons
     '''
+
     unique_probes = joined_dfs['Reporter Identifier'].unique()
     # for u_probe in unique_probes:
     #     overlap = joined_dfs[joined_dfs['Reporter Identifier']==u_probe]
@@ -141,11 +142,17 @@ def find_overlap(joined_dfs):
         #Check fold change
         log2fc = np.log2(gene_df['fold_change'])
         if min(log2fc)<0 and max(log2fc)>0:
+
                  print('FOUND!!!!', gene_group)
+                 #Get age bins
+                 age_comparisons = []
+                 for index, row in gene_df.iterrows():
+                     age_comparisons.append(agebins[row['id1']]+' vs '+agebins[row['id2']])
+
                  fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
                  plt.bar(np.arange(len(log2fc)), log2fc, color = 'midnightblue')
                  plt.title(gene_group)
-                 plt.xticks(np.arange(len(log2fc)), gene_df['Reporter Identifier'].values, rotation='vertical')
+                 plt.xticks(np.arange(len(log2fc)), gene_df['Reporter Identifier'].values+'\n'+age_comparisons, rotation='vertical')
                  ax.spines['top'].set_visible(False)
                  ax.spines['right'].set_visible(False)
                  plt.ylabel('log2 fold change')
@@ -217,5 +224,5 @@ except:
 
 
 #Find overlapping markers
-find_overlap(joined_dfs)
+find_overlap(joined_dfs, agebins)
 pdb.set_trace()
