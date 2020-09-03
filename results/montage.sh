@@ -21,3 +21,7 @@ montage qval_volcano_0_5.png qval_volcano_1_5.png qval_volcano_2_5.png qval_volc
 montage qval_volcano_0_6.png qval_volcano_1_6.png qval_volcano_2_6.png qval_volcano_3_6.png qval_volcano_4_6.png qval_volcano_5_6.png whitebox_45.png -tile 7x1 -geometry +2+2 row7.png
 #All rows together
 montage row1.png row2.png row3.png row4.png row5.png row6.png row7.png -tile 1x7 -geometry +2+2 qval_matrix.png
+
+
+#Montage fold changes for genes
+montage fold_changes/PRKG1.png fold_changes/TMEM181.png -tile 2x1 -geometry +2+2 fold_changes/fold_changes.png
