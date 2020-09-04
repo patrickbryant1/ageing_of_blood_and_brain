@@ -41,12 +41,14 @@ def adjust_pvals(corr_df):
     corr_df['qval']=cor_pval
     return corr_df
 
-def plot_pvals(qvals, ai, bi, outdir):
+def plot_pvals(adjusted_corr_df, ai, bi, outdir):
     #Plot pvalue distribution
     agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
     fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
-    sns.distplot(qvals)
-    plt.title(agebins[ai]+' vs '+agebins[bi])
+    pvals = np.array(adjusted_corr_df['p'])
+    num_sig = len(adjusted_corr_df[adjusted_corr_df['Rejection on 0.05']==True])
+    sns.distplot(pvals)
+    plt.title(agebins[ai]+' vs '+agebins[bi]+'\n'+str(num_sig)+' sig on FDR 0.05')
     plt.xlabel('p-value')
     plt.tight_layout()
     ax.spines['top'].set_visible(False)
@@ -54,23 +56,34 @@ def plot_pvals(qvals, ai, bi, outdir):
     plt.savefig(outdir+'qval_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
     plt.close()
 
-def volcano_plot(fold_change, qvals, ai, bi, outdir):
+def volcano_plot(adjusted_corr_df, ai, bi, outdir):
     '''Do a volcano plot
     '''
     agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
-    fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
+    fold_change = np.array(adjusted_corr_df['fold_change'])
+    pvals = np.array(adjusted_corr_df['p'])
+    sig_pvals_index = adjusted_corr_df[adjusted_corr_df['Rejection on 0.05']==True].index
+
+    #Log transform
     log2fc = np.log2(fold_change)
-    neglog10qval = -np.log10(qvals)
-    plt.scatter(log2fc,neglog10qval, s=0.2, color='lightsteelblue')
-    t  =-np.log10(0.05)
-    plt.axhline(t, min(log2fc),max(log2fc), linewidth=0.3, linestyle ="--", color = 'firebrick', label='bonferroni threshold')
-    #Plot those with fold change less than 2 (log2=1) (or half = -1)
+    neglog10pval = -np.log10(pvals)
+    neglog10sigpval = neglog10pval[sig_pvals_index]
+    log2fcsig = log2fc[sig_pvals_index]
+    #Plot
+    fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
+    plt.scatter(log2fc,neglog10pval, s=0.2, color='lightsteelblue')
+    t  =-np.log10(0.05/len(log2fc))
+    #plt.axhline(t, min(log2fc),max(log2fc), linewidth=0.3, linestyle ="--", color = 'firebrick', label='bonferroni threshold')
+    #Plot those with fold change less than 1.5 (or 1/1.5)
     fc_t = np.log2(1.5)
-    high_fc_i = np.where((log2fc<-fc_t)|(log2fc>fc_t))
-    plt.scatter(log2fc[high_fc_i[0]],neglog10qval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
+    #high_fc_i = np.where((log2fc<-fc_t)|(log2fc>fc_t))
+    #plt.scatter(log2fc[high_fc_i[0]],neglog10pval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
+    #Plot the ones sig on FDR 0.05 with FC >1.5
+    high_fc_i = np.where((log2fcsig<-fc_t)|(log2fcsig>fc_t))
+    plt.scatter(log2fcsig[high_fc_i[0]],neglog10sigpval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
     plt.title(agebins[ai]+' vs '+agebins[bi])
     plt.xlabel('log2 fold change')
-    plt.ylabel('-log10 q-value')
+    plt.ylabel('-log10 p-value')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.tight_layout()
@@ -160,7 +173,7 @@ def find_overlap(joined_dfs, agebins):
                  plt.savefig(outdir+'fold_changes/'+gene_group+'.png', format='png', dpi=300)
                  plt.close()
 
-    pdb.set_trace()
+                 pdb.set_trace()
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
@@ -193,9 +206,9 @@ except:
             adjusted_corr_df['id1']=i
             adjusted_corr_df['id2']=j
             #Volcano plot
-            volcano_plot(np.array(adjusted_corr_df['fold_change']), np.array(adjusted_corr_df['qval']), i, j, outdir)
+            volcano_plot(adjusted_corr_df, i, j, outdir)
             #qval plot
-            plot_pvals(np.array(adjusted_corr_df['p']), i, j, outdir)
+            plot_pvals(adjusted_corr_df, i, j, outdir)
             #Select on qval
             sel = adjusted_corr_df[adjusted_corr_df['Rejection on 0.05']==True]
             sel = sel.reset_index()

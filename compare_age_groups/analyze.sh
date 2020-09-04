@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-ANNO=/home/patrick/data/Methylation/anno450k.csv
+ANNO=/hdd/pbryant/data/Methylation/anno450k.csv
 BETAS=/hdd/pbryant/data/Methylation/Hannum_blood/joined_betas_full450k.csv
 SAMPLES=/hdd/pbryant/data/Methylation/Hannum_blood/sample_sheet.tsv
 AL='blood'
