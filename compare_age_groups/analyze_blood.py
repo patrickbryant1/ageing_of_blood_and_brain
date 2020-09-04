@@ -104,11 +104,6 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             X1 = X[:,i1]
             X2 = X[:,i2]
             stats, pvals = ttest_ind(X1,X2,axis=1)
-            #Volcano plot
-            fold_change = np.average(X2,axis=1)/np.average(X1,axis=1)
-            volcano_plot(fold_change, pvals, ai, bi, outdir)
-            #Plot pvals
-            plot_pvals(pvals, ai, bi, outdir)
             #agesel = np.append(age_indices[ai],age_indices[ai+1])
             #Xsel = X[:,agesel]
 
@@ -116,50 +111,21 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             #     if xi%1000==0:
             #         print(xi)
             #     R[xi], p[xi] = pearsonr(Xsel[xi,:], agesel)
+            fold_change = np.average(X2,axis=1)/np.average(X1,axis=1)
             #Save
             df = pd.DataFrame()
             df['Reporter Identifier']=markers
             df['stat']=stats
             df['p']=pvals
             df['fold_change']=fold_change
+            df['beta1'] = np.average(X1,axis=1)
+            df['beta2'] = np.average(X2,axis=1)
             #Save df
             df.to_csv(outdir+str(ai)+'_'+str(bi)+'_corr_results.csv')
 
 
     return None
 
-def plot_pvals(pvals, ai, bi, outdir):
-    #Plot pvalue distribution
-    agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
-    fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
-    sns.distplot(pvals)
-    plt.title(agebins[ai]+' vs '+agebins[bi]+'\n'+str(len(pvals[pvals<0.05/len(pvals)]))+ ' out of '+str(len(pvals))+' sig on 0.05')
-    plt.xlabel('p-value')
-    plt.tight_layout()
-    plt.savefig(outdir+'pval_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
-    plt.close()
-
-def volcano_plot(fold_change, pvals, ai, bi, outdir):
-    '''Do a volcano plot
-    '''
-    agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
-    fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
-    log2fc = np.log2(fold_change)
-    neglog10pval = -np.log10(pvals)
-    plt.scatter(log2fc,neglog10pval, s=0.2, color='lightsteelblue')
-    bonferroni_t  =-np.log10(0.05/fold_change.shape[0])
-    plt.axhline(bonferroni_t, min(log2fc),max(log2fc), linewidth=0.3, linestyle ="--", color = 'firebrick', label='bonferroni threshold')
-    #Plot those with fold change less than 2 (log2=1) (or half = -1)
-    fc_t = np.log2(1.5)
-    high_fc_i = np.where((log2fc<-fc_t)|(log2fc>fc_t))
-    plt.scatter(log2fc[high_fc_i[0]],neglog10pval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
-    plt.legend()
-    plt.title(agebins[ai]+' vs '+agebins[bi])
-    plt.xlabel('log2 fold change')
-    plt.ylabel('-log10 p-value')
-    plt.tight_layout()
-    plt.savefig(outdir+'volcano_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
-    plt.close()
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})

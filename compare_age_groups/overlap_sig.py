@@ -120,23 +120,19 @@ def find_overlap(joined_dfs, agebins):
     '''Find markers that overlap significantly and have FC>1.5 across comparisons
     '''
 
+    #Check probe overlaps
     unique_probes = joined_dfs['Reporter Identifier'].unique()
-    # for u_probe in unique_probes:
-    #     overlap = joined_dfs[joined_dfs['Reporter Identifier']==u_probe]
-    #
-    #     log2fc = np.log2(overlap['fold_change'])
-    #     if min(log2fc)<0 and max(log2fc)>0:
-    #         print('FOUND!!!!')
-    #         pdb.set_trace()
-        #fig,ax = plt.subplots(figsize=(2.5/2.54, 2.5/2.54))
-        # plt.bar(np.arange(len(overlap)), log2fc)
-        # plt.title(u_probe)
-        # ax.spines['top'].set_visible(False)
-        # ax.spines['right'].set_visible(False)
-        # plt.tight_layout()
-        # plt.savefig(outdir+'fold_changes/'+u_probe+'.png', format='png', dpi=300)
-        # plt.close()
+    for u_probe in unique_probes:
+        overlap = joined_dfs[joined_dfs['Reporter Identifier']==u_probe]
 
+        log2fc = np.log2(overlap['fold_change'])
+        #Check if up and down in different comparisons
+        if min(log2fc)<0 and max(log2fc)>0:
+            print('FOUND!!!!')
+            pdb.set_trace()
+
+
+    #Check gene overlaps
     gene_annotations = pd.read_csv(args.gene_annotations[0])
     #Join on probe id
     joined_dfs = pd.merge(joined_dfs, gene_annotations, left_on='Reporter Identifier', right_on='Name', how='left')
@@ -173,7 +169,63 @@ def find_overlap(joined_dfs, agebins):
                  plt.savefig(outdir+'fold_changes/'+gene_group+'.png', format='png', dpi=300)
                  plt.close()
 
-                 pdb.set_trace()
+def vis_FC_changes(joined_dfs, agebins):
+    '''Visualize the fold changes for the significant markers
+    '''
+    colors = {0:'cornflowerblue',1:'royalblue',2:'midnightblue',3:'mediumpurple',4:'rebeccapurple'}
+    ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    for i in range(0,5,2):
+        #Get all selected markers with age comparison of i and j
+        sel = joined_dfs[joined_dfs['id1']==i]
+        sel = sel[sel['id2']==i+2]
+
+        #Create x and y values
+        for index, row in sel.iterrows():
+            plt.plot([i,i+2],[row['beta1'],row['beta2']], color = colors[i], linewidth=0.5)
+            plt.scatter([i,i+2],[row['beta1'],row['beta2']], color=colors[i], s=0.2)
+        # #sel_probes = sel['Reporter Identifier'].unique()
+        # for probe in sel_probes:
+        #     sub_sel = sel[sel['Reporter Identifier']==probe]
+        #     if len(sub_sel)>1:
+        #         plt.plot(sub_sel['id1'],np.log2(sub_sel['fold_change']), color = 'cornflowerblue', linewidth=0.5)
+        #         plt.scatter(sub_sel['id1'],np.log2(sub_sel['fold_change']), color='cornflowerblue', s=1)
+        #     else:
+        #         plt.scatter(sub_sel['id1'],np.log2(sub_sel['fold_change']), color='royalblue', s=1)
+
+    ids =  [0,2,4,6]
+    sel_ages = agebins[ids]
+    plt.xticks(ids,sel_ages)
+    plt.title('10 year gaps')
+    plt.ylim([0,0.54])
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.ylabel('Beta value')
+    plt.tight_layout()
+    plt.savefig(outdir+'fold_changes/gap10_even.png', format='png', dpi=300)
+    plt.close()
+
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    for i in [1,3]:
+        #Get all selected markers with age comparison of i and j
+        sel = joined_dfs[joined_dfs['id1']==i]
+        sel = sel[sel['id2']==i+2]
+
+        #Create x and y values
+        for index, row in sel.iterrows():
+            plt.plot([i,i+2],[row['beta1'],row['beta2']], color = colors[i], linewidth=0.5)
+            plt.scatter([i,i+2],[row['beta1'],row['beta2']], color=colors[i], s=0.2)
+    ids =  [1,3,5]
+    sel_ages = agebins[ids]
+    plt.xticks(ids,sel_ages)
+    plt.title('10 year gaps')
+    plt.ylim([0,0.54])
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.ylabel('Beta value')
+    plt.tight_layout()
+    plt.savefig(outdir+'fold_changes/gap10_uneven.png', format='png', dpi=300)
+    plt.close()
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
@@ -237,5 +289,7 @@ except:
 
 
 #Find overlapping markers
-find_overlap(joined_dfs, agebins)
+#find_overlap(joined_dfs, agebins)
+#Visualize fold changes
+vis_FC_changes(joined_dfs, np.array(agebins))
 pdb.set_trace()
