@@ -217,14 +217,23 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
     #Look at gene regulation overlaps
     extracted_gene_df = pd.DataFrame()
     fig,ax = plt.subplots(figsize=(12/2.54, 12/2.54))
+    found_genes = []
+    duplicate_genes = []
     for i in range(0,5):
         #Get all selected markers with age comparison of i and j
         sel = total_gene_df[total_gene_df['id1']==i]
         sel = sel[sel['id2']==i+2]
         sel['id1']=agebins[i]
         sel['id2']=agebins[i+2]
+        for gene in sel['gene_group'].unique():
+            if gene in found_genes:
+                duplicate_genes.append(gene)
+            else:
+                continue
+        found_genes.extend(sel['gene_group'].unique())
         extracted_gene_df = pd.concat([extracted_gene_df,sel])
     extracted_gene_df.to_csv(outdir+'genes_for_sel_markers.csv')
+    print(duplicate_genes)
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
