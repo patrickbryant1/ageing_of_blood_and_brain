@@ -193,44 +193,58 @@ def find_overlap(joined_dfs, agebins):
 def vis_FC_changes(joined_dfs, agebins, total_gene_df):
     '''Visualize the fold changes for the significant markers
     '''
-    # colors = {0:'cornflowerblue',1:'royalblue',2:'midnightblue',3:'mediumpurple',4:'rebeccapurple'}
-    # fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    # for i in range(0,5,2):
-    #     #Get all selected markers with age comparison of i and j
-    #     sel = joined_dfs[joined_dfs['id1']==i]
-    #     sel = sel[sel['id2']==i+2]
-    #
-    #     #Create x and y values
-    #     for index, row in sel.iterrows():
-    #         plt.plot([i,i+2],[row['beta1'],row['beta2']], color = colors[i], linewidth=0.5)
-    #         plt.scatter([i,i+2],[row['beta1'],row['beta2']], color=colors[i], s=0.2)
-    # #
-    # def format_plot(fig,ax,ids, outname):
-    #     sel_ages = agebins[ids]
-    #     plt.xticks(ids,sel_ages)
-    #     plt.title('10 year gaps')
-    #     plt.ylim([0,0.54])
-    #     ax.spines['top'].set_visible(False)
-    #     ax.spines['right'].set_visible(False)
-    #     plt.ylabel('Beta value')
-    #     plt.tight_layout()
-    #     plt.savefig(outname, format='png', dpi=300)
-    #     plt.close()
-    #
-    # format_plot(fig,ax,[0,2,4,6], outdir+'fold_changes/gap10_even.png')
-    # #Plot uneven
-    # fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    # for i in [1,3]:
-    #     #Get all selected markers with age comparison of i and j
-    #     sel = joined_dfs[joined_dfs['id1']==i]
-    #     sel = sel[sel['id2']==i+2]
-    #
-    #     #Create x and y values
-    #     for index, row in sel.iterrows():
-    #         plt.plot([i,i+2],[row['beta1'],row['beta2']], color = colors[i], linewidth=0.5)
-    #         plt.scatter([i,i+2],[row['beta1'],row['beta2']], color=colors[i], s=0.2)
-    # format_plot(fig,ax,[1,3,5], outdir+'fold_changes/gap10_uneven.png')
+    colors = {0:'cornflowerblue',1:'seagreen',2:'royalblue',3:'mediumseagreen',4:'midnightblue'}
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    collected_markers = {}
+    for i in range(0,5,2):
+        #Get all selected markers with age comparison of i and j
+        sel = joined_dfs[joined_dfs['id1']==i]
+        sel = sel[sel['id2']==i+2]
 
+        #Create x and y values
+        for index, row in sel.iterrows():
+            plt.plot([i,i+2],[row['beta1'],row['beta2']], color = colors[i], linewidth=0.5)
+            plt.scatter([i,i+2],[row['beta1'],row['beta2']], color=colors[i], s=0.2)
+            for key in collected_markers:
+                if row['Reporter Identifier'] in collected_markers[key]:
+                    print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2])
+
+        collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
+
+
+    def format_plot(fig,ax,ids, outname):
+        sel_ages = agebins[ids]
+        plt.xticks(ids,sel_ages)
+        plt.title('10 year gaps')
+        plt.ylim([0,0.54])
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        plt.ylabel('Beta value')
+        plt.xlabel('Age group')
+        plt.tight_layout()
+        plt.savefig(outname, format='png', dpi=300)
+        plt.close()
+
+    format_plot(fig,ax,[0,2,4,6], outdir+'fold_changes/gap10_even.png')
+    #Plot uneven
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    collected_markers = {}
+    for i in [1,3]:
+        #Get all selected markers with age comparison of i and j
+        sel = joined_dfs[joined_dfs['id1']==i]
+        sel = sel[sel['id2']==i+2]
+        #Create x and y values
+        for index, row in sel.iterrows():
+            plt.plot([i,i+2],[row['beta1'],row['beta2']], color = colors[i], linewidth=0.5)
+            plt.scatter([i,i+2],[row['beta1'],row['beta2']], color=colors[i], s=0.2)
+
+            for key in collected_markers:
+                if row['Reporter Identifier'] in collected_markers[key]:
+                    print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2])
+
+        collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
+    format_plot(fig,ax,[1,3,5], outdir+'fold_changes/gap10_uneven.png')
+    pdb.set_trace()
     #Look at gene regulation overlaps
     extracted_gene_df = pd.DataFrame()
     fig,ax = plt.subplots(figsize=(12/2.54, 12/2.54))
@@ -242,6 +256,7 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
         sel = sel[sel['id2']==i+2]
         sel['id1']=agebins[i]
         sel['id2']=agebins[i+2]
+
         for gene in sel['gene_group'].unique():
             if gene in found_genes:
                 duplicate_genes.append(gene)
@@ -251,6 +266,25 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
         extracted_gene_df = pd.concat([extracted_gene_df,sel])
     extracted_gene_df.to_csv(outdir+'genes_for_sel_markers.csv')
     print(duplicate_genes)
+
+def plot_age_distrubution():
+    '''Plot age distribution
+    '''
+    sample_sheet = pd.read_csv(args.sample_sheet[0], sep='\t')
+
+    fig,ax = plt.subplots(figsize=(12/2.54, 9/2.54))
+    sns.distplot(sample_sheet['Characteristics [age y]'], color='grey',label='All')
+    sns.distplot(sample_sheet[sample_sheet['Characteristics [sex]']=='female']['Characteristics [age y]'], color='mediumvioletred',label='Female')
+    sns.distplot(sample_sheet[sample_sheet['Characteristics [sex]']=='male']['Characteristics [age y]'], color='royalblue',label='Male')
+    plt.title('Age distribution')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.xlabel('Age (y)')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(outdir+'age_distribution.png', format='png', dpi=300)
+    plt.close()
+
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
@@ -263,7 +297,8 @@ agelabels = {'blood':"Characteristics [age y]"}
 #sample_sheet = args.sample_sheet[0]
 indir = args.indir[0]
 outdir = args.outdir[0]
-
+#Plot ages
+plot_age_distrubution()
 
 #Get age group correlations
 agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']

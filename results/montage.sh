@@ -24,9 +24,9 @@
 
 
 # #Montage fold changes for genes
-# montage fold_changes/PRKG1.png fold_changes/TMEM181.png -tile 2x1 -geometry +2+2 fold_changes/fold_changes.png
+montage fold_changes/genes/*.png -tile 5x8 -geometry +2+2 fold_changes/genes/all_genes.png
 #
 # #Montage beta value changes for markers
-# montage fold_changes/gap10_even.png fold_changes/gap10_uneven.png -tile 2x1 -geometry +2+2 fold_changes/all_gap10.png
+montage fold_changes/gap10_even.png fold_changes/gap10_uneven.png -tile 2x1 -geometry +2+2 fold_changes/all_gap10.png
 
 montage fold_changes/markers/*.png -tile 3x1 -geometry +2+2 fold_changes/markers/all_makers.png
