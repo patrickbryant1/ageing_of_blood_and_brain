@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 
 from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
-from statsmodels.stats.multitest import fdrcorrection
 from statsmodels.stats.multitest import multipletests
 from scipy.stats import ttest_ind
 import pdb
@@ -35,7 +34,7 @@ parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'P
 def adjust_pvals(corr_df):
     '''Adjust the pvalues
     '''
-    res = multipletests(corr_df['p'], 0.05)
+    res = multipletests(corr_df['p'], 0.05, method='fdr_bh')
     rej, cor_pval = res[0], res[1]
     corr_df['Rejection on 0.05']=rej
     corr_df['qval']=cor_pval
@@ -81,6 +80,7 @@ def volcano_plot(adjusted_corr_df, ai, bi, outdir):
     #Plot the ones sig on FDR 0.05 with FC >1.5
     high_fc_i = np.where((log2fcsig<-fc_t)|(log2fcsig>fc_t))
     plt.scatter(log2fcsig[high_fc_i[0]],neglog10sigpval[high_fc_i[0]], s=0.2, color='midnightblue', label='FC>1.5')
+    plt.ylim([0,60])
     plt.title(agebins[ai]+' vs '+agebins[bi])
     plt.xlabel('log2 fold change')
     plt.ylabel('-log10 p-value')
@@ -120,20 +120,36 @@ def find_overlap(joined_dfs, agebins):
     '''Find markers that overlap significantly and have FC>1.5 across comparisons
     '''
 
-    # #Check probe overlaps
-    # unique_probes = joined_dfs['Reporter Identifier'].unique()
-    # for u_probe in unique_probes:
-    #     overlap = joined_dfs[joined_dfs['Reporter Identifier']==u_probe]
-    #
-    #     log2fc = np.log2(overlap['fold_change'])
-    #     #Check if up and down in different comparisons
-    #     if min(log2fc)<0 and max(log2fc)>0:
-    #         print('FOUND!!!!')
-    #         pdb.set_trace()
+    #Check probe overlaps
+    unique_probes = joined_dfs['Reporter Identifier'].unique()
+    for u_probe in unique_probes:
+        overlap = joined_dfs[joined_dfs['Reporter Identifier']==u_probe]
+
+        log2fc = np.log2(overlap['fold_change'])
+        #Check if up and down in different comparisons
+        if min(log2fc)<0 and max(log2fc)>0:
+            print('FOUND!!!!', u_probe)
+            overlap = overlap.reset_index()
+            #Get age bins
+            age_comparisons = []
+            for index, row in overlap.iterrows():
+                age_comparisons.append(agebins[row['id1']]+' vs '+agebins[row['id2']])
+
+            fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+            plt.bar(np.arange(len(log2fc)), log2fc, color = 'midnightblue')
+            plt.title(u_probe)
+            plt.xticks(np.arange(len(log2fc)), age_comparisons, rotation='vertical')
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            plt.ylabel('log2 fold change')
+            plt.tight_layout()
+            plt.savefig(outdir+'fold_changes/markers/'+u_probe+'.png', format='png', dpi=300)
+            plt.close()
 
 
     #Check gene overlaps
     gene_annotations = pd.read_csv(args.gene_annotations[0])
+
     #Join on probe id
     joined_dfs = pd.merge(joined_dfs, gene_annotations, left_on='Reporter Identifier', right_on='Name', how='left')
     #Group genes
@@ -143,6 +159,7 @@ def find_overlap(joined_dfs, agebins):
 
     #Loop through all gene groups
     total_gene_df = pd.DataFrame()
+    plt.rcParams.update({'font.size': 5})
     for gene_group in unique_genes_grouped:
         gene_df = pd.DataFrame()
         for gene in unique_genes_grouped[gene_group]:
@@ -168,7 +185,7 @@ def find_overlap(joined_dfs, agebins):
                  ax.spines['right'].set_visible(False)
                  plt.ylabel('log2 fold change')
                  plt.tight_layout()
-                 plt.savefig(outdir+'fold_changes/'+gene_group+'.png', format='png', dpi=300)
+                 plt.savefig(outdir+'fold_changes/genes/'+gene_group+'.png', format='png', dpi=300)
                  plt.close()
 
     return total_gene_df

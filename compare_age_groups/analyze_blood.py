@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 
 from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
-from statsmodels.stats.multitest import fdrcorrection
 from scipy.stats import ttest_ind
 import pdb
 
