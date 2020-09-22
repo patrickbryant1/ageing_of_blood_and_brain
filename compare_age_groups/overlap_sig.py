@@ -119,8 +119,13 @@ def group_genes(unique_genes):
 def find_overlap(joined_dfs, agebins):
     '''Find markers that overlap significantly and have FC>1.5 across comparisons
     '''
+    #Check gene overlaps
+    gene_annotations = pd.read_csv(args.gene_annotations[0])
+    #Join on probe id
+    joined_dfs = pd.merge(joined_dfs, gene_annotations, left_on='Reporter Identifier', right_on='Name', how='left')
 
     #Check probe overlaps
+    overlapping_probes = pd.DataFrame()
     unique_probes = joined_dfs['Reporter Identifier'].unique()
     for u_probe in unique_probes:
         overlap = joined_dfs[joined_dfs['Reporter Identifier']==u_probe]
@@ -129,6 +134,8 @@ def find_overlap(joined_dfs, agebins):
         #Check if up and down in different comparisons
         if min(log2fc)<0 and max(log2fc)>0:
             print('FOUND!!!!', u_probe)
+            #Save to overlapping probes
+            overlapping_probes = pd.concat([overlapping_probes,overlap])
             overlap = overlap.reset_index()
             #Get age bins
             age_comparisons = []
@@ -147,11 +154,6 @@ def find_overlap(joined_dfs, agebins):
             plt.close()
 
 
-    #Check gene overlaps
-    gene_annotations = pd.read_csv(args.gene_annotations[0])
-
-    #Join on probe id
-    joined_dfs = pd.merge(joined_dfs, gene_annotations, left_on='Reporter Identifier', right_on='Name', how='left')
     #Group genes
     unique_genes = joined_dfs['UCSC_RefGene_Name'].dropna()
     unique_genes = unique_genes.unique()
@@ -188,7 +190,7 @@ def find_overlap(joined_dfs, agebins):
                  plt.savefig(outdir+'fold_changes/genes/'+gene_group+'.png', format='png', dpi=300)
                  plt.close()
 
-    return total_gene_df
+    return total_gene_df, overlapping_probes
 
 def vis_FC_changes(joined_dfs, agebins, total_gene_df):
     '''Visualize the fold changes for the significant markers
@@ -349,11 +351,13 @@ except:
 
 try:
     total_gene_df = pd.read_csv(outdir+'total_gene_df.csv')
+    overlapping_probes = pd.read_csv(outdir+'overlapping_probes_df.csv')
 except:
     #Find overlapping markers
-    total_gene_df = find_overlap(joined_dfs, agebins)
+    total_gene_df, overlapping_probes = find_overlap(joined_dfs, agebins)
     #save
     total_gene_df.to_csv(outdir+'total_gene_df.csv')
+    overlapping_probes.to_csv(outdir+'overlapping_probes_df.csv')
 
 #Visualize fold changes
 vis_FC_changes(joined_dfs, np.array(agebins), total_gene_df)
