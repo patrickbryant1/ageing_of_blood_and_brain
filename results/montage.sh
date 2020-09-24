@@ -24,9 +24,11 @@
 
 
 # #Montage fold changes for genes
-montage fold_changes/genes/*.png -tile 5x8 -geometry +2+2 fold_changes/genes/all_genes.png
+montage fold_changes/genes/ARHGAP22.png  fold_changes/genes/LOH12CR2.png fold_changes/genes/ARHGEF4.png   fold_changes/genes/LRRK1.png fold_changes/genes/ARSG.png      fold_changes/genes/MAGI2.png fold_changes/genes/B3GALT6.png   fold_changes/genes/MOSC2.png fold_changes/genes/BMP8A.png     fold_changes/genes/MYO10.png fold_changes/genes/C12orf65.png  fold_changes/genes/PRDXDD1P.png fold_changes/genes/CACNA1A.png   fold_changes/genes/PRKG1.png fold_changes/genes/DOCK1.png     fold_changes/genes/RABGGTB.png fold_changes/genes/DUSP5.png     fold_changes/genes/SDF4.png fold_changes/genes/EPB41L4A.png  fold_changes/genes/SFRS6.png  -tile 4x5 -geometry +2+2 fold_changes/genes/all_genes1.png
+
+montage fold_changes/genes/FLJ32810.png  fold_changes/genes/SHANK1.png fold_changes/genes/GGNBP2.png    fold_changes/genes/SHANK2.png fold_changes/genes/HLA-B.png     fold_changes/genes/SLC16A6.png fold_changes/genes/JAKMIP3.png   fold_changes/genes/SLC7A5.png fold_changes/genes/KIAA1409.png  fold_changes/genes/SNORD45C.png fold_changes/genes/LEPR.png      fold_changes/genes/TMEM181.png fold_changes/genes/LHX3.png      fold_changes/genes/TP73.png fold_changes/genes/LIMCH1.png    fold_changes/genes/TYMP.png fold_changes/genes/LMTK3.png     fold_changes/genes/VWC2.png fold_changes/genes/LOH12CR1.png  fold_changes/genes/ZMAT4.png -tile 4x5 -geometry +2+2 fold_changes/genes/all_genes2.png
 #
 # #Montage beta value changes for markers
-montage fold_changes/gap10_even.png fold_changes/gap10_uneven.png -tile 2x1 -geometry +2+2 fold_changes/all_gap10.png
+#montage fold_changes/gap10_even.png fold_changes/gap10_uneven.png -tile 2x1 -geometry +2+2 fold_changes/all_gap10.png
 
-montage fold_changes/markers/*.png -tile 3x1 -geometry +2+2 fold_changes/markers/all_makers.png
+montage fold_changes/markers/cg02725290.png fold_changes/markers/cg14074924.png fold_changes/markers/cg16651196.png fold_changes/markers/cg02725290_vs_age.png fold_changes/markers/cg14074924_vs_age.png fold_changes/markers/cg16651196_vs_age.png -tile 3x2 -geometry +2+2 fold_changes/markers/all_makers.png

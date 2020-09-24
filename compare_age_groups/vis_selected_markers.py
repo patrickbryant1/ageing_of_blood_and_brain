@@ -119,14 +119,15 @@ def plot_probes(X,markers,ages,age_indices,overlapping_probes):
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
         #Get ra
         x_av,y_av = running_average(ages,age_indices,vals)
-        plt.plot(x_av,y_av, color = 'k', linewidth=1)
-        plt.scatter(ages, vals, color = 'midnightblue', s=1)
+        plt.plot(x_av,np.log10(y_av), color = 'k', linewidth=1)
+        plt.scatter(ages, np.log10(vals), color = 'midnightblue', s=0.1)
 
         #Format plot
         plt.title(u_probe)
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
-        plt.ylabel('Beta value')
+        plt.ylabel('log Beta value')
+        plt.xlabel('Age')
         plt.tight_layout()
         plt.savefig(outdir+'fold_changes/markers/'+u_probe+'_vs_age.png', format='png', dpi=300)
         plt.close()
