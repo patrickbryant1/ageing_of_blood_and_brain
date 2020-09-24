@@ -277,8 +277,8 @@ def plot_age_distrubution():
 
     fig,ax = plt.subplots(figsize=(12/2.54, 9/2.54))
     sns.distplot(sample_sheet['Characteristics [age y]'], color='grey',label='All')
-    sns.distplot(sample_sheet[sample_sheet['Characteristics [sex]']=='female']['Characteristics [age y]'], color='mediumvioletred',label='Female')
-    sns.distplot(sample_sheet[sample_sheet['Characteristics [sex]']=='male']['Characteristics [age y]'], color='royalblue',label='Male')
+    sns.distplot(sample_sheet[sample_sheet['Characteristics [sex]']=='female']['Characteristics [age y]'], color='mediumvioletred',label='Female', hist=False)
+    sns.distplot(sample_sheet[sample_sheet['Characteristics [sex]']=='male']['Characteristics [age y]'], color='royalblue',label='Male', hist=False)
     plt.title('Age distribution')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
