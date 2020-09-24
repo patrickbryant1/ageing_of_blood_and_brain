@@ -8,4 +8,7 @@ OUTDIR=../results/
 
 #Compare significant markers
 INDIR=../results/
-./overlap_sig.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --indir $INDIR --outdir $OUTDIR
+#./overlap_sig.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --indir $INDIR --outdir $OUTDIR
+
+#Visualize selected markers
+#./vis_selected_markers.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --outdir $OUTDIR

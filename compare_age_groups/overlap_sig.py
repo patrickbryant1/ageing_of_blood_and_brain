@@ -169,11 +169,12 @@ def find_overlap(joined_dfs, agebins):
                 gene = ';'.join(gene)
             gene_df = pd.concat([gene_df, joined_dfs[joined_dfs['UCSC_RefGene_Name']==gene]])
             gene_df['gene_group']=gene_group
-            total_gene_df = pd.concat([total_gene_df, gene_df])
+
         #Check fold change
         log2fc = np.log2(gene_df['fold_change'])
         if min(log2fc)<0 and max(log2fc)>0:
                  print('FOUND!!!!', gene_group)
+                 total_gene_df = pd.concat([total_gene_df, gene_df])
                  #Get age bins
                  age_comparisons = []
                  for index, row in gene_df.iterrows():
@@ -246,7 +247,7 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
 
         collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
     format_plot(fig,ax,[1,3,5], outdir+'fold_changes/gap10_uneven.png')
-    pdb.set_trace()
+
     #Look at gene regulation overlaps
     extracted_gene_df = pd.DataFrame()
     fig,ax = plt.subplots(figsize=(12/2.54, 12/2.54))
