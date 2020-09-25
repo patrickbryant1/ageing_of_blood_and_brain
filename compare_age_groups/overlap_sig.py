@@ -210,7 +210,7 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
             plt.scatter([i,i+2],[row['beta1'],row['beta2']], color=colors[i], s=0.2)
             for key in collected_markers:
                 if row['Reporter Identifier'] in collected_markers[key]:
-                    print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2])
+                    print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2],',',row['fold_change'])
 
         collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
 
@@ -243,7 +243,7 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
 
             for key in collected_markers:
                 if row['Reporter Identifier'] in collected_markers[key]:
-                    print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2])
+                    print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2],',',row['fold_change'])
 
         collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
     format_plot(fig,ax,[1,3,5], outdir+'fold_changes/gap10_uneven.png')
