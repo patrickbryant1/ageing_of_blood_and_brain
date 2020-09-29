@@ -45,4 +45,8 @@
 #
 # montage $BASE/cg20894495_vs_age.png $BASE/cg04315227_vs_age.png  $BASE/cg13021192_vs_age.png  $BASE/cg21012737_vs_age.png $BASE/cg04633600_vs_age.png  $BASE/cg13275176_vs_age.png  $BASE/cg21245975_vs_age.png $BASE/cg05268155_vs_age.png  $BASE/cg13332925_vs_age.png  $BASE/cg22133704_vs_age.png $BASE/cg05273049_vs_age.png  $BASE/cg13353717_vs_age.png  $BASE/cg23109721_vs_age.png $BASE/cg05979320_vs_age.png  $BASE/cg13372488_vs_age.png  $BASE/cg23243080_vs_age.png $BASE/cg06069187_vs_age.png  $BASE/cg13529619_vs_age.png  $BASE/cg23484755_vs_age.png $BASE/cg06103394_vs_age.png  $BASE/cg13682223_vs_age.png  $BASE/cg24613083_vs_age.png $BASE/cg06343869_vs_age.png  $BASE/cg14074924_vs_age.png  $BASE/cg25307371_vs_age.png $BASE/cg06960514_vs_age.png  $BASE/cg14300823_vs_age.png  $BASE/cg26195366_vs_age.png $BASE/cg07089783_vs_age.png  $BASE/cg14390683_vs_age.png  $BASE/cg26466970_vs_age.png $BASE/cg07193998_vs_age.png  $BASE/cg14464244_vs_age.png  $BASE/cg26657240_vs_age.png $BASE/cg07518837_vs_age.png  $BASE/cg14795253_vs_age.png  $BASE/cg27281836_vs_age.png -tile 5x8 -geometry +2+2 $BASE/all2.png
 
-montage /home/pbryant/ageing_of_blood/results/fold_changes/top10/*.png -tile 5x2 -geometry +2+2 /home/pbryant/ageing_of_blood/results/fold_changes/top10/all.png
+#Montage top10 correlations
+#montage /home/pbryant/ageing_of_blood/results/fold_changes/top10/*.png -tile 5x2 -geometry +2+2 /home/pbryant/ageing_of_blood/results/fold_changes/top10/all.png
+
+#Montage overlapping probes with 10 year gaps
+montage /home/pbryant/ageing_of_blood/results/fold_changes/overlap_10_year_gaps/*.png -tile 4x2 -geometry +2+2 /home/pbryant/ageing_of_blood/results/fold_changes/overlap_10_year_gaps/all.png

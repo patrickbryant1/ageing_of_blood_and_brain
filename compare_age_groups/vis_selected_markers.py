@@ -228,6 +228,35 @@ def plot_top10_probes(X,markers,ages,age_indices,top10_probes,Rs):
         plt.close()
         print(u_probe+' '+str(np.round(Rs[ri],2)))
         ri+=1
+
+def plot_overlap_10_year_gaps(X,markers,ages,age_indices,overlap_10_year_gap_probes):
+    '''Plot the change in probe vs age.
+    '''
+    ri=0
+    for u_probe in overlap_10_year_gap_probes:
+        #Plot ages vs vals
+        fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
+        #Loop through the probes
+        i = np.where(markers==u_probe)[0]
+        vals = X[i,:][0,:]
+
+        #Get ra
+        x_av,y_av = running_average(ages,age_indices,vals)
+        plt.plot(x_av,np.log10(y_av), color='midnightblue', linewidth=1)
+        try:
+            plt.scatter(ages, np.log10(vals), color='midnightblue', s=0.1)
+        except:
+            pdb.set_trace()
+        #Format plot
+        plt.title(u_probe)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        plt.ylabel('log Beta value')
+        plt.xlabel('Age')
+        plt.tight_layout()
+        plt.savefig(outdir+'fold_changes/overlap_10_year_gaps/'+u_probe+'_vs_age.png', format='png', dpi=300)
+        plt.close()
+        ri+=1
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
@@ -236,7 +265,7 @@ args = parser.parse_args()
 agelabels = {'blood':"Characteristics [age y]"}
 agelabel=agelabels[args.agelabel[0]]
 gene_annotations = pd.read_csv(args.gene_annotations[0],low_memory=False)
-#joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
+joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
 print('Read betas')
 sample_sheet = pd.read_csv(args.sample_sheet[0], sep = '\t')
 outdir = args.outdir[0]
@@ -245,11 +274,13 @@ overlapping_genes = pd.read_csv(args.overlapping_genes[0]) #Genes with up/down r
 diff_probes = np.load(args.diff_probes[0], allow_pickle=True)#Probes not overlapping btw correlation analysis and age group comprison
 top10_corr = pd.read_csv(args.top10_corr[0]) #Top 10 marker correlations with age
 overlap_10_year_gaps = pd.read_csv(args.overlap_10_year_gaps[0])
-pdb.set_trace()
+
 #pdb.set_trace()
 #Get data
 X, markers, ages, age_indices = format_probes(joined_betas, sample_sheet, gene_annotations, outdir)
 #plot_probes(X,markers,ages,age_indices,overlapping_probes)
 #plot_genes(X,markers,ages,age_indices,overlapping_genes)
 #plot_diff_probes(X,markers,ages,age_indices,diff_probes)
-plot_top10_probes(X,markers,ages,age_indices,top10_corr['Reporter Identifier'], top10_corr['R'])
+#plot_top10_probes(X,markers,ages,age_indices,top10_corr['Reporter Identifier'], top10_corr['R'])
+
+plot_overlap_10_year_gaps(X,markers,ages,age_indices,overlap_10_year_gaps['Reporter Identifier'])
