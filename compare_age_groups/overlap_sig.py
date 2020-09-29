@@ -191,14 +191,19 @@ def find_overlap(joined_dfs, agebins):
                  plt.savefig(outdir+'fold_changes/genes/'+gene_group+'.png', format='png', dpi=300)
                  plt.close()
 
-    return total_gene_df, overlapping_probes
+    return unique_genes_grouped,total_gene_df, overlapping_probes
 
 def vis_FC_changes(joined_dfs, agebins, total_gene_df):
     '''Visualize the fold changes for the significant markers
     '''
     colors = {0:'cornflowerblue',1:'seagreen',2:'royalblue',3:'mediumseagreen',4:'midnightblue'}
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    collected_markers = {}
+    collected_marker_df = pd.DataFrame()
+    collected_markers = {} #Current collected
+    #All for future vis
+    all_markers = []
+    all_comparisons = []
+    #Go through age group comprisons
     for i in range(0,5,2):
         #Get all selected markers with age comparison of i and j
         sel = joined_dfs[joined_dfs['id1']==i]
@@ -213,6 +218,8 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
                     print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2],',',row['fold_change'])
 
         collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
+        all_markers.extend(sel['Reporter Identifier'].unique())
+        all_comparisons.extend([agebins[i]+'vs'+agebins[i+2]]*len(sel))
 
 
     def format_plot(fig,ax,ids, outname):
@@ -246,6 +253,9 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
                     print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2],',',row['fold_change'])
 
         collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
+        #Save
+        all_markers.extend(sel['Reporter Identifier'].unique())
+        all_comparisons.extend([agebins[i]+'vs'+agebins[i+2]]*len(sel))
     format_plot(fig,ax,[1,3,5], outdir+'fold_changes/gap10_uneven.png')
 
     #Look at gene regulation overlaps
@@ -269,6 +279,7 @@ def vis_FC_changes(joined_dfs, agebins, total_gene_df):
         extracted_gene_df = pd.concat([extracted_gene_df,sel])
     extracted_gene_df.to_csv(outdir+'genes_for_sel_markers.csv')
     print(duplicate_genes)
+    pdb.set_trace()
 
 def plot_age_distrubution():
     '''Plot age distribution
@@ -358,15 +369,18 @@ except:
 try:
     total_gene_df = pd.read_csv(outdir+'total_gene_df.csv')
     overlapping_probes = pd.read_csv(outdir+'overlapping_probes_df.csv')
+    unique_genes_grouped = pd.read_csv(outdir+'unique_genes_grouped_df.csv')
 except:
     #Find overlapping markers
-    total_gene_df, overlapping_probes = find_overlap(joined_dfs, agebins)
+    unique_genes_grouped, total_gene_df, overlapping_probes = find_overlap(joined_dfs, agebins)
     #save
     total_gene_df.to_csv(outdir+'total_gene_df.csv')
     overlapping_probes.to_csv(outdir+'overlapping_probes_df.csv')
+    unique_genes_grouped.to_csv(outdir+'unique_genes_grouped_df.csv')
 
 #Visualize fold changes
-vis_FC_changes(joined_dfs, np.array(agebins), total_gene_df)
+pdb.set_trace()
+vis_FC_changes(joined_dfs, np.array(agebins), unique_genes_grouped)
 
 #Look at overlap between direct correlations and age comparisons
 overlap = joined_dfs[joined_dfs['Reporter Identifier'].isin(adjusted_age_correlations['Reporter Identifier'])]['Reporter Identifier'].unique()

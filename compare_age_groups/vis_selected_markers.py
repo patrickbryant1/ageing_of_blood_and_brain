@@ -249,5 +249,4 @@ X, markers, ages, age_indices = format_probes(joined_betas, sample_sheet, gene_a
 #plot_probes(X,markers,ages,age_indices,overlapping_probes)
 #plot_genes(X,markers,ages,age_indices,overlapping_genes)
 #plot_diff_probes(X,markers,ages,age_indices,diff_probes)
-pdb.set_trace()
 plot_top10_probes(X,markers,ages,age_indices,top10_corr['Reporter Identifier'], top10_corr['R'])
