@@ -11,4 +11,4 @@ INDIR=../results/
 ./overlap_sig.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --indir $INDIR --outdir $OUTDIR
 
 #Visualize selected markers
-#./vis_selected_markers.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --overlapping_probes ../results/overlapping_probes_df.csv --overlapping_genes ../results/total_gene_df.csv --diff_probes ../results/diff_btw_corr_age_comp.npy --top10_corr ../results/top10_corr.csv --outdir $OUTDIR
+#./vis_selected_markers.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --overlapping_probes ../results/overlapping_probes_df.csv --overlapping_genes ../results/overlapping_gene_df.csv --diff_probes ../results/diff_btw_corr_age_comp.npy --top10_corr ../results/top10_corr.csv --outdir $OUTDIR
