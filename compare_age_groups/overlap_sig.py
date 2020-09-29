@@ -307,7 +307,7 @@ plot_age_distrubution()
 age_correlations = pd.read_csv(indir+'correlation_results.csv')
 #Adjust pvals
 adjusted_age_correlations = adjust_pvals(age_correlations)
-pdb.set_trace()
+adjusted_age_correlations = adjusted_age_correlations[adjusted_age_correlations['Rejection on 0.05']==True]
 #Get age group comparisons
 agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
 try:
@@ -367,4 +367,9 @@ except:
 
 #Visualize fold changes
 vis_FC_changes(joined_dfs, np.array(agebins), total_gene_df)
+
+#Look at overlap between direct correlations and age comparisons
+overlap = joined_dfs[joined_dfs['Reporter Identifier'].isin(adjusted_age_correlations['Reporter Identifier'])]['Reporter Identifier'].unique()
+diff = joined_dfs[~joined_dfs['Reporter Identifier'].isin(overlap)]['Reporter Identifier'].unique()
+print('Number of markers from age comprisons in correlations=',len(overlap))
 pdb.set_trace()
