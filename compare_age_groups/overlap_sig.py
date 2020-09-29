@@ -31,21 +31,21 @@ parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'P
 
 
 #######FUNCTIONS#######
-def adjust_pvals(corr_df):
+def adjust_pvals(comparison_df):
     '''Adjust the pvalues
     '''
-    res = multipletests(corr_df['p'], 0.05, method='fdr_bh')
+    res = multipletests(comparison_df['p'], 0.05, method='fdr_bh')
     rej, cor_pval = res[0], res[1]
-    corr_df['Rejection on 0.05']=rej
-    corr_df['qval']=cor_pval
-    return corr_df
+    comparison_df['Rejection on 0.05']=rej
+    comparison_df['qval']=cor_pval
+    return comparison_df
 
-def plot_pvals(adjusted_corr_df, ai, bi, outdir):
+def plot_pvals(adjusted_comparison_df, ai, bi, outdir):
     #Plot pvalue distribution
     agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
     fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
-    pvals = np.array(adjusted_corr_df['p'])
-    num_sig = len(adjusted_corr_df[adjusted_corr_df['Rejection on 0.05']==True])
+    pvals = np.array(adjusted_comparison_df['p'])
+    num_sig = len(adjusted_comparison_df[adjusted_comparison_df['Rejection on 0.05']==True])
     sns.distplot(pvals)
     plt.title(agebins[ai]+' vs '+agebins[bi]+'\n'+str(num_sig)+' sig on FDR 0.05')
     plt.xlabel('p-value')
@@ -55,13 +55,13 @@ def plot_pvals(adjusted_corr_df, ai, bi, outdir):
     plt.savefig(outdir+'qval_'+str(ai)+'_'+str(bi)+'.png', format='png', dpi=300)
     plt.close()
 
-def volcano_plot(adjusted_corr_df, ai, bi, outdir):
+def volcano_plot(adjusted_comparison_df, ai, bi, outdir):
     '''Do a volcano plot
     '''
     agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
-    fold_change = np.array(adjusted_corr_df['fold_change'])
-    pvals = np.array(adjusted_corr_df['p'])
-    sig_pvals_index = adjusted_corr_df[adjusted_corr_df['Rejection on 0.05']==True].index
+    fold_change = np.array(adjusted_comparison_df['fold_change'])
+    pvals = np.array(adjusted_comparison_df['p'])
+    sig_pvals_index = adjusted_comparison_df[adjusted_comparison_df['Rejection on 0.05']==True].index
 
     #Log transform
     log2fc = np.log2(fold_change)
@@ -294,7 +294,7 @@ plt.rcParams.update({'font.size': 7})
 #Args
 args = parser.parse_args()
 agelabels = {'blood':"Characteristics [age y]"}
-#agelabel=agelabels[args.agelabel[0]]
+agelabel=agelabels[args.agelabel[0]]
 #gene_annotations = args.gene_annotations[0]
 #joined_betas = args.joined_betas[0]
 #sample_sheet = args.sample_sheet[0]
@@ -303,7 +303,12 @@ outdir = args.outdir[0]
 #Plot ages
 plot_age_distrubution()
 
-#Get age group correlations
+#Get marker correlations with age
+age_correlations = pd.read_csv(indir+'correlation_results.csv')
+#Adjust pvals
+adjusted_age_correlations = adjust_pvals(age_correlations)
+pdb.set_trace()
+#Get age group comparisons
 agebins = ['19-30','30-40','40-50','50-60','60-70','70-80','80+']
 try:
     joined_dfs = pd.read_csv(outdir+'sig_markers.csv')
@@ -315,17 +320,17 @@ except:
 
     for i in range(7):
         for j in range(i+1,7):
-            corr_df = pd.read_csv(indir+str(i)+'_'+str(j)+'_age_comparison_results.csv')
+            comparison_df = pd.read_csv(indir+str(i)+'_'+str(j)+'_age_comparison_results.csv')
             #Adjust pvals
-            adjusted_corr_df = adjust_pvals(corr_df)
-            adjusted_corr_df['id1']=i
-            adjusted_corr_df['id2']=j
+            adjusted_comparison_df = adjust_pvals(comparison_df)
+            adjusted_comparison_df['id1']=i
+            adjusted_comparison_df['id2']=j
             #Volcano plot
-            volcano_plot(adjusted_corr_df, i, j, outdir)
+            volcano_plot(adjusted_comparison_df, i, j, outdir)
             #qval plot
-            plot_pvals(adjusted_corr_df, i, j, outdir)
+            plot_pvals(adjusted_comparison_df, i, j, outdir)
             #Select on qval
-            sel = adjusted_corr_df[adjusted_corr_df['Rejection on 0.05']==True]
+            sel = adjusted_comparison_df[adjusted_comparison_df['Rejection on 0.05']==True]
             sel = sel.reset_index()
             log2fc = np.log2(sel['fold_change'])
             t = np.log2(1.5)
@@ -337,7 +342,7 @@ except:
             age1.append(agebins[i])
             age2.append(agebins[j])
             num_sig.append(len(sel))
-            print(len(sel),'significant markers with fold change >1.5 out of',len(corr_df),'on FDR<0.05')
+            print(len(sel),'significant markers with fold change >1.5 out of',len(comparison_df),'on FDR<0.05')
             joined_dfs = joined_dfs.append(sel)
 
 
