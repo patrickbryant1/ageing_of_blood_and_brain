@@ -27,6 +27,8 @@ parser.add_argument('--gene_annotations', nargs=1, type= str, default=sys.stdin,
 parser.add_argument('--agelabel', nargs=1, type= str, default=sys.stdin, help = 'Agelabel.')
 parser.add_argument('--overlapping_probes', nargs=1, type= str, default=sys.stdin, help = 'Path to overlapping probes.')
 parser.add_argument('--overlapping_genes', nargs=1, type= str, default=sys.stdin, help = 'Path to overlapping probes.')
+parser.add_argument('--diff_probes', nargs=1, type= str, default=sys.stdin, help = 'Path to probes not overlapping btw age group comparisons and correlation analysis.')
+parser.add_argument('--top10_corr', nargs=1, type= str, default=sys.stdin, help = 'Path to 1op 10 correalting probes from the correlation analysis.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -144,8 +146,10 @@ joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
 print('Read betas')
 sample_sheet = pd.read_csv(args.sample_sheet[0], sep = '\t')
 outdir = args.outdir[0]
-overlapping_probes = pd.read_csv(args.overlapping_probes[0])
-overlapping_genes = pd.read_csv(args.overlapping_genes[0])
+overlapping_probes = pd.read_csv(args.overlapping_probes[0]) #Probes with up/down regulation in different age group comparisons
+overlapping_genes = pd.read_csv(args.overlapping_genes[0]) #Genes with up/down regulation in different age group comparisons
+diff_probes = np.load(args.diff_probes[0], allow_pickle=True)#Probes not overlapping btw correlation analysis and age group comprison
+top10_corr = pd.read_csv(args.top10_corr[0]) #Top 10 marker correlations with age
 #Get data
 X, markers, ages, age_indices = format_probes(joined_betas, sample_sheet, gene_annotations, outdir)
 plot_probes(X,markers,ages,age_indices,overlapping_probes)
