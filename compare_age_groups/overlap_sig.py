@@ -372,4 +372,13 @@ vis_FC_changes(joined_dfs, np.array(agebins), total_gene_df)
 overlap = joined_dfs[joined_dfs['Reporter Identifier'].isin(adjusted_age_correlations['Reporter Identifier'])]['Reporter Identifier'].unique()
 diff = joined_dfs[~joined_dfs['Reporter Identifier'].isin(overlap)]['Reporter Identifier'].unique()
 print('Number of markers from age comprisons in correlations=',len(overlap))
-pdb.set_trace()
+print('Number of markers that are not =', len(diff))
+#Save diff for later vis
+np.save(outdir+'diff_btw_corr_age_comp.npy',diff)
+
+#Look at top 10 correlations
+adjusted_age_correlations['absR']=np.absolute(adjusted_age_correlations['R'])
+adjusted_age_correlations = adjusted_age_correlations.sort_values('absR', ascending=False)
+adjusted_age_correlations = adjusted_age_correlations.reset_index()
+top10 = adjusted_age_correlations.loc[0:10]
+top10.to_csv(outdir+'top10_corr.csv')
