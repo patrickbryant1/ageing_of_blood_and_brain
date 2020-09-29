@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
 from scipy.stats import ttest_ind
+import matplotlib.pylab as pl
 import pdb
 
 
@@ -134,6 +135,53 @@ def plot_probes(X,markers,ages,age_indices,overlapping_probes):
         plt.savefig(outdir+'fold_changes/markers/'+u_probe+'_vs_age.png', format='png', dpi=300)
         plt.close()
     pdb.set_trace()
+
+def plot_genes(X,markers,ages,age_indices,overlapping_genes):
+    '''Plot the change in probe vs age.
+    '''
+
+    def running_average(ages,age_indices,vals):
+        x = []
+        y = []
+        for i in range(len(age_indices)):
+            x.append(np.average(ages[age_indices[i]]))
+            y.append(np.average(vals[age_indices[i]]))
+
+        return x,y
+    u_genes = overlapping_genes['gene_group'].unique()
+    for gene in u_genes:
+
+        sel = overlapping_genes[overlapping_genes['gene_group']==gene]
+        sel = sel.reset_index()
+        sel_probes = sel['Reporter Identifier'].unique()
+        #Plot ages vs vals
+        fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+        #Colors
+        colors = pl.cm.viridis(np.linspace(0,1,len(sel_probes)))
+        pi=0
+        for u_probe in sel_probes:
+            #Loop through the probes
+            i = np.where(markers==u_probe)[0]
+            vals = X[i,:][0,:]
+
+            #Get ra
+            x_av,y_av = running_average(ages,age_indices,vals)
+            plt.plot(x_av,np.log10(y_av), color=colors[pi], linewidth=1, label=u_probe)
+            plt.scatter(ages, np.log10(vals), color=colors[pi], s=0.1)
+            #Increase probe index
+            pi+=1
+        #Format plot
+        plt.title(gene)
+        plt.legend()
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        plt.ylabel('log Beta value')
+        plt.xlabel('Age')
+        plt.tight_layout()
+        plt.savefig(outdir+'fold_changes/genes/'+gene+'_vs_age.png', format='png', dpi=300)
+        plt.close()
+    pdb.set_trace()
+
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
@@ -150,6 +198,8 @@ overlapping_probes = pd.read_csv(args.overlapping_probes[0]) #Probes with up/dow
 overlapping_genes = pd.read_csv(args.overlapping_genes[0]) #Genes with up/down regulation in different age group comparisons
 diff_probes = np.load(args.diff_probes[0], allow_pickle=True)#Probes not overlapping btw correlation analysis and age group comprison
 top10_corr = pd.read_csv(args.top10_corr[0]) #Top 10 marker correlations with age
+#pdb.set_trace()
 #Get data
 X, markers, ages, age_indices = format_probes(joined_betas, sample_sheet, gene_annotations, outdir)
-plot_probes(X,markers,ages,age_indices,overlapping_probes)
+#plot_probes(X,markers,ages,age_indices,overlapping_probes)
+plot_genes(X,markers,ages,age_indices,overlapping_genes)
