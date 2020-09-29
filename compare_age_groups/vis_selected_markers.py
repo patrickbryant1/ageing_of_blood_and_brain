@@ -99,19 +99,22 @@ def format_probes(joined_betas, sample_sheet, gene_annotations, outdir):
 
     return X, markers, ages, age_indices
 
+def running_average(ages,age_indices,vals):
+    '''Construct running average using age group divisions (steps of 10 years)
+    '''
+    x = []
+    y = []
+    for i in range(len(age_indices)):
+        x.append(np.average(ages[age_indices[i]]))
+        y.append(np.average(vals[age_indices[i]]))
+
+    return x,y
 
 def plot_probes(X,markers,ages,age_indices,overlapping_probes):
     '''Plot the change in probe vs age.
     '''
 
-    def running_average(ages,age_indices,vals):
-        x = []
-        y = []
-        for i in range(len(age_indices)):
-            x.append(np.average(ages[age_indices[i]]))
-            y.append(np.average(vals[age_indices[i]]))
 
-        return x,y
     u_probes = overlapping_probes['Reporter Identifier'].unique()
     for u_probe in u_probes:
         sel = overlapping_probes[overlapping_probes['Reporter Identifier']==u_probes[0]]
@@ -134,20 +137,12 @@ def plot_probes(X,markers,ages,age_indices,overlapping_probes):
         plt.tight_layout()
         plt.savefig(outdir+'fold_changes/markers/'+u_probe+'_vs_age.png', format='png', dpi=300)
         plt.close()
-    pdb.set_trace()
+
 
 def plot_genes(X,markers,ages,age_indices,overlapping_genes):
     '''Plot the change in probe vs age.
     '''
 
-    def running_average(ages,age_indices,vals):
-        x = []
-        y = []
-        for i in range(len(age_indices)):
-            x.append(np.average(ages[age_indices[i]]))
-            y.append(np.average(vals[age_indices[i]]))
-
-        return x,y
     u_genes = overlapping_genes['gene_group'].unique()
     for gene in u_genes:
 
@@ -180,8 +175,58 @@ def plot_genes(X,markers,ages,age_indices,overlapping_genes):
         plt.tight_layout()
         plt.savefig(outdir+'fold_changes/genes/'+gene+'_vs_age.png', format='png', dpi=300)
         plt.close()
-    pdb.set_trace()
 
+def plot_diff_probes(X,markers,ages,age_indices,diff_probes):
+    '''Plot the change in probe vs age.
+    '''
+
+    for u_probe in diff_probes:
+        #Plot ages vs vals
+        fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
+        #Loop through the probes
+        i = np.where(markers==u_probe)[0]
+        vals = X[i,:][0,:]
+
+        #Get ra
+        x_av,y_av = running_average(ages,age_indices,vals)
+        plt.plot(x_av,np.log10(y_av), color='midnightblue', linewidth=1)
+        plt.scatter(ages, np.log10(vals), color='midnightblue', s=0.1)
+        #Format plot
+        plt.title(u_probe)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        plt.ylabel('log Beta value')
+        plt.xlabel('Age')
+        plt.tight_layout()
+        plt.savefig(outdir+'fold_changes/diff/'+u_probe+'_vs_age.png', format='png', dpi=300)
+        plt.close()
+
+def plot_top10_probes(X,markers,ages,age_indices,top10_probes,Rs):
+    '''Plot the change in probe vs age.
+    '''
+    ri=0
+    for u_probe in top10_probes:
+        #Plot ages vs vals
+        fig,ax = plt.subplots(figsize=(4.5/2.54, 4.5/2.54))
+        #Loop through the probes
+        i = np.where(markers==u_probe)[0]
+        vals = X[i,:][0,:]
+
+        #Get ra
+        x_av,y_av = running_average(ages,age_indices,vals)
+        plt.plot(x_av,np.log10(y_av), color='midnightblue', linewidth=1)
+        plt.scatter(ages, np.log10(vals), color='midnightblue', s=0.1)
+        #Format plot
+        plt.title(u_probe)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        plt.ylabel('log Beta value')
+        plt.xlabel('Age')
+        plt.tight_layout()
+        plt.savefig(outdir+'fold_changes/top10/'+u_probe+'_vs_age.png', format='png', dpi=300)
+        plt.close()
+        print(u_probe+' '+str(np.round(Rs[ri],2)))
+        ri+=1
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
@@ -202,4 +247,7 @@ top10_corr = pd.read_csv(args.top10_corr[0]) #Top 10 marker correlations with ag
 #Get data
 X, markers, ages, age_indices = format_probes(joined_betas, sample_sheet, gene_annotations, outdir)
 #plot_probes(X,markers,ages,age_indices,overlapping_probes)
-plot_genes(X,markers,ages,age_indices,overlapping_genes)
+#plot_genes(X,markers,ages,age_indices,overlapping_genes)
+#plot_diff_probes(X,markers,ages,age_indices,diff_probes)
+pdb.set_trace()
+plot_top10_probes(X,markers,ages,age_indices,top10_corr['Reporter Identifier'], top10_corr['R'])
