@@ -315,7 +315,7 @@ except:
 
     for i in range(7):
         for j in range(i+1,7):
-            corr_df = pd.read_csv(indir+str(i)+'_'+str(j)+'_corr_results.csv')
+            corr_df = pd.read_csv(indir+str(i)+'_'+str(j)+'_age_comparison_results.csv')
             #Adjust pvals
             adjusted_corr_df = adjust_pvals(corr_df)
             adjusted_corr_df['id1']=i

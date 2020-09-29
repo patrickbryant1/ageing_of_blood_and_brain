@@ -91,13 +91,29 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     print(np.round(100*X[X==0].shape[0]/(X.shape[0]*X.shape[1]),2), '% zeros')
     #Take all samples with less than 10 zeros
     X = X[zero_indices,:][0]
-    
+
     print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
+
+    #Correlate probe values with age
+    R = np.zeros(X.shape[0])
+    p = np.zeros(X.shape[0])
+    for xi in range(X.shape[0]):
+        if xi%1000==0:
+            print(xi)
+        R[xi], p[xi] = pearsonr(X[xi,:], ages)
+
+    #Save marker-age correlations
+    corr_df = pd.DataFrame()
+    corr_df['Reporter Identifier']=markers
+    corr_df['R']=R
+    corr_df['p']=p
+    corr_df.to_csv(outdir+'correlation_results.csv')
+
+    #Compare age groups
     for ai in range(len(age_indices)-1):
         for bi in range(ai+1,len(age_indices)): #Compare all combinations
             print(ai,bi)
-            #R = np.zeros(X.shape[0])
-            #p = np.zeros(X.shape[0])
+
 
             i1 = age_indices[ai]
             i2 = age_indices[bi]
@@ -107,10 +123,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             #agesel = np.append(age_indices[ai],age_indices[ai+1])
             #Xsel = X[:,agesel]
 
-            # for xi in range(X.shape[0]):
-            #     if xi%1000==0:
-            #         print(xi)
-            #     R[xi], p[xi] = pearsonr(Xsel[xi,:], agesel)
+
             fold_change = np.average(X2,axis=1)/np.average(X1,axis=1)
             #Save
             df = pd.DataFrame()
@@ -121,7 +134,8 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             df['beta1'] = np.average(X1,axis=1)
             df['beta2'] = np.average(X2,axis=1)
             #Save df
-            df.to_csv(outdir+str(ai)+'_'+str(bi)+'_corr_results.csv')
+            df.to_csv(outdir+str(ai)+'_'+str(bi)+'_age_comparison_results.csv')
+
 
 
     return None
