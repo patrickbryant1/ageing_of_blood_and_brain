@@ -27,9 +27,9 @@ parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, hel
 parser.add_argument('--gene_annotations', nargs=1, type= str, default=sys.stdin, help = 'Path to gene annotations.')
 parser.add_argument('--agelabel', nargs=1, type= str, default=sys.stdin, help = 'Agelabel.')
 parser.add_argument('--overlapping_probes', nargs=1, type= str, default=sys.stdin, help = 'Path to overlapping probes.')
-parser.add_argument('--overlapping_genes', nargs=1, type= str, default=sys.stdin, help = 'Path to overlapping probes.')
+parser.add_argument('--overlapping_genes', nargs=1, type= str, default=sys.stdin, help = 'Path to overlapping genes.')
 parser.add_argument('--diff_probes', nargs=1, type= str, default=sys.stdin, help = 'Path to probes not overlapping btw age group comparisons and correlation analysis.')
-parser.add_argument('--top10_corr', nargs=1, type= str, default=sys.stdin, help = 'Path to 1op 10 correalting probes from the correlation analysis.')
+parser.add_argument('--top10_corr', nargs=1, type= str, default=sys.stdin, help = 'Path to top 10 correalting probes from the correlation analysis.')
 parser.add_argument('--overlap_10_year_gaps', nargs=1, type= str, default=sys.stdin, help = 'Markers that are important and overlapping with 10 year gaps.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 

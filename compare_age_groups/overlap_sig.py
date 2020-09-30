@@ -120,9 +120,7 @@ def find_overlap(joined_dfs, agebins):
     '''Find markers that overlap significantly and have FC>1.5 across comparisons
     '''
     #Check gene overlaps
-    gene_annotations = pd.read_csv(args.gene_annotations[0])
-    #Join on probe id
-    joined_dfs = pd.merge(joined_dfs, gene_annotations, left_on='Reporter Identifier', right_on='Name', how='left')
+
 
     #Check probe overlaps
     overlapping_probes = pd.DataFrame()
@@ -194,21 +192,24 @@ def find_overlap(joined_dfs, agebins):
     return overlapping_gene_df, overlapping_probes
 
 def vis_marker_FC_changes(joined_dfs, agebins):
-    '''Visualize the fold changes for the significant markers
+    '''Visualize the fold changes for the significant markers with age gap 10
     '''
     colors = {0:'cornflowerblue',1:'seagreen',2:'royalblue',3:'mediumseagreen',4:'midnightblue'}
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    collected_marker_df = pd.DataFrame()
+    collected_marker_df = pd.DataFrame() #All for future vis
     collected_markers = {} #Current collected
-    #All for future vis
-    all_markers = []
-    all_comparisons = []
+
+
     #Go through age group comprisons
     for i in range(0,5,2):
         #Get all selected markers with age comparison of i and j
         sel = joined_dfs[joined_dfs['id1']==i]
         sel = sel[sel['id2']==i+2]
-
+        #Replace ids
+        sel['id1']=agebins[i]
+        sel['id2']=agebins[i+2]
+        #Add to collected marker df
+        collected_marker_df = pd.concat([collected_marker_df,sel]) #save
         #Create x and y values
         for index, row in sel.iterrows():
             plt.plot([i,i+2],[row['beta1'],row['beta2']], color = colors[i], linewidth=0.5)
@@ -218,9 +219,6 @@ def vis_marker_FC_changes(joined_dfs, agebins):
                     print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2],',',row['fold_change'])
 
         collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
-        all_markers.extend(sel['Reporter Identifier'].unique())
-        all_comparisons.extend([agebins[i]+'vs'+agebins[i+2]]*len(sel))
-
 
     def format_plot(fig,ax,ids, outname):
         sel_ages = agebins[ids]
@@ -243,6 +241,10 @@ def vis_marker_FC_changes(joined_dfs, agebins):
         #Get all selected markers with age comparison of i and j
         sel = joined_dfs[joined_dfs['id1']==i]
         sel = sel[sel['id2']==i+2]
+        #Replace ids
+        sel['id1']=agebins[i]
+        sel['id2']=agebins[i+2]
+        collected_marker_df = pd.concat([collected_marker_df,sel]) #save
         #Create x and y values
         for index, row in sel.iterrows():
             plt.plot([i,i+2],[row['beta1'],row['beta2']], color = colors[i], linewidth=0.5)
@@ -253,10 +255,12 @@ def vis_marker_FC_changes(joined_dfs, agebins):
                     print(row['Reporter Identifier'],',',key,',',agebins[i]+'vs'+agebins[i+2],',',row['fold_change'])
 
         collected_markers[agebins[i]+'vs'+agebins[i+2]]=(sel['Reporter Identifier'].unique())
-        #Save
-        all_markers.extend(sel['Reporter Identifier'].unique())
-        all_comparisons.extend([agebins[i]+'vs'+agebins[i+2]]*len(sel))
+
     format_plot(fig,ax,[1,3,5], outdir+'fold_changes/gap10_uneven.png')
+
+    #Save collected markers
+    collected_marker_df.to_csv(outdir+'collected_markers_10_year_gaps.csv')
+
 
 def plot_age_distrubution():
     '''Plot age distribution
@@ -340,6 +344,10 @@ except:
     results['Age group 2']=age2
     results['Significant markers with fold change >1.5']=num_sig
     results.to_csv(outdir+'num_sig_fc1_5.csv')
+    #Get gene annotations
+    gene_annotations = pd.read_csv(args.gene_annotations[0])
+    #Join on probe id
+    joined_dfs = pd.merge(joined_dfs, gene_annotations, left_on='Reporter Identifier', right_on='Name', how='left')
     #Save joined dfs
     joined_dfs.to_csv(outdir+'sig_markers.csv')
 
