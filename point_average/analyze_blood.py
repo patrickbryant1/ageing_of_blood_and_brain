@@ -152,19 +152,25 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     point_ages = np.arange(minage,maxage+1)
     #Save running averages
     running_averages = np.zeros((X.shape[0],len(point_ages)))
+    max_fold_changes = np.zeros(X.shape[0])
     #Calculate running point average
     for xi in range(len(X)):
+        if xi%1000==0: #Print if congruent with 1000
+            print(xi)
         Xsel = X[xi,:]
         #Go through all point indices
         for pi in range(len(point_indices)):
             age_points = point_indices[pi]
-            point_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
+            running_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
 
-        pdb.set_trace()
 
-        max_fold_change = max(point_averages[xi,:])/min(point_averages[xi,:])
 
-    #Save
+        max_fold_changes[xi] = max(running_averages[xi,:])/min(running_averages[xi,:])
+    pdb.set_trace()
+    #Save running averages and fold changes
+    np.save(outdir+'running_averages.npy', running_averages)
+    np.save(outdir+'max_fold_changes.npy', max_fold_changes)
+    
     df = pd.DataFrame()
     df['Reporter Identifier']=markers
     df['stat']=stats
