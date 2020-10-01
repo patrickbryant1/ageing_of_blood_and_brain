@@ -23,6 +23,8 @@ parser = argparse.ArgumentParser(description = '''Adjust the pvals and visualize
 parser.add_argument('--gene_annotations', nargs=1, type= str, default=sys.stdin, help = 'Path to gene annotations.')
 parser.add_argument('--running_averages', nargs=1, type= str, default=sys.stdin, help = 'Path to marker running averages.')
 parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdin, help = 'Path to marker max fold changes and pvals.')
+parser.add_argument('--marker_values', nargs=1, type= str, default=sys.stdin, help = 'Path to marker values.')
+parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Path to sample ages.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -53,25 +55,33 @@ def vis_pvals(comparison_df):
     plt.close()
 
 
-def calc_derivatives(sel, running_averages):
+def calc_derivatives(sel, ages, running_averages, marker_values):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
     gradients = np.zeros((len(sel),running_averages.shape[1])) #Save gradients
     max_grad_diff = np.zeros(len(sel))
     sel_indices = np.array(sel.index) #Indices
+    sel_ra = []
     #Plot the selected ra as well
-    fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
+    fig1,ax1 = plt.subplots(figsize=(9/2.54, 9/2.54))
+    fig2,ax2 = plt.subplots(figsize=(9/2.54, 9/2.54))
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient
+        #Save normalized selected ra
+        sel_ra.append(running_averages[si,:]/max(running_averages[si,:]))
+        #Calculate the maximal gradient difference
         max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
 
         ax1.plot(np.arange(19,102),running_averages[si,:]/max(running_averages[si,:]),color='b', linewidth=0.1,alpha=0.1)
         ax2.plot(np.arange(19,102),gradients[i,:],color='b', linewidth=0.1,alpha=0.1)
 
     #Format plot
+
+    #Plot total ra
+    sel_ra = np.array(sel_ra)
+    ax1.plot(np.arange(19,102),np.median(sel_ra,axis=0),color='k', linewidth=3)
     ax1.set_title('Running averages')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
@@ -80,6 +90,8 @@ def calc_derivatives(sel, running_averages):
     fig1.tight_layout()
     fig1.savefig(outdir+'ra.png', format='png', dpi=300)
 
+    #Plot total gradients
+    ax2.plot(np.arange(19,102),np.median(gradients,axis=0),color='k', linewidth=1)
     ax2.set_title('Gradients of running averages')
     ax2.spines['top'].set_visible(False)
     ax2.spines['right'].set_visible(False)
@@ -89,12 +101,16 @@ def calc_derivatives(sel, running_averages):
     fig2.savefig(outdir+'gradients.png', format='png', dpi=300)
     plt.close()
 
+    #Plot selected markers
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    #Plot gradients with diff >0.1
-    sel_grad = gradients[np.where(max_grad_diff>0.1)]
-    for i in range(len(sel_grad)):
-        plt.plot(np.arange(19,102),sel_grad[i,:],color='b', linewidth=0.1)
-    plt.show()
+    #Plot ra with diff >0.1
+    sel_ra = running_averages[sel_indices[np.where(max_grad_diff>0.1)]]
+    sel_markers = marker_values[sel_indices[np.where(max_grad_diff>0.1)]]
+    for i in range(len(sel_ra)):
+        plt.scatter(ages, np.log10(sel_markers[i,:]))
+        plt.plot(np.arange(19,102),np.log10(sel_ra[i,:]),color='b', linewidth=1)
+        plt.show()
+
     #Plot distribution of the max grad diff
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     sns.distplot(max_grad_diff)
@@ -165,6 +181,8 @@ args = parser.parse_args()
 gene_annotations = pd.read_csv(args.gene_annotations[0],low_memory=False)
 running_averages = np.load(args.running_averages[0], allow_pickle=True)
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
+marker_values = np.load(args.marker_values[0], allow_pickle=True)
+ages = pd.read_csv(args.ages[0])
 outdir = args.outdir[0]
 #Visualize pvals
 vis_pvals(max_fold_change_df)
@@ -175,5 +193,6 @@ sel = max_fold_change_df[max_fold_change_df['Rejection on 0.05']==True]
 sel = sel[np.absolute(sel['fold_change'])>2]
 #Print the number selected
 print(len(sel),'selected markers out of', len(max_fold_change_df))
+
 #Calculate derivatives
-calc_derivatives(sel, running_averages)
+calc_derivatives(sel, ages['Age'], running_averages, marker_values)

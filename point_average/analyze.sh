@@ -9,4 +9,6 @@ OUTDIR=../results/point_average/
 #Adjust the pvals, select markers and and visualize
 RA=/home/pbryant/results/methylation/aging_of_blood/running_averages.npy
 FCDF=../results/point_average/marker_max_FC_pval.csv
-./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --outdir $OUTDIR
+MV=/home/pbryant/results/methylation/aging_of_blood/marker_values.npy
+AGES=../results/point_average/ages.csv
+./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --outdir $OUTDIR
