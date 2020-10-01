@@ -166,11 +166,15 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
 
 
         max_fold_changes[xi] = max(running_averages[xi,:])/min(running_averages[xi,:])
+
+        #Calculate p-value between samples belonging to max/min fold change
+        xmax = 
+        stats, pvals = ttest_ind(X1,X2,axis=1)
     pdb.set_trace()
     #Save running averages and fold changes
     np.save(outdir+'running_averages.npy', running_averages)
     np.save(outdir+'max_fold_changes.npy', max_fold_changes)
-    
+
     df = pd.DataFrame()
     df['Reporter Identifier']=markers
     df['stat']=stats
