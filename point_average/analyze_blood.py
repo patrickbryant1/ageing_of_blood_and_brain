@@ -54,14 +54,30 @@ def point_indices(ages):
     unique_ages = np.sort(unique_ages)
 
     #Go through each unique age and see how many there are of each
-    num_per_age = []
-    for ua in unique_ages:
-        pdb.set_trace()
-        np.where(ages==ua)
+    num_per_age = np.zeros(len(unique_ages))
+    indices_per_age = [] #Save age indices per age
+    for i in range(len(unique_ages)):
+        #Check where ages = ages[i]
+        num_per_age[i]=len(np.where(ages==ages[i])[0])
+        indices_per_age.append(np.where(ages==ages[i])[0])
 
-    #Save age indices per age
-    age_indices = []
+
     #Get 5% of points for each year
+    mina = min(unique_ages)
+    maxa = max(unique_ages)
+    point_indices = [] #save point indices
+    target = int(len(ages)*0.05) #Number of points to fetch for each age
+    for age in np.arange(mina,maxa+1):
+        num_fetched = 0
+        fetched_indices = [] #Save the indices fetched per age
+        while num_fetched<target:
+            #Start with the exact age match
+            match_i = np.where(unique_ages==age)
+            if match_i:
+                num_fetched+=num_per_age[match_i]
+                
+
+
     return age_indices
 
 def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
