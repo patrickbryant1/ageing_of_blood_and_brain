@@ -47,7 +47,7 @@ def get_ages(sample_sheet, sample_names, agelabel):
 
     return np.array(sample_ages)
 
-def point_indices(ages):
+def get_point_indices(ages):
 
     #Get unique ages
     unique_ages = np.unique(ages)
@@ -94,7 +94,6 @@ def point_indices(ages):
             #Want the same number of points per age - adjustments are therefore needed
             if num_fetched>target:
                 diff = int(num_fetched-target)
-                pdb.set_trace()
                 #Take away points so the target is not exceeded.
                 #By making a random selection on all indices
                 remove_indices = np.random.choice(all_indices,diff,replace=False)
@@ -107,12 +106,8 @@ def point_indices(ages):
             offset+=1
 
         point_indices.append(fetched_indices)
-        pdb.set_trace()
 
-
-
-
-    return age_indices
+    return point_indices
 
 def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     '''Analyze the relationship between probe beta values and age
@@ -133,9 +128,9 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     age_df.to_csv(outdir+'ages.csv')
 
     #Get point indices
-    age_indices = point_indices(ages)
-    #Save age groups
-    np.save(outdir+'age_points.npy',np.array(age_indices))
+    point_indices = get_point_indices(ages)
+    #Save point_indices
+    np.save(outdir+'age_points.npy',np.array(point_indices))
 
     #Looking at single marker comparisons
     markers = np.array(merged['Reporter Identifier'])
@@ -151,32 +146,34 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
 
     print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
 
-    #Compare age groups
-    for ai in range(len(age_indices)-1):
-        for bi in range(ai+1,len(age_indices)): #Compare all combinations
-            print(ai,bi)
+    #Min and max age
+    minage = min(ages)
+    maxage = max(ages)
+    point_ages = np.arange(minage,maxage+1)
+    #Save running averages
+    running_averages = np.zeros((X.shape[0],len(point_ages)))
+    #Calculate running point average
+    for xi in range(len(X)):
+        Xsel = X[xi,:]
+        #Go through all point indices
+        for pi in range(len(point_indices)):
+            age_points = point_indices[pi]
+            point_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
 
+        pdb.set_trace()
 
-            i1 = age_indices[ai]
-            i2 = age_indices[bi]
-            X1 = X[:,i1]
-            X2 = X[:,i2]
-            stats, pvals = ttest_ind(X1,X2,axis=1)
-            #agesel = np.append(age_indices[ai],age_indices[ai+1])
-            #Xsel = X[:,agesel]
+        max_fold_change = max(point_averages[xi,:])/min(point_averages[xi,:])
 
-
-            fold_change = np.average(X2,axis=1)/np.average(X1,axis=1)
-            #Save
-            df = pd.DataFrame()
-            df['Reporter Identifier']=markers
-            df['stat']=stats
-            df['p']=pvals
-            df['fold_change']=fold_change
-            df['beta1'] = np.average(X1,axis=1)
-            df['beta2'] = np.average(X2,axis=1)
-            #Save df
-            df.to_csv(outdir+str(ai)+'_'+str(bi)+'_age_comparison_results.csv')
+    #Save
+    df = pd.DataFrame()
+    df['Reporter Identifier']=markers
+    df['stat']=stats
+    df['p']=pvals
+    df['fold_change']=fold_change
+    df['beta1'] = np.average(X1,axis=1)
+    df['beta2'] = np.average(X2,axis=1)
+    #Save df
+    df.to_csv(outdir+str(ai)+'_'+str(bi)+'_age_comparison_results.csv')
     #Correlate probe values with age
     R = np.zeros(X.shape[0])
     p = np.zeros(X.shape[0])
