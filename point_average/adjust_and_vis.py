@@ -12,7 +12,7 @@ import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
 
-from scipy.stats import ttest_ind
+from statsmodels.stats.multitest import multipletests
 import matplotlib.pylab as pl
 import pdb
 
@@ -36,11 +36,34 @@ def adjust_pvals(comparison_df):
     comparison_df['qval']=cor_pval
     return comparison_df
 
-def calc_derivatives(max_fold_change_df, running_averages):
+def vis_pvals(comparison_df):
+    '''Visualize the pvals
+    '''
+
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    sns.distplot(comparison_df['p'], bins=100)
+    #Format plot
+    plt.title('p-value distribution')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.ylabel('Count')
+    plt.xlabel('p-value')
+    plt.tight_layout()
+    plt.savefig(outdir+'pval_distribution.png', format='png', dpi=300)
+    plt.close()
+
+
+def calc_derivatives(sel, running_averages):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
-    
+    gradients = np.zeros(len(sel)) #Save gradients
+    sel_indices = np.array(sel.index) #Indices
+    for i in range(len(sel)):
+        si = sel_indices[i] #Get index
+        gradients[i]=np.gradient(running_averages[si,:]) #Calc gradient
+    pdb.set_trace()
+
 def plot_probes(X,markers,ages,age_indices,overlapping_probes):
     '''Plot the change in probe vs age.
     '''
@@ -80,5 +103,14 @@ running_averages = np.load(args.running_averages[0], allow_pickle=True)
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
 outdir = args.outdir[0]
 
+#Visualize pvals
+vis_pvals(max_fold_change_df)
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
+#Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)
+sel = max_fold_change_df[max_fold_change_df['Rejection on 0.05']==True]
+sel = sel[np.absolute(sel['fold_change'])>2]
+#Print the number selected
+print(len(sel),' selected markers out of', len(max_fold_change_df))
+#Calculate derivatives
+calc_derivatives(sel, running_averages)
