@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
 from scipy.stats import ttest_ind
+from scipy.interpolate import Rbf #Radian basis function
 import pdb
 
 
@@ -145,7 +146,8 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     X = X[zero_indices,:][0]
 
     print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
-
+    #Save X
+    np.save(outdir+'marker_values.npy',X)
     #Min and max age
     minage = min(ages)
     maxage = max(ages)
@@ -173,6 +175,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
         xmin = Xsel[np.array(point_indices[mini],dtype='int32')]
         stat, pval = ttest_ind(xmax,xmin)
         max_fold_change_pvals[xi]=pval
+
     #Save running averages and fold changes
     #np.save(outdir+'running_averages.npy', running_averages)
     np.save(outdir+'max_fold_changes.npy', max_fold_changes)
