@@ -153,6 +153,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     #Save running averages
     running_averages = np.zeros((X.shape[0],len(point_ages)))
     max_fold_changes = np.zeros(X.shape[0])
+    max_fold_change_pvals = np.zeros(X.shape[0])
     #Calculate running point average
     for xi in range(len(X)):
         if xi%1000==0: #Print if congruent with 1000
@@ -163,20 +164,20 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             age_points = point_indices[pi]
             running_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
 
-        pdb.set_trace()
-        maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0]
-        mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0]
-        max_fold_changes[xi] = running_averages[maxi,:]/running_averages[mini,:]
+        maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0]
+        mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0][0]
+        max_fold_changes[xi] = running_averages[xi,maxi]/running_averages[xi,mini]
 
         #Calculate p-value between samples belonging to max/min fold change
-        xmax = Xsel[[np.array(point_ages[maxi],dtype='int32')]]
-        xmin = Xsel[[np.array(point_ages[mini],dtype='int32')]]
-        stats, pvals = ttest_ind(xmax,xmin,axis=1)
-
+        xmax = Xsel[np.array(point_indices[maxi],dtype='int32')]
+        xmin = Xsel[np.array(point_indices[mini],dtype='int32')]
+        stat, pval = ttest_ind(xmax,xmin,axis=1)
+        max_fold_change_pvals[xi]=pval
     #Save running averages and fold changes
+    pdb.set_trace()
     np.save(outdir+'running_averages.npy', running_averages)
     np.save(outdir+'max_fold_changes.npy', max_fold_changes)
-
+    np.save(outdir+'max_fold_change_pvals.npy', max_fold_change_pvals)
     df = pd.DataFrame()
     df['Reporter Identifier']=markers
     df['stat']=stats
