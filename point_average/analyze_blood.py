@@ -68,14 +68,43 @@ def point_indices(ages):
     point_indices = [] #save point indices
     target = int(len(ages)*0.05) #Number of points to fetch for each age
     for age in np.arange(mina,maxa+1):
+        offset=0
         num_fetched = 0
         fetched_indices = [] #Save the indices fetched per age
         while num_fetched<target:
             #Start with the exact age match
-            match_i = np.where(unique_ages==age)
-            if match_i:
-                num_fetched+=num_per_age[match_i]
-                
+            pos_match_i = np.where(unique_ages==age+offset)[0]
+            neg_match_i = np.where(unique_ages==age-offset)[0]
+
+            #Count the number fetched
+            if pos_match_i and offset!=0: #don't want to sample twice on offset=0
+                num_fetched+=num_per_age[pos_match_i]
+                pos_indices = indices_per_age[pos_match_i]
+            else:
+                pos_indices = np.array([]) #Add empty array
+
+            if neg_match_i:
+                num_fetched+=num_per_age[neg_match_i])
+                neg_indices = indices_per_age[neg_match_i]
+            #All indices
+            all_indices = np.concatenate([pos_indices,neg_indices])
+            pdb.set_trace()
+            #Want the same number of points per age - adjustments are therefore needed
+            if num_fetched>target:
+                diff = num_fetched-target
+
+                #Take away points so the ages are equally represented, meaning removing
+                #more points from the bigger group
+
+
+
+            #Increase offset
+            offset+=1
+
+
+            pdb.set_trace()
+
+
 
 
     return age_indices
