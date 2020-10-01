@@ -163,14 +163,16 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             age_points = point_indices[pi]
             running_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
 
-
-
-        max_fold_changes[xi] = max(running_averages[xi,:])/min(running_averages[xi,:])
+        pdb.set_trace()
+        maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0]
+        mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0]
+        max_fold_changes[xi] = running_averages[maxi,:]/running_averages[mini,:]
 
         #Calculate p-value between samples belonging to max/min fold change
-        xmax = 
-        stats, pvals = ttest_ind(X1,X2,axis=1)
-    pdb.set_trace()
+        xmax = Xsel[[np.array(point_ages[maxi],dtype='int32')]]
+        xmin = Xsel[[np.array(point_ages[mini],dtype='int32')]]
+        stats, pvals = ttest_ind(xmax,xmin,axis=1)
+
     #Save running averages and fold changes
     np.save(outdir+'running_averages.npy', running_averages)
     np.save(outdir+'max_fold_changes.npy', max_fold_changes)
