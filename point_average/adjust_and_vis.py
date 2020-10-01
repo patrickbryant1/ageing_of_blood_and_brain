@@ -12,8 +12,6 @@ import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
 
-from sklearn.decomposition import PCA
-from scipy.stats import pearsonr
 from scipy.stats import ttest_ind
 import matplotlib.pylab as pl
 import pdb
@@ -29,8 +27,20 @@ parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'P
 
 
 #######FUNCTIONS#######
+def adjust_pvals(comparison_df):
+    '''Adjust the pvalues
+    '''
+    res = multipletests(comparison_df['p'], 0.05, method='fdr_bh')
+    rej, cor_pval = res[0], res[1]
+    comparison_df['Rejection on 0.05']=rej
+    comparison_df['qval']=cor_pval
+    return comparison_df
 
-
+def calc_derivatives(max_fold_change_df, running_averages):
+    '''Calculate the derivatives for all significant probes
+    with FC >2 (or less than 1/2)
+    '''
+    
 def plot_probes(X,markers,ages,age_indices,overlapping_probes):
     '''Plot the change in probe vs age.
     '''
@@ -65,25 +75,10 @@ def plot_probes(X,markers,ages,age_indices,overlapping_probes):
 plt.rcParams.update({'font.size': 7})
 #Args
 args = parser.parse_args()
-agelabels = {'blood':"Characteristics [age y]"}
-agelabel=agelabels[args.agelabel[0]]
 gene_annotations = pd.read_csv(args.gene_annotations[0],low_memory=False)
-joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
-print('Read betas')
-sample_sheet = pd.read_csv(args.sample_sheet[0], sep = '\t')
+running_averages = np.load(args.running_averages[0], allow_pickle=True)
+max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
 outdir = args.outdir[0]
-overlapping_probes = pd.read_csv(args.overlapping_probes[0]) #Probes with up/down regulation in different age group comparisons
-overlapping_genes = pd.read_csv(args.overlapping_genes[0]) #Genes with up/down regulation in different age group comparisons
-diff_probes = np.load(args.diff_probes[0], allow_pickle=True)#Probes not overlapping btw correlation analysis and age group comprison
-top10_corr = pd.read_csv(args.top10_corr[0]) #Top 10 marker correlations with age
-overlap_10_year_gaps = pd.read_csv(args.overlap_10_year_gaps[0])
 
-#pdb.set_trace()
-#Get data
-X, markers, ages, age_indices = format_probes(joined_betas, sample_sheet, gene_annotations, outdir)
-#plot_probes(X,markers,ages,age_indices,overlapping_probes)
-#plot_genes(X,markers,ages,age_indices,overlapping_genes)
-#plot_diff_probes(X,markers,ages,age_indices,diff_probes)
-#plot_top10_probes(X,markers,ages,age_indices,top10_corr['Reporter Identifier'], top10_corr['R'])
-
-plot_overlap_10_year_gaps(X,markers,ages,age_indices,overlap_10_year_gaps['Reporter Identifier'])
+#Adjust pvals
+max_fold_change_df = adjust_pvals(max_fold_change_df)

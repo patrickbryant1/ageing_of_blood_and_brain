@@ -178,7 +178,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     np.save(outdir+'max_fold_changes.npy', max_fold_changes)
     np.save(outdir+'max_fold_change_pvals.npy', max_fold_change_pvals)
     df = pd.DataFrame()
-    pdb.set_trace()
+
     df['Reporter Identifier']=markers
     df['p']=max_fold_change_pvals
     df['fold_change']=max_fold_changes
