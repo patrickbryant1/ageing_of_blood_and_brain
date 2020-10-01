@@ -58,8 +58,8 @@ def point_indices(ages):
     indices_per_age = [] #Save age indices per age
     for i in range(len(unique_ages)):
         #Check where ages = ages[i]
-        num_per_age[i]=len(np.where(ages==ages[i])[0])
-        indices_per_age.append(np.where(ages==ages[i])[0])
+        num_per_age[i]=len(np.where(ages==unique_ages[i])[0])
+        indices_per_age.append(np.where(ages==unique_ages[i])[0])
 
 
     #Get 5% of points for each year
@@ -77,32 +77,37 @@ def point_indices(ages):
             neg_match_i = np.where(unique_ages==age-offset)[0]
 
             #Count the number fetched
-            if pos_match_i and offset!=0: #don't want to sample twice on offset=0
-                num_fetched+=num_per_age[pos_match_i]
-                pos_indices = indices_per_age[pos_match_i]
+            if len(pos_match_i)>0 and offset!=0: #don't want to sample twice on offset=0
+                num_fetched+=num_per_age[pos_match_i][0]
+                pos_indices = indices_per_age[pos_match_i[0]]
             else:
                 pos_indices = np.array([]) #Add empty array
 
-            if neg_match_i:
-                num_fetched+=num_per_age[neg_match_i])
-                neg_indices = indices_per_age[neg_match_i]
+            if len(neg_match_i)>0:
+                num_fetched+=num_per_age[neg_match_i][0]
+                neg_indices = indices_per_age[neg_match_i[0]]
+            else:
+                neg_indices = np.array([]) #Add empty array
             #All indices
             all_indices = np.concatenate([pos_indices,neg_indices])
-            pdb.set_trace()
+
             #Want the same number of points per age - adjustments are therefore needed
             if num_fetched>target:
-                diff = num_fetched-target
-
-                #Take away points so the ages are equally represented, meaning removing
-                #more points from the bigger group
-
-
+                diff = int(num_fetched-target)
+                pdb.set_trace()
+                #Take away points so the target is not exceeded.
+                #By making a random selection on all indices
+                remove_indices = np.random.choice(all_indices,diff,replace=False)
+                keep_indices = np.setdiff1d(all_indices,remove_indices)
+                all_indices = keep_indices
+            #Save indices
+            fetched_indices.extend(all_indices)
 
             #Increase offset
             offset+=1
 
-
-            pdb.set_trace()
+        point_indices.append(fetched_indices)
+        pdb.set_trace()
 
 
 
@@ -196,6 +201,8 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
+#Seed
+np.random.seed(42) #Answer to everything
 #Args
 args = parser.parse_args()
 agelabels = {'blood':"Characteristics [age y]"}
