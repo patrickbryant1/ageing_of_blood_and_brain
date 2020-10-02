@@ -95,7 +95,33 @@ def vis_age_distr(ages, age_points, sample_sheet):
     plt.tight_layout()
     plt.savefig(outdir+'ag_point_cutoffs.png', format='png', dpi=300)
     plt.close()
-    pdb.set_trace()
+
+def group_genes(unique_genes):
+    '''Go through all unique genes and group them according to overlaps
+    '''
+
+    single_genes = {}
+    for gene in unique_genes:
+        gene = gene.split(';')
+        if len(gene)>1: #If more than one gene associated to the marker
+            fetched_singles = [] #Many genes are repeated
+            for g in gene: #Loop through all individual genes
+                if g in fetched_singles:
+                    continue #Make sure each gene in the split is only recorded once
+                if g in single_genes.keys(): #If already found
+                    single_genes[g].append(gene)
+                else:
+                    single_genes[g] = [gene]
+                fetched_singles.append(g)
+        else:
+            if gene[0] in single_genes.keys(): #If already found
+                single_genes[gene[0]].append(gene[0])
+            else:
+                single_genes[gene[0]] = [gene[0]]
+
+    unique_genes_grouped=single_genes
+    return unique_genes_grouped
+
 
 def calc_derivatives(sel, ages, running_averages, marker_values):
     '''Calculate the derivatives for all significant probes
@@ -216,6 +242,28 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
 
     #Plot the top 10 gradient changes
 
+
+def group_markers_by_gene(sel, unique_genes_grouped):
+    '''Group the selected markers per gene and return the
+    genes that are regulated by at least 2 markers
+    '''
+    multi_marker_gene_df = pd.DataFrame()
+    for gene_group in unique_genes_grouped:
+        gene_df = pd.DataFrame()
+        for gene in unique_genes_grouped[gene_group]:
+            if type(gene) == list and len(gene)>1:
+                gene = ';'.join(gene)
+            gene_df = pd.concat([gene_df, sel[sel['UCSC_RefGene_Name']==gene]])
+            gene_df['gene_group']=gene_group
+
+        if len(gene_df)>1:
+            multi_marker_gene_df = pd.concat([overlapping_gene_df,gene_df])
+            print(gene_group)
+
+    return multi_marker_gene_df
+    pdb.set_trace()
+
+
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
@@ -231,10 +279,9 @@ sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
 outdir = args.outdir[0]
 
 #Visualize pvals
-vis_pvals(max_fold_change_df)
-
+#vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(ages, age_points, sample_sheet)
+#vis_age_distr(ages, age_points, sample_sheet)
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
 #Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)
@@ -242,6 +289,10 @@ sel = max_fold_change_df[max_fold_change_df['Rejection on 0.05']==True]
 sel = sel[np.absolute(sel['fold_change'])>2]
 #Print the number selected
 print(len(sel),'selected markers out of', len(max_fold_change_df))
+#Get the gene annotations for the selected markers
+sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
+unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
 
 #Calculate derivatives
-calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+#calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
