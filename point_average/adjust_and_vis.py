@@ -257,11 +257,39 @@ def group_markers_by_gene(sel, unique_genes_grouped):
             gene_df['gene_group']=gene_group
 
         if len(gene_df)>1:
-            multi_marker_gene_df = pd.concat([overlapping_gene_df,gene_df])
+            multi_marker_gene_df = pd.concat([multi_marker_gene_df,gene_df])
             print(gene_group)
 
     return multi_marker_gene_df
-    pdb.set_trace()
+
+
+def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages):
+    '''Plot the running averages of the genes regulated by multiple markers
+    '''
+
+    u_genes = multi_marker_gene_df['gene_group'].unique()
+    for gene in u_genes:
+        multi_markers = multi_marker_gene_df[multi_marker_gene_df['gene_group']==gene]
+        multi_markers = multi_markers.reset_index()
+        #Plot
+        fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+        #Colors
+        colors = pl.cm.viridis(np.linspace(0,1,len(multi_markers)))
+        for i in range(len(multi_markers)):
+            row = multi_markers.loc[i]
+            index = row['Unnamed: 0_x']
+            plt.plot(np.arange(19,102),running_averages[index,:],color = colors[i], linewidth=1,label=row['Reporter Identifier'])
+            plt.scatter(ages, marker_values[index,:], color=colors[i],s=0.1)
+
+        #Format plot
+        plt.title(gene)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        plt.ylabel('Beta value')
+        plt.xlabel('Age')
+        plt.tight_layout()
+        plt.savefig(outdir+'genes/'+gene+'.png', format='png', dpi=300)
+        plt.close()
 
 
 ###########MAIN###########
@@ -270,9 +298,9 @@ plt.rcParams.update({'font.size': 7})
 #Args
 args = parser.parse_args()
 gene_annotations = pd.read_csv(args.gene_annotations[0],low_memory=False)
-#running_averages = np.load(args.running_averages[0], allow_pickle=True)
+running_averages = np.load(args.running_averages[0], allow_pickle=True)
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
-#marker_values = np.load(args.marker_values[0], allow_pickle=True)
+marker_values = np.load(args.marker_values[0], allow_pickle=True)
 ages = pd.read_csv(args.ages[0])
 age_points = np.load(args.age_points[0],allow_pickle=True)
 sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
@@ -296,3 +324,6 @@ unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The f
 #Calculate derivatives
 #calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
+#Plot
+plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+pdb.set_trace()
