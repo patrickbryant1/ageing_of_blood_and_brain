@@ -42,7 +42,7 @@ def vis_pvals(comparison_df):
     '''Visualize the pvals
     '''
 
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    fig,ax = plt.subplots(figsize=(9/2.54, 9/2.54))
     sns.distplot(comparison_df['p'])
     #Format plot
     plt.title('p-value distribution')
@@ -54,7 +54,6 @@ def vis_pvals(comparison_df):
     plt.savefig(outdir+'pval_distribution.png', format='png', dpi=300)
     plt.close()
 
-
 def calc_derivatives(sel, ages, running_averages, marker_values):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
@@ -62,50 +61,76 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     gradients = np.zeros((len(sel),running_averages.shape[1])) #Save gradients
     max_grad_diff = np.zeros(len(sel))
     sel_indices = np.array(sel.index) #Indices
-    sel_ra = []
-    sel_marker_values = []
-    #Plot the selected ra as well
-    fig1,ax1 = plt.subplots(figsize=(9/2.54, 9/2.54))
-    fig2,ax2 = plt.subplots(figsize=(9/2.54, 9/2.54))
+    #Save the positive and neg corr in different lists
+    pos_sel_ra = []
+    pos_sel_marker_values = []
+    neg_sel_ra = []
+    neg_sel_marker_values = []
+
+    #Plot the selected gradients as well
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient
         #Save normalized selected ra
-        sel_ra.append(running_averages[si,:]/max(running_averages[si,:]))
-        sel_marker_values.append(marker_values[si,:]/max(marker_values[si,:]))
+        if np.sum(gradients[i,:]) >0:
+            pos_sel_ra.append(running_averages[si,:]/max(marker_values[si,:]))
+            pos_sel_marker_values.append(marker_values[si,:]/max(marker_values[si,:]))
+        else:
+            neg_sel_ra.append(running_averages[si,:]/max(marker_values[si,:]))
+            neg_sel_marker_values.append(marker_values[si,:]/max(marker_values[si,:]))
         #Calculate the maximal gradient difference
         max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
-
-        ax1.plot(np.arange(19,102),running_averages[si,:]/max(marker_values[si,:]),color='royalblue', linewidth=0.1,alpha=0.1)
-        ax2.plot(np.arange(19,102),gradients[i,:],color='royalblue', linewidth=0.1,alpha=0.2)
+        ax.plot(np.arange(19,102),gradients[i,:],color='royalblue', linewidth=0.1,alpha=0.2)
 
     #Format plot
-
-    #Plot total ra
-    sel_ra = np.array(sel_ra)
-    sel_marker_values = np.array(sel_marker_values)
-    ax1.plot(np.arange(19,102),np.median(sel_ra,axis=0),color='k', linewidth=2)
-    ax1.scatter(ages,np.median(sel_marker_values,axis=0),color='k',s=0.5)
-    ax1.set_title('Running averages')
-    ax1.spines['top'].set_visible(False)
-    ax1.spines['right'].set_visible(False)
-    ax1.set_ylabel('Normalized beta value')
-    ax1.set_xlabel('Age')
-    #ax1.set_ylim([0,0.4])
-    fig1.tight_layout()
-    fig1.savefig(outdir+'ra.png', format='png', dpi=300)
-
     #Plot total gradients
-    ax2.plot(np.arange(19,102),np.median(gradients,axis=0),color='k', linewidth=1)
-    ax2.set_title('Gradients of running averages')
-    ax2.spines['top'].set_visible(False)
-    ax2.spines['right'].set_visible(False)
-    ax2.set_ylabel('Gradient')
-    ax2.set_xlabel('Age')
-    fig2.tight_layout()
-    fig2.savefig(outdir+'gradients.png', format='png', dpi=300)
+    ax.plot(np.arange(19,102),np.average(gradients,axis=0),color='k', linewidth=1)
+    ax.set_title('Gradients of running averages')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.set_ylabel('Gradient')
+    ax.set_xlabel('Age')
+    fig.tight_layout()
+    fig.savefig(outdir+'gradients.png', format='png', dpi=300)
     plt.close()
 
+    #Plot running averages with pos and neg gradients
+    #Positive
+    fig,ax = plt.subplots(figsize=(9/2.54, 9/2.54))
+    for pi in range(len(pos_sel_ra)):
+        ax.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
+    #Plot total ra
+    pos_sel_ra = np.array(pos_sel_ra)
+    print('Positively correlated markers:', len(pos_sel_ra))
+    pos_sel_marker_values = np.array(pos_sel_marker_values)
+    ax.plot(np.arange(19,102),np.average(pos_sel_ra,axis=0),color='k', linewidth=1)
+    ax.scatter(ages,np.average(pos_sel_marker_values,axis=0),color='k',s=0.2)
+    ax.set_title('Positive running averages')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.set_ylabel('Normalized beta value')
+    ax.set_xlabel('Age')
+    fig.tight_layout()
+    fig.savefig(outdir+'pos_ra.png', format='png', dpi=300)
+
+    #Negative
+    fig,ax = plt.subplots(figsize=(9/2.54, 9/2.54))
+    for pi in range(len(neg_sel_ra)):
+        ax.plot(np.arange(19,102),neg_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.5)
+    #Plot total ra
+    neg_sel_ra = np.array(neg_sel_ra)
+    print('Negatively correlated markers:', len(neg_sel_ra))
+    neg_sel_marker_values = np.array(neg_sel_marker_values)
+    ax.plot(np.arange(19,102),np.average(neg_sel_ra,axis=0),color='k', linewidth=1)
+    ax.scatter(ages,np.average(neg_sel_marker_values,axis=0),color='k',s=0.2)
+    ax.set_title('Negative running averages')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.set_ylabel('Normalized beta value')
+    ax.set_xlabel('Age')
+    fig.tight_layout()
+    fig.savefig(outdir+'neg_ra.png', format='png', dpi=300)
     # #Plot selected markers
     # fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     # #Plot ra with diff >0.1
