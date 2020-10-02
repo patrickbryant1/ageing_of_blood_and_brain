@@ -25,6 +25,8 @@ parser.add_argument('--running_averages', nargs=1, type= str, default=sys.stdin,
 parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdin, help = 'Path to marker max fold changes and pvals.')
 parser.add_argument('--marker_values', nargs=1, type= str, default=sys.stdin, help = 'Path to marker values.')
 parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Path to sample ages.')
+parser.add_argument('--age_points', nargs=1, type= str, default=sys.stdin, help = 'Path to age points.')
+parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -53,6 +55,47 @@ def vis_pvals(comparison_df):
     plt.tight_layout()
     plt.savefig(outdir+'pval_distribution.png', format='png', dpi=300)
     plt.close()
+
+def vis_age_distr(ages, age_points, sample_sheet):
+    '''Visualize the distribution of ages and the age points
+    '''
+    #Merge dfs
+    ages['Sample'] = ages['Sample']+ ' 1'
+    merged = pd.merge(ages, sample_sheet, left_on='Sample', right_on = 'Source Name', how='left')
+    ages = np.array(ages['Age'])
+    fig,ax = plt.subplots(figsize=(9/2.54, 6/2.54))
+    sns.distplot(ages,color='grey', label='All')
+    sns.distplot(merged[merged['Characteristics [sex]']=='female']['Age'],color='darkred', hist=False,label='Female')
+    sns.distplot(merged[merged['Characteristics [sex]']=='male']['Age'], color='royalblue', hist=False,label='Male')
+    plt.title('Age distribution')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.ylabel('Density')
+    plt.xlabel('Age')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(outdir+'ag_distribution.png', format='png', dpi=300)
+    plt.close()
+
+    #Plot cutoffs
+    fig,ax = plt.subplots(figsize=(9/2.54, 6/2.54))
+    y=0
+    sns.distplot(ages,color='grey')
+    for i in range(len(age_points)):
+        agesel = ages[np.array(age_points[i,:],dtype='int32')]
+        plt.plot([min(agesel),max(agesel)],[y,y],alpha=0.8, color='royalblue',linewidth=1)
+        y+=0.03/len(age_points)
+
+
+    plt.title('Running average groups')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.ylabel('Density')
+    plt.xlabel('Age')
+    plt.tight_layout()
+    plt.savefig(outdir+'ag_point_cutoffs.png', format='png', dpi=300)
+    plt.close()
+    pdb.set_trace()
 
 def calc_derivatives(sel, ages, running_averages, marker_values):
     '''Calculate the derivatives for all significant probes
@@ -179,13 +222,19 @@ plt.rcParams.update({'font.size': 7})
 #Args
 args = parser.parse_args()
 gene_annotations = pd.read_csv(args.gene_annotations[0],low_memory=False)
-running_averages = np.load(args.running_averages[0], allow_pickle=True)
+#running_averages = np.load(args.running_averages[0], allow_pickle=True)
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
-marker_values = np.load(args.marker_values[0], allow_pickle=True)
+#marker_values = np.load(args.marker_values[0], allow_pickle=True)
 ages = pd.read_csv(args.ages[0])
+age_points = np.load(args.age_points[0],allow_pickle=True)
+sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
 outdir = args.outdir[0]
+
 #Visualize pvals
 vis_pvals(max_fold_change_df)
+
+#Visualize age distribution and cutoffs
+vis_age_distr(ages, age_points, sample_sheet)
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
 #Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)
