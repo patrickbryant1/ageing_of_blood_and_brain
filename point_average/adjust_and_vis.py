@@ -63,6 +63,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     max_grad_diff = np.zeros(len(sel))
     sel_indices = np.array(sel.index) #Indices
     sel_ra = []
+    sel_marker_values = []
     #Plot the selected ra as well
     fig1,ax1 = plt.subplots(figsize=(9/2.54, 9/2.54))
     fig2,ax2 = plt.subplots(figsize=(9/2.54, 9/2.54))
@@ -71,22 +72,26 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
         gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient
         #Save normalized selected ra
         sel_ra.append(running_averages[si,:]/max(running_averages[si,:]))
+        sel_marker_values.append(marker_values[si,:]/max(marker_values[si,:]))
         #Calculate the maximal gradient difference
         max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
 
-        ax1.plot(np.arange(19,102),running_averages[si,:]/max(running_averages[si,:]),color='b', linewidth=0.1,alpha=0.1)
-        ax2.plot(np.arange(19,102),gradients[i,:],color='b', linewidth=0.1,alpha=0.1)
+        ax1.plot(np.arange(19,102),running_averages[si,:]/max(marker_values[si,:]),color='royalblue', linewidth=0.1,alpha=0.1)
+        ax2.plot(np.arange(19,102),gradients[i,:],color='royalblue', linewidth=0.1,alpha=0.2)
 
     #Format plot
 
     #Plot total ra
     sel_ra = np.array(sel_ra)
-    ax1.plot(np.arange(19,102),np.median(sel_ra,axis=0),color='k', linewidth=3)
+    sel_marker_values = np.array(sel_marker_values)
+    ax1.plot(np.arange(19,102),np.median(sel_ra,axis=0),color='k', linewidth=2)
+    ax1.scatter(ages,np.median(sel_marker_values,axis=0),color='k',s=0.5)
     ax1.set_title('Running averages')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
     ax1.set_ylabel('Normalized beta value')
     ax1.set_xlabel('Age')
+    #ax1.set_ylim([0,0.4])
     fig1.tight_layout()
     fig1.savefig(outdir+'ra.png', format='png', dpi=300)
 
@@ -101,15 +106,15 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     fig2.savefig(outdir+'gradients.png', format='png', dpi=300)
     plt.close()
 
-    #Plot selected markers
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    #Plot ra with diff >0.1
-    sel_ra = running_averages[sel_indices[np.where(max_grad_diff>0.1)]]
-    sel_markers = marker_values[sel_indices[np.where(max_grad_diff>0.1)]]
-    for i in range(len(sel_ra)):
-        plt.scatter(ages, np.log10(sel_markers[i,:]))
-        plt.plot(np.arange(19,102),np.log10(sel_ra[i,:]),color='b', linewidth=1)
-        plt.show()
+    # #Plot selected markers
+    # fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    # #Plot ra with diff >0.1
+    # sel_ra = running_averages[sel_indices[np.where((max_grad_diff>0.04)&(max_grad_diff<0.05))[0]]]
+    # sel_markers = marker_values[sel_indices[np.where((max_grad_diff>0.04)&(max_grad_diff<0.05))[0]]]
+    # for i in range(len(sel_ra)):
+    #     plt.scatter(ages,sel_markers[i,:])
+    #     plt.plot(np.arange(19,102),sel_ra[i,:],color='b', linewidth=1)
+    #     plt.show()
 
     #Plot distribution of the max grad diff
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
@@ -142,36 +147,6 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     pdb.set_trace()
 
     #Plot the top 10 gradient changes
-
-
-def plot_probes(X,markers,ages,age_indices,overlapping_probes):
-    '''Plot the change in probe vs age.
-    '''
-
-
-    u_probes = overlapping_probes['Reporter Identifier'].unique()
-    for u_probe in u_probes:
-        sel = overlapping_probes[overlapping_probes['Reporter Identifier']==u_probes[0]]
-        sel = sel.reset_index()
-        i = np.where(markers==u_probe)[0]
-        vals = X[i,:][0,:]
-        #Plot ages vs vals
-        fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-        #Get ra
-        x_av,y_av = running_average(ages,age_indices,vals)
-        plt.plot(x_av,np.log10(y_av), color = 'k', linewidth=1)
-        plt.scatter(ages, np.log10(vals), color = 'midnightblue', s=0.1)
-
-        #Format plot
-        plt.title(u_probe)
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        plt.ylabel('log Beta value')
-        plt.xlabel('Age')
-        plt.tight_layout()
-        plt.savefig(outdir+'fold_changes/markers/'+u_probe+'_vs_age.png', format='png', dpi=300)
-        plt.close()
-
 
 ###########MAIN###########
 #Plt

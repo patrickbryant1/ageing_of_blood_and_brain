@@ -67,7 +67,8 @@ def get_point_indices(ages):
     mina = min(unique_ages)
     maxa = max(unique_ages)
     point_indices = [] #save point indices
-    target = int(len(ages)*0.05) #Number of points to fetch for each age
+    target = int(len(ages)*0.1) #Number of points to fetch for each age
+    print('Target:', target)
     for age in np.arange(mina,maxa+1):
         offset=0
         num_fetched = 0
@@ -177,9 +178,10 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
         max_fold_change_pvals[xi]=pval
 
     #Save running averages and fold changes
-    #np.save(outdir+'running_averages.npy', running_averages)
+    np.save(outdir+'running_averages.npy', running_averages)
     np.save(outdir+'max_fold_changes.npy', max_fold_changes)
     np.save(outdir+'max_fold_change_pvals.npy', max_fold_change_pvals)
+    pdb.set_trace()
     df = pd.DataFrame()
 
     df['Reporter Identifier']=markers
