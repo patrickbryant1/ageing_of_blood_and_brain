@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 
 from statsmodels.stats.multitest import multipletests
 import matplotlib.pylab as pl
+from scipy.signal import savgol_filter
 import pdb
 
 
@@ -162,10 +163,9 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Plot running averages with pos and neg gradients
     #Positive
     fig1,ax1 = plt.subplots(figsize=(9/2.54, 9/2.54))
-    fig2,ax2 = plt.subplots(figsize=(9/2.54, 9/2.54))
     for pi in range(len(pos_sel_ra)):
         ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
-        ax2.plot(np.arange(19,102),pos_sel_gradients[pi],color='royalblue', linewidth=0.1,alpha=0.2)
+
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
     print('Positively correlated markers:', len(pos_sel_ra))
@@ -180,32 +180,42 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     fig1.tight_layout()
     fig1.savefig(outdir+'pos_ra.png', format='png', dpi=300)
 
-    ax2.plot(np.arange(19,102),np.average(np.array(pos_sel_gradients),axis=0),color='k', linewidth=1)
-    ax2.set_title('Positive gradients')
+    #Negative
+    fig1,ax1 = plt.subplots(figsize=(9/2.54, 9/2.54))
+    for pi in range(len(neg_sel_ra)):
+        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.5)
+    #Plot total ra
+    neg_sel_ra = np.array(neg_sel_ra)
+    print('Negatively correlated markers:', len(neg_sel_ra))
+    neg_sel_marker_values = np.array(neg_sel_marker_values)
+    ax1.plot(np.arange(19,102),np.average(neg_sel_ra,axis=0),color='k', linewidth=1)
+    ax1.scatter(ages,np.average(neg_sel_marker_values,axis=0),color='k',s=0.2)
+    ax1.set_title('Negative running averages')
+    ax1.spines['top'].set_visible(False)
+    ax1.spines['right'].set_visible(False)
+    ax1.set_ylabel('Normalized beta value')
+    ax1.set_xlabel('Age')
+    fig1.tight_layout()
+    fig1.savefig(outdir+'neg_ra.png', format='png', dpi=300)
+    plt.close()
+
+    #Plot total gradients
+    fig2,ax2 = plt.subplots(figsize=(9/2.54, 9/2.54))
+    ax2.plot(np.arange(19,102),np.average(np.array(pos_sel_gradients),axis=0),color='royalblue', linewidth=1)
+    ax2.plot(np.arange(19,102),np.average(np.array(neg_sel_gradients),axis=0),color='lightcoral', linewidth=1)
+    neg_sm = savgol_filter(np.average(np.array(neg_sel_gradients),axis=0),15,2)
+    pos_sm = savgol_filter(np.average(np.array(pos_sel_gradients),axis=0),15,2)
+    ax2.plot(np.arange(19,102),neg_sm,color='maroon', linewidth=1)
+    ax2.plot(np.arange(19,102),pos_sm,color='midnightblue', linewidth=1)
+    ax2.set_title('Gradients')
+    ax2.set_ylim([-0.01,0.01])
     ax2.spines['top'].set_visible(False)
     ax2.spines['right'].set_visible(False)
     ax2.set_ylabel('Gradient')
     ax2.set_xlabel('Age')
     fig2.tight_layout()
-    fig2.savefig(outdir+'pos_gradients.png', format='png', dpi=300)
+    fig2.savefig(outdir+'gradients.png', format='png', dpi=300)
 
-    #Negative
-    fig,ax = plt.subplots(figsize=(9/2.54, 9/2.54))
-    for pi in range(len(neg_sel_ra)):
-        ax.plot(np.arange(19,102),neg_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.5)
-    #Plot total ra
-    neg_sel_ra = np.array(neg_sel_ra)
-    print('Negatively correlated markers:', len(neg_sel_ra))
-    neg_sel_marker_values = np.array(neg_sel_marker_values)
-    ax.plot(np.arange(19,102),np.average(neg_sel_ra,axis=0),color='k', linewidth=1)
-    ax.scatter(ages,np.average(neg_sel_marker_values,axis=0),color='k',s=0.2)
-    ax.set_title('Negative running averages')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_ylabel('Normalized beta value')
-    ax.set_xlabel('Age')
-    fig.tight_layout()
-    fig.savefig(outdir+'neg_ra.png', format='png', dpi=300)
     # #Plot selected markers
     # fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     # #Plot ra with diff >0.1
@@ -312,9 +322,9 @@ sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
 outdir = args.outdir[0]
 
 #Visualize pvals
-vis_pvals(max_fold_change_df)
+#vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(ages, age_points, sample_sheet)
+#vis_age_distr(ages, age_points, sample_sheet)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
