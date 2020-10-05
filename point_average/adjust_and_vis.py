@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 from statsmodels.stats.multitest import multipletests
 import matplotlib.pylab as pl
 from scipy.signal import savgol_filter
+
+from collections import Counter
 import pdb
 
 
@@ -145,6 +147,8 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     pos_sel_gradients = []
     neg_sel_gradients = []
 
+    #Positive or neg in sel
+    pos_neg_sel = []
     #Loop through the significant markers
     norm=True
     for i in range(len(sel)):
@@ -162,10 +166,12 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
             pos_sel_ra.append(running_averages[si,:]/divider)
             pos_sel_marker_values.append(marker_values[si,:]/divider)
             pos_sel_gradients.append(gradients[i,:])
+            pos_neg_sel.append('pos')
         else:
             neg_sel_ra.append(running_averages[si,:]/divider)
             neg_sel_marker_values.append(marker_values[si,:]/divider)
             neg_sel_gradients.append(gradients[i,:])
+            pos_neg_sel.append('neg')
 
 
 
@@ -234,16 +240,6 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     fig2.tight_layout()
     fig2.savefig(outdir+'gradients.png', format='png', dpi=300)
 
-    # #Plot selected markers
-    # fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    # #Plot ra with diff >0.1
-    # sel_ra = running_averages[sel_indices[np.where((max_grad_diff>0.04)&(max_grad_diff<0.05))[0]]]
-    # sel_markers = marker_values[sel_indices[np.where((max_grad_diff>0.04)&(max_grad_diff<0.05))[0]]]
-    # for i in range(len(sel_ra)):
-    #     plt.scatter(ages,sel_markers[i,:])
-    #     plt.plot(np.arange(19,102),sel_ra[i,:],color='b', linewidth=1)
-    #     plt.show()
-
     #Plot distribution of the max grad diff
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     sns.distplot(max_grad_diff)
@@ -275,6 +271,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
 
     #Plot the top 10 gradient changes
 
+
+    #Add to sel
+    sel['pos_neg_grad']=pos_neg_sel
+
+    return sel
 
 def group_markers_by_gene(sel, unique_genes_grouped):
     '''Group the selected markers per gene and return the
@@ -373,6 +374,28 @@ def correlation_overlap(correlation_results, sel):
     plt.savefig(outdir+'correlations.png', format='png', dpi=300)
     plt.close()
 
+
+def reg_feature_groups(sel):
+    '''Check Regulatory_Feature_Group for the curves with pos and neg gradients respectively
+    '''
+
+    pos = sel[sel['pos_neg_grad']=='pos']
+    neg = sel[sel['pos_neg_grad']=='neg']
+    pdb.set_trace()
+    #Plot
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    pos_counts = Counter(pos['Regulatory_Feature_Group'])
+
+    plt.xlabel('Pearson R')
+    plt.ylabel('Density')
+    plt.title('Marker correlations')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(outdir+'correlations.png', format='png', dpi=300)
+    plt.close()
+
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
@@ -407,7 +430,7 @@ sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unna
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
 
 #Calculate derivatives
-#calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
 #plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
@@ -417,10 +440,12 @@ multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
 #Group hannum markers
 unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-analyze_hannum(hannum_markers,sel)
+#analyze_hannum(hannum_markers,sel)
 
 #Analyze overlap with correlations
-correlation_overlap(correlation_results, sel)
+#correlation_overlap(correlation_results, sel)
 
+#Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
+reg_feature_groups(sel)
 #Save sel
 sel.to_csv(outdir+'ra_sig_markers.csv')
