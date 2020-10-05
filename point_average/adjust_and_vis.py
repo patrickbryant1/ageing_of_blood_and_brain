@@ -200,11 +200,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     plt.close()
 
     #Plot total gradients
-    fig2,ax2 = plt.subplots(figsize=(9/2.54, 9/2.54))
+    fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
     ax2.plot(np.arange(19,102),np.average(np.array(pos_sel_gradients),axis=0),color='royalblue', linewidth=1)
     ax2.plot(np.arange(19,102),np.average(np.array(neg_sel_gradients),axis=0),color='lightcoral', linewidth=1)
-    neg_sm = savgol_filter(np.average(np.array(neg_sel_gradients),axis=0),window_length=21,polyorder=3)
-    pos_sm = savgol_filter(np.average(np.array(pos_sel_gradients),axis=0),window_length=21,polyorder=3)
+    neg_sm = savgol_filter(np.average(np.array(neg_sel_gradients),axis=0),window_length=21,polyorder=2)
+    pos_sm = savgol_filter(np.average(np.array(pos_sel_gradients),axis=0),window_length=21,polyorder=2)
     ax2.plot(np.arange(19,102),neg_sm,color='maroon', linewidth=1, label = 'Negative')
     ax2.plot(np.arange(19,102),pos_sm,color='midnightblue', linewidth=1, label = 'Positive')
     ax2.set_title('Gradients')
