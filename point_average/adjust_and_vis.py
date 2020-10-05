@@ -28,6 +28,8 @@ parser.add_argument('--marker_values', nargs=1, type= str, default=sys.stdin, he
 parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Path to sample ages.')
 parser.add_argument('--age_points', nargs=1, type= str, default=sys.stdin, help = 'Path to age points.')
 parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet.')
+parser.add_argument('--hannum_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to Hannum markers (71).')
+parser.add_argument('--correlation_results', nargs=1, type= str, default=sys.stdin, help = 'Path to correlation results.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -306,6 +308,52 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         plt.savefig(outdir+'genes/'+gene+'.png', format='png', dpi=300)
         plt.close()
 
+def analyze_hannum(hannum_markers,sel):
+    '''Analyze which of the significant markers are used in the Hannum clock
+    '''
+    overlap = pd.merge(hannum_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    plt.hist(hannum_markers['Coefficient'],bins=30,label='Hannum', color='cornflowerblue')
+    plt.hist(overlap['Coefficient'],bins=30,label='Running average',color='magenta')
+    plt.legend()
+    plt.xlabel('Hannum coeffecient')
+    plt.ylabel('Count')
+    plt.title('Hannum markers and coefficients')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.tight_layout()
+    plt.savefig(outdir+'hannum_markers.png', format='png', dpi=300)
+    plt.close()
+
+def correlation_overlap(correlation_results, sel):
+    '''Check the overlap with the markers that have sig correlations
+    with age on FDR=0.05
+    '''
+
+    #Adjust pvals for correlation results
+    correlation_results = adjust_pvals(correlation_results)
+    #Get  correlations for sel
+    sel = pd.merge(sel,correlation_results,on='Reporter Identifier', how='left')
+
+    #Get only the sig
+    sig_correlation_results =  correlation_results[correlation_results['Rejection on 0.05']==True]
+
+    #See how many markers overlap
+    print(len(sel[sel['Rejection on 0.05_y']==True]),'markers out of',len(sel),'were found in the correlation analysis')
+
+    #Plot
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    sns.distplot(sel['R'], color='Magenta', label='Running average')
+    sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
+    plt.xlabel('Pearson R')
+    plt.ylabel('Density')
+    plt.title('Marker correlations')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(outdir+'correlations.png', format='png', dpi=300)
+    plt.close()
 
 ###########MAIN###########
 #Plt
@@ -319,6 +367,8 @@ marker_values = np.load(args.marker_values[0], allow_pickle=True)
 ages = pd.read_csv(args.ages[0])
 age_points = np.load(args.age_points[0],allow_pickle=True)
 sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
+hannum_markers = pd.read_csv(args.hannum_markers[0])
+correlation_results = pd.read_csv(args.correlation_results[0])
 outdir = args.outdir[0]
 
 #Visualize pvals
@@ -339,7 +389,13 @@ sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unna
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
 
 #Calculate derivatives
-calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+#calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
-plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+
+#Analyze Hannum markers
+#analyze_hannum(hannum_markers,sel)
+
+#Analyze overlap with correlations
+correlation_overlap(correlation_results, sel)
