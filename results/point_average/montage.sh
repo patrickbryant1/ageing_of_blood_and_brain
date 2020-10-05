@@ -12,13 +12,13 @@ convert  grad_diff_vs_FC.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B"
 convert  gradients.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  gradients.png
 montage grad_diff_distribution.png grad_diff_vs_FC.png gradients.png -tile 3x1 -geometry +2+2 Figure2.png
 
+
+#Figure 3
+convert  pos_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" pos_ra.png
+convert  neg_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" neg_ra.png
+montage pos_ra.png neg_ra.png -tile 2x1 -geometry +2+2 Figure3.png
+
 #Figure 3
 convert  hannum_markers.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  hannum_markers.png
 convert  correlations.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" correlations.png
-montage hannum_markers.png correlations.png -tile 2x1 -geometry +2+2 Figure3.png
-
-
-#Figure 4
-convert  pos_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" pos_ra.png
-convert  neg_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" neg_ra.png
-montage pos_ra.png neg_ra.png -tile 2x1 -geometry +2+2 Figure4.png
+montage hannum_markers.png correlations.png -tile 2x1 -geometry +2+2 Figure4.png
