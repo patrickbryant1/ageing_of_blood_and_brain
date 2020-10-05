@@ -289,7 +289,7 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         multi_markers = multi_marker_gene_df[multi_marker_gene_df['gene_group']==gene]
         multi_markers = multi_markers.reset_index()
         #Plot
-        fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+        fig,ax = plt.subplots(figsize=(6/2.54, 5.5/2.54))
         #Colors
         colors = pl.cm.viridis(np.linspace(0,1,len(multi_markers)))
         for i in range(len(multi_markers)):
@@ -302,6 +302,7 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         plt.title(gene)
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
+        plt.legend()
         plt.ylabel('Beta value')
         plt.xlabel('Age')
         plt.tight_layout()
@@ -393,14 +394,13 @@ unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The f
 #calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
-#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
 
 #Analyze Hannum markers
 #Get gene annotations
 hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
 #Group hannum markers
 unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-pdb.set_trace()
 #analyze_hannum(hannum_markers,sel)
 
 #Analyze overlap with correlations
