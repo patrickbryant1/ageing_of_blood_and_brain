@@ -11,6 +11,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.pylab as pl
 
 import pdb
 
@@ -25,22 +26,22 @@ parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'P
 
 #######FUNCTIONS#######
 
-def plot_GO(go_df):
+def plot_GO(go_df,colors,title,outname):
     '''Plot the GO as bar charts
     '''
 
     #Plot
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    fig,ax = plt.subplots(figsize=(18/2.54, 12/2.54))
 
-    sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
-
+    plt.bar(np.arange(len(go_df)),go_df[2],color=colors)
+    ax.set_xticks(np.arange(len(go_df)))
+    ax.set_xticklabels(go_df[1], rotation='vertical')
     plt.ylabel('Count')
-    plt.title('Marker correlations')
+    plt.title(title)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
-    plt.legend()
     plt.tight_layout()
-    plt.savefig(outdir+'correlations.png', format='png', dpi=300)
+    plt.savefig(outname, format='png', dpi=300)
     plt.close()
 
 ###########MAIN###########
@@ -48,10 +49,13 @@ def plot_GO(go_df):
 plt.rcParams.update({'font.size': 7})
 #Args
 args = parser.parse_args()
-ra_GO = pd.read_csv(args.ra_GO[0],low_memory=False)
-hannum_GO = pd.read_csv(args.hannum_GO[0],low_memory=False)
+ra_GO = pd.read_csv(args.ra_GO[0],sep='\t', header=None)
+hannum_GO = pd.read_csv(args.hannum_GO[0],sep='\t', header=None)
 outdir = args.outdir[0]
 
-pdb.set_trace()
+
 #Plot ra GO
-plot_GO(ra_go)
+colors = pl.cm.tab20b(np.linspace(0,1,len(ra_GO)))
+plot_GO(ra_GO,colors[:len(ra_GO)], 'Running average gene ontology enrichment', outdir+'genes/go_ra.png')
+colors = pl.cm.tab20b(np.linspace(0,1,len(hannum_GO)))
+plot_GO(hannum_GO,colors,'Hannum gene ontology enrichment', outdir+'genes/Hannum/go_hannum.png')
