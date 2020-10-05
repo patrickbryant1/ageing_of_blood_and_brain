@@ -132,12 +132,13 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     '''
     gradients = np.zeros((len(sel),running_averages.shape[1])) #Save gradients
     max_grad_diff = np.zeros(len(sel))
-    sel_indices = np.array(sel.index) #Indices
+    sel_indices = np.array(sel['Unnamed: 0_x']) #Indices
     #Save the positive and neg corr in different lists
     pos_sel_ra = []
     pos_sel_marker_values = []
     neg_sel_ra = []
     neg_sel_marker_values = []
+
 
     #Plot the selected gradients as well
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
@@ -241,7 +242,6 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     plt.tight_layout()
     plt.savefig(outdir+'grad_diff_vs_FC.png', format='png', dpi=300)
     plt.close()
-    pdb.set_trace()
 
     #Plot the top 10 gradient changes
 
@@ -310,10 +310,10 @@ sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
 outdir = args.outdir[0]
 
 #Visualize pvals
-#vis_pvals(max_fold_change_df)
+vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
 vis_age_distr(ages, age_points, sample_sheet)
-pdb.set_trace()
+
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
 #Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)
@@ -322,12 +322,13 @@ sel = sel[np.absolute(sel['fold_change'])>2]
 #Print the number selected
 print(len(sel),'selected markers out of', len(max_fold_change_df))
 #Get the gene annotations for the selected markers
+###NOTE!!! This resets the index!!!
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
+
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
 
 #Calculate derivatives
-#calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
 plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
-pdb.set_trace()
