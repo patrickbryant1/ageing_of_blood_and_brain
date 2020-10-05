@@ -146,25 +146,32 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     neg_sel_gradients = []
 
     #Loop through the significant markers
+    norm=True
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
-        gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient
+        if norm == True:
+            divider = max(marker_values[si,:])
+        else:
+            divider=1
+        #Calculate the maximal gradient difference
+        gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient without norm
+        max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
+        gradients[i,:]=np.gradient(running_averages[si,:]/divider) #Calc gradient with norm
         #Save normalized selected ra
         if np.sum(gradients[i,:]) >0:
-            pos_sel_ra.append(running_averages[si,:]/max(marker_values[si,:]))
-            pos_sel_marker_values.append(marker_values[si,:]/max(marker_values[si,:]))
+            pos_sel_ra.append(running_averages[si,:]/divider)
+            pos_sel_marker_values.append(marker_values[si,:]/divider)
             pos_sel_gradients.append(gradients[i,:])
         else:
-            neg_sel_ra.append(running_averages[si,:]/max(marker_values[si,:]))
-            neg_sel_marker_values.append(marker_values[si,:]/max(marker_values[si,:]))
+            neg_sel_ra.append(running_averages[si,:]/divider)
+            neg_sel_marker_values.append(marker_values[si,:]/divider)
             neg_sel_gradients.append(gradients[i,:])
-        #Calculate the maximal gradient difference
-        max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
+
 
 
     #Plot running averages with pos and neg gradients
     #Positive
-    fig1,ax1 = plt.subplots(figsize=(9/2.54, 9/2.54))
+    fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
         ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
 
@@ -173,29 +180,35 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     print('Positively correlated markers:', len(pos_sel_ra))
     pos_sel_marker_values = np.array(pos_sel_marker_values)
     ax1.plot(np.arange(19,102),np.average(pos_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.average(pos_sel_marker_values,axis=0),color='k',s=0.2)
+    ax1.scatter(ages,np.average(pos_sel_marker_values,axis=0),color='k',s=0.1)
     ax1.set_title('Positive running averages')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
-    ax1.set_ylabel('Normalized beta value')
+    if norm==True:
+        ax1.set_ylabel('Normalized beta value')
+    else:
+        ax1.set_ylabel('Beta value')
     ax1.set_xlabel('Age')
     fig1.tight_layout()
     fig1.savefig(outdir+'pos_ra.png', format='png', dpi=300)
 
     #Negative
-    fig1,ax1 = plt.subplots(figsize=(9/2.54, 9/2.54))
+    fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.5)
+        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='lightcoral', linewidth=0.5,alpha=0.4)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
     neg_sel_marker_values = np.array(neg_sel_marker_values)
     ax1.plot(np.arange(19,102),np.average(neg_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.average(neg_sel_marker_values,axis=0),color='k',s=0.2)
+    ax1.scatter(ages,np.average(neg_sel_marker_values,axis=0),color='k',s=0.1)
     ax1.set_title('Negative running averages')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
-    ax1.set_ylabel('Normalized beta value')
+    if norm==True:
+        ax1.set_ylabel('Normalized beta value')
+    else:
+        ax1.set_ylabel('Beta value')
     ax1.set_xlabel('Age')
     fig1.tight_layout()
     fig1.savefig(outdir+'neg_ra.png', format='png', dpi=300)
@@ -213,7 +226,10 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     plt.legend()
     ax2.spines['top'].set_visible(False)
     ax2.spines['right'].set_visible(False)
-    ax2.set_ylabel('Gradient')
+    if norm==True:
+        ax2.set_ylabel('Gradient of ormalized beta value')
+    else:
+        ax2.set_ylabel('Gradient of beta value')
     ax2.set_xlabel('Age')
     fig2.tight_layout()
     fig2.savefig(outdir+'gradients.png', format='png', dpi=300)
@@ -391,10 +407,10 @@ sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unna
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
 
 #Calculate derivatives
-#calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
-plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
 
 #Analyze Hannum markers
 #Get gene annotations
@@ -408,4 +424,3 @@ unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().
 
 #Save sel
 sel.to_csv(outdir+'ra_sig_markers.csv')
-pdb.set_trace()
