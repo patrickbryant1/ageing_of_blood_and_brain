@@ -14,4 +14,6 @@ AGES=../results/point_average/ages.csv
 AGEPOINTS=../results/point_average/age_points.npy
 HANNUM_MARKERS=./hannum_markers.csv
 CORRELATIONRESULTS=../results/point_average/correlation_results.csv
-./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --age_points $AGEPOINTS --sample_sheet $SAMPLES --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
+#./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --age_points $AGEPOINTS --sample_sheet $SAMPLES --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
+
+#Plot the GO
