@@ -390,13 +390,22 @@ sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unna
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
 
 #Calculate derivatives
-calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+#calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
-plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
 
 #Analyze Hannum markers
-analyze_hannum(hannum_markers,sel)
+#Get gene annotations
+hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
+#Group hannum markers
+unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
+pdb.set_trace()
+#analyze_hannum(hannum_markers,sel)
 
 #Analyze overlap with correlations
-correlation_overlap(correlation_results, sel)
+#correlation_overlap(correlation_results, sel)
+
+#Save sel
+sel.to_csv(outdir+'ra_sig_markers.csv')
+pdb.set_trace()
