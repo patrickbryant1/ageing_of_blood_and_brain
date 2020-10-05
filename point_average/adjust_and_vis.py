@@ -331,7 +331,7 @@ def analyze_hannum(hannum_markers,sel):
     overlap = pd.merge(hannum_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     plt.hist(hannum_markers['Coefficient'],bins=30,label='Hannum', color='cornflowerblue')
-    plt.hist(overlap['Coefficient'],bins=30,label='Running average',color='magenta')
+    plt.hist(overlap['Coefficient'],bins=30,label='Running average',color='darkgreen')
     plt.legend()
     plt.xlabel('Hannum coeffecient')
     plt.ylabel('Count')
@@ -362,7 +362,7 @@ def correlation_overlap(correlation_results, sel):
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
 
     sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
-    sns.distplot(sel['R'], color='Magenta', label='Running average')
+    sns.distplot(sel['R'], color='darkgreen', label='Running average')
     plt.xlabel('Pearson R')
     plt.ylabel('Density')
     plt.title('Marker correlations')
@@ -407,7 +407,7 @@ sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unna
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
 
 #Calculate derivatives
-calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+#calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
 #plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
@@ -417,10 +417,10 @@ multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
 #Group hannum markers
 unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-#analyze_hannum(hannum_markers,sel)
+analyze_hannum(hannum_markers,sel)
 
 #Analyze overlap with correlations
-#correlation_overlap(correlation_results, sel)
+correlation_overlap(correlation_results, sel)
 
 #Save sel
 sel.to_csv(outdir+'ra_sig_markers.csv')
