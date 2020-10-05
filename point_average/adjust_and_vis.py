@@ -138,10 +138,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     pos_sel_marker_values = []
     neg_sel_ra = []
     neg_sel_marker_values = []
+    #Save the positive and negative gradients
+    pos_sel_gradients = []
+    neg_sel_gradients = []
 
-
-    #Plot the selected gradients as well
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    #Loop through the significant markers
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient
@@ -149,43 +150,44 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
         if np.sum(gradients[i,:]) >0:
             pos_sel_ra.append(running_averages[si,:]/max(marker_values[si,:]))
             pos_sel_marker_values.append(marker_values[si,:]/max(marker_values[si,:]))
+            pos_sel_gradients.append(gradients[i,:])
         else:
             neg_sel_ra.append(running_averages[si,:]/max(marker_values[si,:]))
             neg_sel_marker_values.append(marker_values[si,:]/max(marker_values[si,:]))
+            neg_sel_gradients.append(gradients[i,:])
         #Calculate the maximal gradient difference
         max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
-        ax.plot(np.arange(19,102),gradients[i,:],color='royalblue', linewidth=0.1,alpha=0.2)
 
-    #Format plot
-    #Plot total gradients
-    ax.plot(np.arange(19,102),np.average(gradients,axis=0),color='k', linewidth=1)
-    ax.set_title('Gradients of running averages')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_ylabel('Gradient')
-    ax.set_xlabel('Age')
-    fig.tight_layout()
-    fig.savefig(outdir+'gradients.png', format='png', dpi=300)
-    plt.close()
 
     #Plot running averages with pos and neg gradients
     #Positive
-    fig,ax = plt.subplots(figsize=(9/2.54, 9/2.54))
+    fig1,ax1 = plt.subplots(figsize=(9/2.54, 9/2.54))
+    fig2,ax2 = plt.subplots(figsize=(9/2.54, 9/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
+        ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
+        ax2.plot(np.arange(19,102),pos_sel_gradients[pi],color='royalblue', linewidth=0.1,alpha=0.2)
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
     print('Positively correlated markers:', len(pos_sel_ra))
     pos_sel_marker_values = np.array(pos_sel_marker_values)
-    ax.plot(np.arange(19,102),np.average(pos_sel_ra,axis=0),color='k', linewidth=1)
-    ax.scatter(ages,np.average(pos_sel_marker_values,axis=0),color='k',s=0.2)
-    ax.set_title('Positive running averages')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.set_ylabel('Normalized beta value')
-    ax.set_xlabel('Age')
-    fig.tight_layout()
-    fig.savefig(outdir+'pos_ra.png', format='png', dpi=300)
+    ax1.plot(np.arange(19,102),np.average(pos_sel_ra,axis=0),color='k', linewidth=1)
+    ax1.scatter(ages,np.average(pos_sel_marker_values,axis=0),color='k',s=0.2)
+    ax1.set_title('Positive running averages')
+    ax1.spines['top'].set_visible(False)
+    ax1.spines['right'].set_visible(False)
+    ax1.set_ylabel('Normalized beta value')
+    ax1.set_xlabel('Age')
+    fig1.tight_layout()
+    fig1.savefig(outdir+'pos_ra.png', format='png', dpi=300)
+
+    ax2.plot(np.arange(19,102),np.average(np.array(pos_sel_gradients),axis=0),color='k', linewidth=1)
+    ax2.set_title('Positive gradients')
+    ax2.spines['top'].set_visible(False)
+    ax2.spines['right'].set_visible(False)
+    ax2.set_ylabel('Gradient')
+    ax2.set_xlabel('Age')
+    fig2.tight_layout()
+    fig2.savefig(outdir+'pos_gradients.png', format='png', dpi=300)
 
     #Negative
     fig,ax = plt.subplots(figsize=(9/2.54, 9/2.54))
@@ -324,7 +326,6 @@ print(len(sel),'selected markers out of', len(max_fold_change_df))
 #Get the gene annotations for the selected markers
 ###NOTE!!! This resets the index!!!
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
-
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
 
 #Calculate derivatives
