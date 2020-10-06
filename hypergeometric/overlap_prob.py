@@ -7,11 +7,11 @@ import os
 import glob
 import numpy as np
 import math
-
+from scipy.stats import hypergeom
 import pdb
 
 #Arguments for argparse module:
-parser = argparse.ArgumentParser(description = '''Analyze all statistically significant methylation markers btw age groups''')
+parser = argparse.ArgumentParser(description = '''Compute the probability of picking n and D markers from a set of N and that x of these overlap.''')
 parser.add_argument('--x', nargs=1, type= int, default=sys.stdin, help = 'Number of overlapping markers.')
 parser.add_argument('--n', nargs=1, type= int, default=sys.stdin, help = 'Number of markers in group 1.')
 parser.add_argument('--D', nargs=1, type= int, default=sys.stdin, help = 'Number of markers in group 2.')
@@ -36,8 +36,15 @@ def striling_aprroximation(n):
     '''Calculate the approzimation of n! according to the
     striling formula
     n! = sqrt(2*pi*n)*(n/e)^n
+    The version of the formula typically used in applications is
+    ln n ! = n ln n − n + O ( ln ⁡n )
     '''
-    return np.sqrt(2*math.pi*n)*(n/math.e)**n
+    return n*np.log(n)-n
+
+def ramanujan(x):
+    fact = sqrt(pi)*(x/e)**x
+    fact *= (((8*x + 4)*x + 1)*x + 1/30.)**(1./6.)
+    return fact
 
 def comb_a_b(a,b):
     '''Calculate the possible number of ways to choose b from a
@@ -46,6 +53,7 @@ def comb_a_b(a,b):
     a_fac = striling_aprroximation(a)
     a_b_fac = striling_aprroximation(a-b)
     b_fac = striling_aprroximation(b)
+    pdb.set_trace()
     return a_fac/(a_b_fac*b_fac)
 
 def hypergeometric_pmf(i,n,D,N,C_N_n):
