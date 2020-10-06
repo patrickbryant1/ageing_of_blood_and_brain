@@ -29,7 +29,8 @@ parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdi
 parser.add_argument('--marker_values', nargs=1, type= str, default=sys.stdin, help = 'Path to marker values.')
 parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Path to sample ages.')
 parser.add_argument('--age_points', nargs=1, type= str, default=sys.stdin, help = 'Path to age points.')
-parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet.')
+parser.add_argument('--sample_sheet36194', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet with accession 36194.')
+parser.add_argument('--sample_sheet1575', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet with accession 1575.')
 parser.add_argument('--hannum_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to Hannum markers (71).')
 parser.add_argument('--correlation_results', nargs=1, type= str, default=sys.stdin, help = 'Path to correlation results.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
@@ -61,7 +62,7 @@ def vis_pvals(comparison_df):
     plt.savefig(outdir+'pval_distribution.png', format='png', dpi=300)
     plt.close()
 
-def vis_age_distr(ages, age_points, sample_sheet):
+def vis_age_distr(ages, age_points):
     '''Visualize the distribution of ages and the age points
     '''
     #Merge dfs
@@ -407,15 +408,16 @@ max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
 marker_values = np.load(args.marker_values[0], allow_pickle=True)
 ages = pd.read_csv(args.ages[0])
 age_points = np.load(args.age_points[0],allow_pickle=True)
-sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
+sample_sheet36194 = pd.read_csv(args.sample_sheet36194[0], sep = '\t')
+sample_sheet1575 = pd.read_csv(args.sample_sheet1575[0], sep = '\t')
 hannum_markers = pd.read_csv(args.hannum_markers[0])
 correlation_results = pd.read_csv(args.correlation_results[0])
 outdir = args.outdir[0]
 
 #Visualize pvals
-#vis_pvals(max_fold_change_df)
+vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-#vis_age_distr(ages, age_points, sample_sheet)
+vis_age_distr(ages, age_points, sample_sheet)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)

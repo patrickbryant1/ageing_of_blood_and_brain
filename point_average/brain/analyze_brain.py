@@ -35,24 +35,30 @@ def get_ages(joined_betas, sample_sheet1575, sample_sheet36194):
     '''
     sample_names = joined_betas.columns[2:]
     sample_ages = []
-
+    sample_sexes = []
     for name in sample_names:
         sheet, id = name.split('_')
         if sheet=='E-GEOD-36194':
             sample_sheet = sample_sheet36194
             agelabel='Characteristics[age (y)]'
+            sexlabel='Characteristics[sex]'
         else:
             sample_sheet = sample_sheet1575
             agelabel='Characteristics[age]'
+            sexlabel='Characteristics[gender]'
 
+        #Save sex
+        sample_sexes.append(sample_sheet[sample_sheet['Source Name']==id+' 1'][sexlabel].values[0])
+        #Save age
         try:
             sample_ages.append(float(sample_sheet[sample_sheet['Source Name']==id+' 1'][agelabel].values[0]))
+
         except:
             if sample_sheet[sample_sheet['Source Name']==id+' 1'][agelabel].values[0] == '>90':
                 sample_ages.append(90.0)
             else:
                 pdb.set_trace()
-    return sample_ages
+    return sample_ages, sample_sexes
 
 def get_point_indices(ages):
 
@@ -129,7 +135,8 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     zeros = (merged[merged.columns[2:-3]] == 0).astype(int).sum(axis=1)
     zero_indices = np.where(zeros<10)
     #Get ages
-    ages = get_ages(joined_betas, sample_sheet1575, sample_sheet36194)
+    ages, sexes = get_ages(joined_betas, sample_sheet1575, sample_sheet36194)
+
     #Round ages
     ages = np.round(ages)
 
@@ -137,6 +144,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     age_df = pd.DataFrame()
     age_df['Sample'] = joined_betas.columns[2:]
     age_df['Age'] = ages
+    pdb.set_trace()
     age_df.to_csv(outdir+'ages.csv')
 
     #Get point indices
@@ -235,6 +243,8 @@ joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
 joined_betas = joined_betas.fillna(0) #Fill nans with 0
 print('Read betas')
 sample_sheet36194 = pd.read_csv(args.sample_sheet36194[0], sep = '\t')
+#The sex annotation is screqed up, this fixes that
+sample_sheet36194['Characteristics[sex]'][470:]=np.array(sample_sheet36194['Characteristics[sex].1'][470:])
 sample_sheet1575 = pd.read_csv(args.sample_sheet1575[0], sep = '\t')
 outdir = args.outdir[0]
 
