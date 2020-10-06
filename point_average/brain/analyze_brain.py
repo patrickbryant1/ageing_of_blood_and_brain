@@ -204,12 +204,13 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         #Get frontal cortex ages
         tissue_indices = age_df[age_df['Tissue']==tissue].index
 
-        print(tissue, len(tissue_indices),'samples')
         #Get tissue marker values
         X_tissue = X[:,tissue_indices]
         #Clean outliers
         remain_tissue_indices = clean_outliers(X_tissue, outdir, tissue)
         tissue_indices = tissue_indices[remain_tissue_indices]
+        print(tissue, len(tissue_indices),'samples')
+
         #Get cleaned samples
         X_tissue = X[:,tissue_indices]
         #Get tissue ages
@@ -222,7 +223,6 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         #Save point_indices
         np.save(outdir+tissue+'_age_points.npy',np.array(point_indices))
 
-        pdb.set_trace()
         #Save X
         np.save(outdir+tissue+'_marker_values.npy',X_tissue)
         #Min and max age

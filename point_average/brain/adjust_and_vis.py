@@ -178,7 +178,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.1,alpha=0.2)
+        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.1,alpha=0.1)
 
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
@@ -200,7 +200,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Negative
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.1,alpha=0.2)
+        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.1,alpha=0.1)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
@@ -434,17 +434,17 @@ unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
 sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
-plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'])
+#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'])
 
 #Analyze Hannum markers
 #Get gene annotations
-hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
+#hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
 #Group hannum markers
 unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique())
 #analyze_hannum(hannum_markers,sel)
 
 #Analyze overlap with correlations
-#correlation_overlap(correlation_results, sel)
+correlation_overlap(correlation_results, sel)
 
 #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
 reg_feature_groups(sel)
