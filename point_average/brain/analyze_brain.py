@@ -170,12 +170,12 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
 
     print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
 
-    for tissue in ['frontal cortex', 'cerebellum']:
+    for tissue in [ 'cerebellum','frontal cortex']:
         #Get frontal cortex ages
         tissue_indices = age_df[age_df['Tissue']==tissue].index
         tissue_ages = ages[tissue_indices]
         print(tissue, len(tissue_indices),'samples')
-        pdb.set_trace()
+
         #Get point indices
         point_indices = get_point_indices(tissue_ages)
         #Save point_indices
@@ -193,7 +193,6 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         running_averages = np.zeros((X_tissue.shape[0],len(point_ages)))
         max_fold_changes = np.zeros(X_tissue.shape[0])
         max_fold_change_pvals = np.zeros(X_tissue.shape[0])
-        pdb.set_trace()
         #Calculate running point average
         for xi in range(len(X_tissue)):
             if xi%1000==0: #Print if congruent with 1000
@@ -226,14 +225,13 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         #Save df
         df.to_csv(outdir+tissue+'_marker_max_FC_pval.csv')
 
-
         #Correlate probe values with age
         R = np.zeros(X_tissue.shape[0])
         p = np.zeros(X_tissue.shape[0])
-        for xi in range(X.shape[0]):
+        for xi in range(X_tissue.shape[0]):
             if xi%1000==0:
                 print(xi)
-            R[xi], p[xi] = pearsonr(X_tissue[xi,:], ages)
+            R[xi], p[xi] = pearsonr(X_tissue[xi,:], tissue_ages)
 
         #Save marker-age correlations
         corr_df = pd.DataFrame()
