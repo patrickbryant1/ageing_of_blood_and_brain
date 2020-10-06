@@ -169,12 +169,15 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     X = X[zero_indices,:][0]
 
     print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
-
+    #Go through the tissues
     for tissue in [ 'cerebellum','frontal cortex']:
         #Get frontal cortex ages
         tissue_indices = age_df[age_df['Tissue']==tissue].index
         tissue_ages = ages[tissue_indices]
         print(tissue, len(tissue_indices),'samples')
+
+        #Save the tissue ages
+        age_df.loc[tissue_indices].to_csv(outdir+tissue+'_ages.csv')
 
         #Get point indices
         point_indices = get_point_indices(tissue_ages)

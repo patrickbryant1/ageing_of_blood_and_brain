@@ -413,9 +413,9 @@ correlation_results = pd.read_csv(args.correlation_results[0])
 outdir = args.outdir[0]
 
 #Visualize pvals
-#vis_pvals(max_fold_change_df)
+vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-#vis_age_distr(age_df, age_points)
+vis_age_distr(age_df, age_points)
 pdb.set_trace()
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
