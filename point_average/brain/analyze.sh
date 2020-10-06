@@ -12,10 +12,11 @@ OUTDIR=../../results/point_average/brain/
 RA=../../results/point_average/brain/cerebellum_running_averages.npy
 FCDF=../../results/point_average/brain/cerebellum_marker_max_FC_pval.csv
 MV=../../results/point_average/brain/cerebellum_marker_values.npy
-AGES=../../results/point_average/brain/ages.csv
+AGES=../../results/point_average/brain/cerebellum_ages.csv
 AGEPOINTS=../../results/point_average/brain/cerebellum_age_points.npy
 HANNUM_MARKERS=./hannum_markers.csv
 CORRELATIONRESULTS=../../results/point_average/brain/cerebellum_correlation_results.csv
+OUTDIR=$OUTDIR/cerebellum/
 #./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --age_points $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
 
 #Plot the GO

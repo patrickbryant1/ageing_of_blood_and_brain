@@ -1,0 +1,956 @@
+,Sample,Age,Sex,Tissue
+0,E-GEOD-36194_GSM884792,82.0,female,frontal cortex
+1,E-GEOD-36194_GSM884702,11.0,male,frontal cortex
+2,E-GEOD-36194_GSM884637,31.0,male,frontal cortex
+3,E-GEOD-36194_GSM884821,81.0,male,frontal cortex
+4,E-GEOD-36194_GSM884781,92.0,male,frontal cortex
+5,E-GEOD-36194_GSM884770,53.0,female,frontal cortex
+6,E-GEOD-36194_GSM884730,42.0,male,frontal cortex
+7,E-GEOD-36194_GSM884691,45.0,male,frontal cortex
+8,E-GEOD-36194_GSM884814,82.0,female,frontal cortex
+9,E-GEOD-36194_GSM884569,85.0,female,cerebellum
+10,E-GEOD-36194_GSM884612,4.0,male,frontal cortex
+11,E-GEOD-36194_GSM884669,43.0,male,frontal cortex
+12,E-GEOD-36194_GSM884642,16.0,male,frontal cortex
+13,E-GEOD-36194_GSM884768,68.0,male,frontal cortex
+14,E-GEOD-36194_GSM884675,91.0,male,frontal cortex
+15,E-GEOD-36194_GSM884738,25.0,female,frontal cortex
+16,E-GEOD-36194_GSM884644,16.0,female,frontal cortex
+17,E-GEOD-36194_GSM884841,32.0,female,frontal cortex
+18,E-GEOD-36194_GSM884788,89.0,male,frontal cortex
+19,E-GEOD-36194_GSM884618,21.0,male,frontal cortex
+20,E-GEOD-36194_GSM884680,59.0,female,frontal cortex
+21,E-GEOD-36194_GSM884735,22.0,male,frontal cortex
+22,E-GEOD-36194_GSM884801,85.0,male,frontal cortex
+23,E-GEOD-36194_GSM884629,102.0,female,frontal cortex
+24,E-GEOD-36194_GSM884609,24.0,female,frontal cortex
+25,E-GEOD-36194_GSM884714,27.0,male,frontal cortex
+26,E-GEOD-36194_GSM884695,48.0,male,frontal cortex
+27,E-GEOD-36194_GSM884577,85.0,female,cerebellum
+28,E-GEOD-36194_GSM884580,81.0,male,cerebellum
+29,E-GEOD-36194_GSM884767,90.0,male,frontal cortex
+30,E-GEOD-36194_GSM884723,91.0,female,frontal cortex
+31,E-GEOD-36194_GSM884825,16.0,male,frontal cortex
+32,E-GEOD-36194_GSM884832,48.0,male,frontal cortex
+33,E-GEOD-36194_GSM884628,95.0,female,frontal cortex
+34,E-GEOD-36194_GSM884690,18.0,female,frontal cortex
+35,E-GEOD-36194_GSM884813,85.0,female,frontal cortex
+36,E-GEOD-36194_GSM884667,55.0,male,frontal cortex
+37,E-GEOD-36194_GSM884670,16.0,male,frontal cortex
+38,E-GEOD-36194_GSM884784,91.0,male,frontal cortex
+39,E-GEOD-36194_GSM884840,71.0,male,frontal cortex
+40,E-GEOD-36194_GSM884619,38.0,female,frontal cortex
+41,E-GEOD-36194_GSM884684,45.0,male,frontal cortex
+42,E-GEOD-36194_GSM884683,14.0,female,frontal cortex
+43,E-GEOD-36194_GSM884636,44.0,female,frontal cortex
+44,E-GEOD-36194_GSM884641,15.0,female,frontal cortex
+45,E-GEOD-36194_GSM884671,22.0,male,frontal cortex
+46,E-GEOD-36194_GSM884836,79.0,male,frontal cortex
+47,E-GEOD-36194_GSM884623,23.0,female,frontal cortex
+48,E-GEOD-36194_GSM884811,73.0,female,frontal cortex
+49,E-GEOD-36194_GSM884721,48.0,female,frontal cortex
+50,E-GEOD-36194_GSM884737,89.0,male,frontal cortex
+51,E-GEOD-36194_GSM884643,4.0,male,frontal cortex
+52,E-GEOD-36194_GSM884791,73.0,male,frontal cortex
+53,E-GEOD-36194_GSM884599,14.0,female,cerebellum
+54,E-GEOD-36194_GSM884710,18.0,female,frontal cortex
+55,E-GEOD-36194_GSM884622,42.0,male,frontal cortex
+56,E-GEOD-36194_GSM884807,78.0,male,frontal cortex
+57,E-GEOD-36194_GSM884757,61.0,male,frontal cortex
+58,E-GEOD-36194_GSM884681,75.0,female,frontal cortex
+59,E-GEOD-36194_GSM884707,17.0,male,frontal cortex
+60,E-GEOD-36194_GSM884582,86.0,female,cerebellum
+61,E-GEOD-36194_GSM884682,56.0,male,frontal cortex
+62,E-GEOD-36194_GSM884787,73.0,male,frontal cortex
+63,E-GEOD-36194_GSM884574,69.0,male,cerebellum
+64,E-GEOD-36194_GSM884817,86.0,male,frontal cortex
+65,E-GEOD-36194_GSM884719,13.0,male,frontal cortex
+66,E-GEOD-36194_GSM884753,6.0,male,frontal cortex
+67,E-GEOD-36194_GSM884828,70.0,male,frontal cortex
+68,E-GEOD-36194_GSM884774,75.0,female,frontal cortex
+69,E-GEOD-36194_GSM884834,57.0,female,frontal cortex
+70,E-GEOD-36194_GSM884725,94.0,male,frontal cortex
+71,E-GEOD-36194_GSM884752,52.0,male,frontal cortex
+72,E-GEOD-36194_GSM884668,48.0,male,frontal cortex
+73,E-GEOD-36194_GSM884824,19.0,male,frontal cortex
+74,E-GEOD-36194_GSM884694,12.0,male,frontal cortex
+75,E-GEOD-36194_GSM884794,89.0,male,frontal cortex
+76,E-GEOD-36194_GSM884697,50.0,female,frontal cortex
+77,E-GEOD-36194_GSM884771,56.0,male,frontal cortex
+78,E-GEOD-36194_GSM884709,19.0,female,frontal cortex
+79,E-GEOD-36194_GSM884820,70.0,female,frontal cortex
+80,E-GEOD-36194_GSM884728,14.0,male,frontal cortex
+81,E-GEOD-36194_GSM884654,68.0,male,frontal cortex
+82,E-GEOD-36194_GSM884838,13.0,male,frontal cortex
+83,E-GEOD-36194_GSM884656,50.0,female,frontal cortex
+84,E-GEOD-36194_GSM884687,4.0,male,frontal cortex
+85,E-GEOD-36194_GSM884823,86.0,female,frontal cortex
+86,E-GEOD-36194_GSM884726,52.0,male,frontal cortex
+87,E-GEOD-36194_GSM884808,63.0,male,frontal cortex
+88,E-GEOD-36194_GSM884666,16.0,male,frontal cortex
+89,E-GEOD-36194_GSM884819,73.0,male,frontal cortex
+90,E-GEOD-36194_GSM884678,5.0,male,frontal cortex
+91,E-GEOD-36194_GSM884815,69.0,male,frontal cortex
+92,E-GEOD-36194_GSM884575,78.0,male,cerebellum
+93,E-GEOD-36194_GSM884596,67.0,male,cerebellum
+94,E-GEOD-36194_GSM884802,78.0,male,frontal cortex
+95,E-GEOD-36194_GSM884571,84.0,male,cerebellum
+96,E-GEOD-36194_GSM884584,16.0,male,cerebellum
+97,E-GEOD-36194_GSM884570,73.0,female,cerebellum
+98,E-GEOD-36194_GSM884616,40.0,female,frontal cortex
+99,E-GEOD-36194_GSM884760,11.0,male,frontal cortex
+100,E-GEOD-36194_GSM884727,19.0,male,frontal cortex
+101,E-GEOD-36194_GSM884806,81.0,female,frontal cortex
+102,E-GEOD-36194_GSM884803,82.0,male,frontal cortex
+103,E-GEOD-36194_GSM884598,25.0,female,cerebellum
+104,E-GEOD-36194_GSM884689,52.0,male,frontal cortex
+105,E-GEOD-36194_GSM884717,17.0,female,frontal cortex
+106,E-GEOD-36194_GSM884731,16.0,female,frontal cortex
+107,E-GEOD-36194_GSM884613,24.0,male,frontal cortex
+108,E-GEOD-36194_GSM884816,78.0,male,frontal cortex
+109,E-GEOD-36194_GSM884693,36.0,male,frontal cortex
+110,E-GEOD-36194_GSM884704,46.0,male,frontal cortex
+111,E-GEOD-36194_GSM884782,95.0,male,frontal cortex
+112,E-GEOD-36194_GSM884646,73.0,male,frontal cortex
+113,E-GEOD-36194_GSM884804,83.0,male,frontal cortex
+114,E-GEOD-36194_GSM884839,24.0,female,frontal cortex
+115,E-GEOD-36194_GSM884701,80.0,male,frontal cortex
+116,E-GEOD-36194_GSM884601,45.0,male,cerebellum
+117,E-GEOD-36194_GSM884685,15.0,male,frontal cortex
+118,E-GEOD-36194_GSM884799,83.0,male,frontal cortex
+119,E-GEOD-36194_GSM884795,86.0,male,frontal cortex
+120,E-GEOD-36194_GSM884586,34.0,male,cerebellum
+121,E-GEOD-36194_GSM884776,87.0,female,frontal cortex
+122,E-GEOD-36194_GSM884679,17.0,male,frontal cortex
+123,E-GEOD-36194_GSM884663,79.0,male,frontal cortex
+124,E-GEOD-36194_GSM884593,16.0,male,cerebellum
+125,E-GEOD-36194_GSM884649,90.0,female,frontal cortex
+126,E-GEOD-36194_GSM884640,38.0,male,frontal cortex
+127,E-GEOD-36194_GSM884585,48.0,female,cerebellum
+128,E-GEOD-36194_GSM884650,38.0,male,frontal cortex
+129,E-GEOD-36194_GSM884610,19.0,female,frontal cortex
+130,E-GEOD-36194_GSM884696,50.0,male,frontal cortex
+131,E-GEOD-36194_GSM884810,85.0,female,frontal cortex
+132,E-GEOD-36194_GSM884724,91.0,male,frontal cortex
+133,E-GEOD-36194_GSM884835,20.0,male,frontal cortex
+134,E-GEOD-36194_GSM884831,33.0,female,frontal cortex
+135,E-GEOD-36194_GSM884568,86.0,female,cerebellum
+136,E-GEOD-36194_GSM884756,1.0,male,frontal cortex
+137,E-GEOD-36194_GSM884706,12.0,female,frontal cortex
+138,E-GEOD-36194_GSM884608,14.0,male,frontal cortex
+139,E-GEOD-36194_GSM884591,16.0,male,cerebellum
+140,E-GEOD-36194_GSM884732,35.0,male,frontal cortex
+141,E-GEOD-36194_GSM884755,63.0,female,frontal cortex
+142,E-GEOD-36194_GSM884800,87.0,male,frontal cortex
+143,E-GEOD-36194_GSM884734,37.0,male,frontal cortex
+144,E-GEOD-36194_GSM884843,2.0,female,frontal cortex
+145,E-GEOD-36194_GSM884592,90.0,male,cerebellum
+146,E-GEOD-36194_GSM884703,19.0,male,frontal cortex
+147,E-GEOD-36194_GSM884740,15.0,male,frontal cortex
+148,E-GEOD-36194_GSM884786,82.0,female,frontal cortex
+149,E-GEOD-36194_GSM884611,42.0,male,frontal cortex
+150,E-GEOD-36194_GSM884603,68.0,male,cerebellum
+151,E-GEOD-36194_GSM884604,77.0,female,cerebellum
+152,E-GEOD-36194_GSM884576,86.0,male,cerebellum
+153,E-GEOD-36194_GSM884572,85.0,female,cerebellum
+154,E-GEOD-36194_GSM884762,16.0,male,frontal cortex
+155,E-GEOD-36194_GSM884742,1.0,male,frontal cortex
+156,E-GEOD-36194_GSM884842,37.0,male,frontal cortex
+157,E-GEOD-36194_GSM884660,19.0,male,frontal cortex
+158,E-GEOD-36194_GSM884602,15.0,male,cerebellum
+159,E-GEOD-36194_GSM884639,16.0,female,frontal cortex
+160,E-GEOD-36194_GSM884579,70.0,female,cerebellum
+161,E-GEOD-36194_GSM884645,17.0,male,frontal cortex
+162,E-GEOD-36194_GSM884621,31.0,male,frontal cortex
+163,E-GEOD-36194_GSM884674,78.0,male,frontal cortex
+164,E-GEOD-36194_GSM884698,87.0,female,frontal cortex
+165,E-GEOD-36194_GSM884658,76.0,male,frontal cortex
+166,E-GEOD-36194_GSM884648,16.0,female,frontal cortex
+167,E-GEOD-36194_GSM884796,86.0,male,frontal cortex
+168,E-GEOD-36194_GSM884587,70.0,male,cerebellum
+169,E-GEOD-36194_GSM884722,97.0,male,frontal cortex
+170,E-GEOD-36194_GSM884769,36.0,male,frontal cortex
+171,E-GEOD-36194_GSM884765,67.0,male,frontal cortex
+172,E-GEOD-36194_GSM884688,36.0,female,frontal cortex
+173,E-GEOD-36194_GSM884630,70.0,male,frontal cortex
+174,E-GEOD-36194_GSM884705,25.0,female,frontal cortex
+175,E-GEOD-36194_GSM884625,77.0,female,frontal cortex
+176,E-GEOD-36194_GSM884595,43.0,male,cerebellum
+177,E-GEOD-36194_GSM884783,83.0,female,frontal cortex
+178,E-GEOD-36194_GSM884597,89.0,male,cerebellum
+179,E-GEOD-36194_GSM884750,19.0,female,frontal cortex
+180,E-GEOD-36194_GSM884718,33.0,female,frontal cortex
+181,E-GEOD-36194_GSM884672,49.0,male,frontal cortex
+182,E-GEOD-36194_GSM884664,45.0,male,frontal cortex
+183,E-GEOD-36194_GSM884692,0.0,female,frontal cortex
+184,E-GEOD-36194_GSM884715,47.0,male,frontal cortex
+185,E-GEOD-36194_GSM884615,19.0,female,frontal cortex
+186,E-GEOD-36194_GSM884720,44.0,female,frontal cortex
+187,E-GEOD-36194_GSM884627,17.0,female,frontal cortex
+188,E-GEOD-36194_GSM884624,17.0,male,frontal cortex
+189,E-GEOD-36194_GSM884708,35.0,male,frontal cortex
+190,E-GEOD-36194_GSM884759,18.0,male,frontal cortex
+191,E-GEOD-36194_GSM884780,81.0,male,frontal cortex
+192,E-GEOD-36194_GSM884699,89.0,female,frontal cortex
+193,E-GEOD-36194_GSM884573,82.0,female,cerebellum
+194,E-GEOD-36194_GSM884748,91.0,female,frontal cortex
+195,E-GEOD-36194_GSM884833,14.0,male,frontal cortex
+196,E-GEOD-36194_GSM884775,84.0,male,frontal cortex
+197,E-GEOD-36194_GSM884606,6.0,male,cerebellum
+198,E-GEOD-36194_GSM884635,58.0,female,frontal cortex
+199,E-GEOD-36194_GSM884763,18.0,male,frontal cortex
+200,E-GEOD-36194_GSM884766,18.0,female,frontal cortex
+201,E-GEOD-36194_GSM884614,32.0,male,frontal cortex
+202,E-GEOD-36194_GSM884665,8.0,male,frontal cortex
+203,E-GEOD-36194_GSM884777,78.0,female,frontal cortex
+204,E-GEOD-36194_GSM884578,73.0,male,cerebellum
+205,E-GEOD-36194_GSM884790,82.0,male,frontal cortex
+206,E-GEOD-36194_GSM884633,54.0,male,frontal cortex
+207,E-GEOD-36194_GSM884826,48.0,female,frontal cortex
+208,E-GEOD-36194_GSM884617,28.0,male,frontal cortex
+209,E-GEOD-36194_GSM884747,91.0,female,frontal cortex
+210,E-GEOD-36194_GSM884600,18.0,female,cerebellum
+211,E-GEOD-36194_GSM884594,13.0,male,cerebellum
+212,E-GEOD-36194_GSM884716,14.0,male,frontal cortex
+213,E-GEOD-36194_GSM884805,76.0,male,frontal cortex
+214,E-GEOD-36194_GSM884712,51.0,female,frontal cortex
+215,E-GEOD-36194_GSM884830,10.0,female,frontal cortex
+216,E-GEOD-36194_GSM884785,80.0,male,frontal cortex
+217,E-GEOD-36194_GSM884657,21.0,male,frontal cortex
+218,E-GEOD-36194_GSM884676,94.0,female,frontal cortex
+219,E-GEOD-36194_GSM884677,85.0,male,frontal cortex
+220,E-GEOD-36194_GSM884827,34.0,male,frontal cortex
+221,E-GEOD-36194_GSM884638,86.0,female,frontal cortex
+222,E-GEOD-36194_GSM884745,53.0,male,frontal cortex
+223,E-GEOD-36194_GSM884772,81.0,male,frontal cortex
+224,E-GEOD-36194_GSM884749,90.0,male,frontal cortex
+225,E-GEOD-36194_GSM884818,85.0,female,frontal cortex
+226,E-GEOD-36194_GSM884809,86.0,female,frontal cortex
+227,E-GEOD-36194_GSM884605,17.0,male,cerebellum
+228,E-GEOD-36194_GSM884589,10.0,female,cerebellum
+229,E-GEOD-36194_GSM884798,78.0,female,frontal cortex
+230,E-GEOD-36194_GSM884789,82.0,male,frontal cortex
+231,E-GEOD-36194_GSM884659,44.0,male,frontal cortex
+232,E-GEOD-36194_GSM884713,1.0,male,frontal cortex
+233,E-GEOD-36194_GSM884733,25.0,female,frontal cortex
+234,E-GEOD-36194_GSM884647,45.0,male,frontal cortex
+235,E-GEOD-36194_GSM884588,42.0,female,cerebellum
+236,E-GEOD-36194_GSM884673,42.0,male,frontal cortex
+237,E-GEOD-36194_GSM884741,13.0,male,frontal cortex
+238,E-GEOD-36194_GSM884778,88.0,female,frontal cortex
+239,E-GEOD-36194_GSM884822,69.0,male,frontal cortex
+240,E-GEOD-36194_GSM884662,15.0,male,frontal cortex
+241,E-GEOD-36194_GSM884837,1.0,female,frontal cortex
+242,E-GEOD-36194_GSM884620,51.0,male,frontal cortex
+243,E-GEOD-36194_GSM884812,84.0,male,frontal cortex
+244,E-GEOD-36194_GSM884590,33.0,female,cerebellum
+245,E-GEOD-36194_GSM884746,95.0,female,frontal cortex
+246,E-GEOD-36194_GSM884626,2.0,female,frontal cortex
+247,E-GEOD-36194_GSM884631,82.0,male,frontal cortex
+248,E-GEOD-36194_GSM884829,42.0,female,frontal cortex
+249,E-GEOD-36194_GSM884653,87.0,female,frontal cortex
+250,E-GEOD-36194_GSM884581,69.0,male,cerebellum
+251,E-GEOD-36194_GSM884632,30.0,male,frontal cortex
+252,E-GEOD-36194_GSM884744,49.0,male,frontal cortex
+253,E-GEOD-36194_GSM884739,17.0,male,frontal cortex
+254,E-GEOD-36194_GSM884758,61.0,male,frontal cortex
+255,E-GEOD-36194_GSM884711,36.0,male,frontal cortex
+256,E-GEOD-36194_GSM884751,77.0,female,frontal cortex
+257,E-GEOD-36194_GSM884661,15.0,female,frontal cortex
+258,E-GEOD-36194_GSM884651,66.0,male,frontal cortex
+259,E-GEOD-36194_GSM884797,85.0,male,frontal cortex
+260,E-GEOD-36194_GSM884634,2.0,female,frontal cortex
+261,E-GEOD-36194_GSM884764,38.0,male,frontal cortex
+262,E-GEOD-36194_GSM884773,76.0,female,frontal cortex
+263,E-GEOD-36194_GSM884793,88.0,female,frontal cortex
+264,E-GEOD-36194_GSM884607,56.0,male,cerebellum
+265,E-GEOD-36194_GSM884729,7.0,male,frontal cortex
+266,E-GEOD-36194_GSM884700,86.0,male,frontal cortex
+267,E-GEOD-36194_GSM884743,15.0,male,frontal cortex
+268,E-GEOD-36194_GSM884754,45.0,male,frontal cortex
+269,E-GEOD-36194_GSM884652,91.0,male,frontal cortex
+270,E-GEOD-36194_GSM884779,90.0,female,frontal cortex
+271,E-GEOD-36194_GSM884655,16.0,male,frontal cortex
+272,E-GEOD-36194_GSM884583,19.0,male,cerebellum
+273,E-GEOD-36194_GSM884736,19.0,male,frontal cortex
+274,E-GEOD-36194_GSM884686,42.0,male,frontal cortex
+275,E-GEOD-36194_GSM884761,49.0,male,frontal cortex
+276,E-GEOD-15745_GSM401943,48.0,male,temporal cortex
+277,E-GEOD-15745_GSM401772,43.0,female,frontal cortex
+278,E-GEOD-15745_GSM401780,39.0,male,frontal cortex
+279,E-GEOD-15745_GSM401820,33.0,female,pons
+280,E-GEOD-15745_GSM401935,66.0,male,temporal cortex
+281,E-GEOD-15745_GSM401691,46.0,male,frontal cortex
+282,E-GEOD-15745_GSM401814,25.0,female,pons
+283,E-GEOD-15745_GSM401858,86.0,male,pons
+284,E-GEOD-15745_GSM401946,33.0,female,temporal cortex
+285,E-GEOD-15745_GSM401840,17.0,male,pons
+286,E-GEOD-15745_GSM401645,18.0,female,cerebellum
+287,E-GEOD-15745_GSM401649,72.0,female,cerebellum
+288,E-GEOD-15745_GSM401643,28.0,male,cerebellum
+289,E-GEOD-15745_GSM401551,58.0,male,cerebellum
+290,E-GEOD-15745_GSM402044,67.0,male,temporal cortex
+291,E-GEOD-15745_GSM401689,56.0,male,frontal cortex
+292,E-GEOD-15745_GSM401849,40.0,female,pons
+293,E-GEOD-15745_GSM401543,16.0,male,cerebellum
+294,E-GEOD-15745_GSM402038,31.0,female,temporal cortex
+295,E-GEOD-15745_GSM401751,92.0,female,frontal cortex
+296,E-GEOD-15745_GSM401920,46.0,male,pons
+297,E-GEOD-15745_GSM401715,49.0,female,frontal cortex
+298,E-GEOD-15745_GSM401592,95.0,female,cerebellum
+299,E-GEOD-15745_GSM401917,48.0,female,pons
+300,E-GEOD-15745_GSM401565,43.0,male,cerebellum
+301,E-GEOD-15745_GSM401872,42.0,male,pons
+302,E-GEOD-15745_GSM402000,75.0,male,temporal cortex
+303,E-GEOD-15745_GSM401957,15.0,male,temporal cortex
+304,E-GEOD-15745_GSM402018,43.0,female,temporal cortex
+305,E-GEOD-15745_GSM401815,19.0,male,pons
+306,E-GEOD-15745_GSM401566,39.0,female,cerebellum
+307,E-GEOD-15745_GSM401963,66.0,male,temporal cortex
+308,E-GEOD-15745_GSM401774,89.0,male,frontal cortex
+309,E-GEOD-15745_GSM401623,92.0,female,cerebellum
+310,E-GEOD-15745_GSM402001,79.0,male,temporal cortex
+311,E-GEOD-15745_GSM401723,17.0,male,frontal cortex
+312,E-GEOD-15745_GSM401577,96.0,female,cerebellum
+313,E-GEOD-15745_GSM402026,49.0,female,temporal cortex
+314,E-GEOD-15745_GSM402021,54.0,male,temporal cortex
+315,E-GEOD-15745_GSM401600,42.0,male,cerebellum
+316,E-GEOD-15745_GSM401672,58.0,male,frontal cortex
+317,E-GEOD-15745_GSM401972,62.0,male,temporal cortex
+318,E-GEOD-15745_GSM401895,58.0,male,pons
+319,E-GEOD-15745_GSM401829,48.0,male,pons
+320,E-GEOD-15745_GSM401594,85.0,male,cerebellum
+321,E-GEOD-15745_GSM402043,38.0,male,temporal cortex
+322,E-GEOD-15745_GSM401660,44.0,male,frontal cortex
+323,E-GEOD-15745_GSM401754,82.0,male,frontal cortex
+324,E-GEOD-15745_GSM401987,95.0,male,temporal cortex
+325,E-GEOD-15745_GSM401729,32.0,male,frontal cortex
+326,E-GEOD-15745_GSM401608,27.0,male,cerebellum
+327,E-GEOD-15745_GSM401708,45.0,female,frontal cortex
+328,E-GEOD-15745_GSM402027,47.0,female,temporal cortex
+329,E-GEOD-15745_GSM401648,20.0,male,cerebellum
+330,E-GEOD-15745_GSM401663,66.0,male,frontal cortex
+331,E-GEOD-15745_GSM401838,19.0,male,pons
+332,E-GEOD-15745_GSM401995,92.0,male,temporal cortex
+333,E-GEOD-15745_GSM401937,57.0,male,temporal cortex
+334,E-GEOD-15745_GSM401694,41.0,female,frontal cortex
+335,E-GEOD-15745_GSM401835,45.0,male,pons
+336,E-GEOD-15745_GSM401809,38.0,male,pons
+337,E-GEOD-15745_GSM402055,40.0,male,temporal cortex
+338,E-GEOD-15745_GSM401746,79.0,male,frontal cortex
+339,E-GEOD-15745_GSM401906,42.0,female,pons
+340,E-GEOD-15745_GSM401766,25.0,male,frontal cortex
+341,E-GEOD-15745_GSM402024,49.0,male,temporal cortex
+342,E-GEOD-15745_GSM401866,82.0,male,pons
+343,E-GEOD-15745_GSM401546,25.0,female,cerebellum
+344,E-GEOD-15745_GSM401737,40.0,male,frontal cortex
+345,E-GEOD-15745_GSM401757,86.0,male,frontal cortex
+346,E-GEOD-15745_GSM401915,72.0,female,pons
+347,E-GEOD-15745_GSM401791,26.0,male,frontal cortex
+348,E-GEOD-15745_GSM401666,22.0,female,frontal cortex
+349,E-GEOD-15745_GSM401878,27.0,male,pons
+350,E-GEOD-15745_GSM401783,61.0,male,frontal cortex
+351,E-GEOD-15745_GSM402041,48.0,female,temporal cortex
+352,E-GEOD-15745_GSM401940,47.0,female,temporal cortex
+353,E-GEOD-15745_GSM401789,33.0,male,frontal cortex
+354,E-GEOD-15745_GSM401969,21.0,male,temporal cortex
+355,E-GEOD-15745_GSM401980,82.0,male,temporal cortex
+356,E-GEOD-15745_GSM401892,49.0,male,pons
+357,E-GEOD-15745_GSM401909,46.0,female,pons
+358,E-GEOD-15745_GSM401771,57.0,male,frontal cortex
+359,E-GEOD-15745_GSM401832,32.0,male,pons
+360,E-GEOD-15745_GSM401903,20.0,male,pons
+361,E-GEOD-15745_GSM401857,87.0,male,pons
+362,E-GEOD-15745_GSM401834,18.0,female,pons
+363,E-GEOD-15745_GSM401692,34.0,male,frontal cortex
+364,E-GEOD-15745_GSM401778,43.0,male,frontal cortex
+365,E-GEOD-15745_GSM401738,23.0,male,frontal cortex
+366,E-GEOD-15745_GSM401697,29.0,male,frontal cortex
+367,E-GEOD-15745_GSM401605,48.0,male,cerebellum
+368,E-GEOD-15745_GSM401614,28.0,male,cerebellum
+369,E-GEOD-15745_GSM401877,17.0,male,pons
+370,E-GEOD-15745_GSM401926,43.0,male,pons
+371,E-GEOD-15745_GSM401589,42.0,female,cerebellum
+372,E-GEOD-15745_GSM401760,48.0,male,frontal cortex
+373,E-GEOD-15745_GSM401949,49.0,male,temporal cortex
+374,E-GEOD-15745_GSM401889,32.0,female,pons
+375,E-GEOD-15745_GSM401591,54.0,male,cerebellum
+376,E-GEOD-15745_GSM401855,90.0,female,pons
+377,E-GEOD-15745_GSM401626,75.0,male,cerebellum
+378,E-GEOD-15745_GSM401881,95.0,male,pons
+379,E-GEOD-15745_GSM401651,53.0,female,cerebellum
+380,E-GEOD-15745_GSM401975,32.0,male,temporal cortex
+381,E-GEOD-15745_GSM401944,58.0,male,temporal cortex
+382,E-GEOD-15745_GSM402052,43.0,male,temporal cortex
+383,E-GEOD-15745_GSM401617,48.0,male,cerebellum
+384,E-GEOD-15745_GSM401875,41.0,male,pons
+385,E-GEOD-15745_GSM401929,61.0,male,pons
+386,E-GEOD-15745_GSM401740,39.0,female,frontal cortex
+387,E-GEOD-15745_GSM401921,58.0,male,pons
+388,E-GEOD-15745_GSM401883,90.0,female,pons
+389,E-GEOD-15745_GSM401932,44.0,male,temporal cortex
+390,E-GEOD-15745_GSM402003,27.0,male,temporal cortex
+391,E-GEOD-15745_GSM401720,37.0,male,frontal cortex
+392,E-GEOD-15745_GSM401941,48.0,male,temporal cortex
+393,E-GEOD-15745_GSM401786,26.0,female,frontal cortex
+394,E-GEOD-15745_GSM401984,84.0,male,temporal cortex
+395,E-GEOD-15745_GSM401978,28.0,male,temporal cortex
+396,E-GEOD-15745_GSM401625,96.0,male,cerebellum
+397,E-GEOD-15745_GSM401817,57.0,male,pons
+398,E-GEOD-15745_GSM401886,39.0,female,pons
+399,E-GEOD-15745_GSM401548,48.0,male,cerebellum
+400,E-GEOD-15745_GSM401821,49.0,female,pons
+401,E-GEOD-15745_GSM402023,22.0,male,temporal cortex
+402,E-GEOD-15745_GSM401628,86.0,male,cerebellum
+403,E-GEOD-15745_GSM401671,23.0,male,frontal cortex
+404,E-GEOD-15745_GSM401901,49.0,female,pons
+405,E-GEOD-15745_GSM402015,48.0,male,temporal cortex
+406,E-GEOD-15745_GSM401900,25.0,male,pons
+407,E-GEOD-15745_GSM401695,45.0,male,frontal cortex
+408,E-GEOD-15745_GSM401755,96.0,male,frontal cortex
+409,E-GEOD-15745_GSM401588,32.0,male,cerebellum
+410,E-GEOD-15745_GSM401863,84.0,male,pons
+411,E-GEOD-15745_GSM401637,66.0,male,cerebellum
+412,E-GEOD-15745_GSM402007,39.0,female,temporal cortex
+413,E-GEOD-15745_GSM402046,43.0,male,temporal cortex
+414,E-GEOD-15745_GSM401580,83.0,male,cerebellum
+415,E-GEOD-15745_GSM401806,20.0,male,pons
+416,E-GEOD-15745_GSM401826,22.0,male,pons
+417,E-GEOD-15745_GSM401585,79.0,male,cerebellum
+418,E-GEOD-15745_GSM401654,48.0,female,cerebellum
+419,E-GEOD-15745_GSM401545,47.0,female,cerebellum
+420,E-GEOD-15745_GSM401852,34.0,male,pons
+421,E-GEOD-15745_GSM401714,53.0,male,frontal cortex
+422,E-GEOD-15745_GSM401609,23.0,male,cerebellum
+423,E-GEOD-15745_GSM402006,42.0,male,temporal cortex
+424,E-GEOD-15745_GSM401571,31.0,female,cerebellum
+425,E-GEOD-15745_GSM401983,96.0,female,temporal cortex
+426,E-GEOD-15745_GSM401880,22.0,male,pons
+427,E-GEOD-15745_GSM401540,68.0,male,cerebellum
+428,E-GEOD-15745_GSM401912,20.0,male,pons
+429,E-GEOD-15745_GSM401952,45.0,female,temporal cortex
+430,E-GEOD-15745_GSM401683,17.0,female,frontal cortex
+431,E-GEOD-15745_GSM402012,16.0,male,temporal cortex
+432,E-GEOD-15745_GSM401743,82.0,male,frontal cortex
+433,E-GEOD-15745_GSM401717,57.0,male,frontal cortex
+434,E-GEOD-15745_GSM401960,28.0,male,temporal cortex
+435,E-GEOD-15745_GSM401823,66.0,male,pons
+436,E-GEOD-15745_GSM401675,62.0,male,frontal cortex
+437,E-GEOD-15745_GSM401758,86.0,male,frontal cortex
+438,E-GEOD-15745_GSM401542,66.0,male,cerebellum
+439,E-GEOD-15745_GSM401731,20.0,male,frontal cortex
+440,E-GEOD-15745_GSM401603,26.0,male,cerebellum
+441,E-GEOD-15745_GSM401700,19.0,female,frontal cortex
+442,E-GEOD-15745_GSM401958,53.0,male,temporal cortex
+443,E-GEOD-15745_GSM401554,16.0,female,cerebellum
+444,E-GEOD-15745_GSM401998,88.0,male,temporal cortex
+445,E-GEOD-15745_GSM402049,17.0,female,temporal cortex
+446,E-GEOD-15745_GSM401874,39.0,female,pons
+447,E-GEOD-15745_GSM401897,20.0,male,pons
+448,E-GEOD-15745_GSM401586,93.0,female,cerebellum
+449,E-GEOD-15745_GSM401854,95.0,female,pons
+450,E-GEOD-15745_GSM402035,41.0,female,temporal cortex
+451,E-GEOD-15745_GSM401841,59.0,male,pons
+452,E-GEOD-15745_GSM402009,26.0,male,temporal cortex
+453,E-GEOD-15745_GSM401560,24.0,male,cerebellum
+454,E-GEOD-15745_GSM401640,46.0,male,cerebellum
+455,E-GEOD-15745_GSM401818,48.0,male,pons
+456,E-GEOD-15745_GSM401964,34.0,male,temporal cortex
+457,E-GEOD-15745_GSM401634,47.0,female,cerebellum
+458,E-GEOD-15745_GSM401703,59.0,male,frontal cortex
+459,E-GEOD-15745_GSM401631,41.0,male,cerebellum
+460,E-GEOD-15745_GSM401549,48.0,male,cerebellum
+461,E-GEOD-15745_GSM401711,38.0,female,frontal cortex
+462,E-GEOD-15745_GSM401732,90.0,female,frontal cortex
+463,E-GEOD-15745_GSM401986,92.0,female,temporal cortex
+464,E-GEOD-15745_GSM401992,39.0,female,temporal cortex
+465,E-GEOD-15745_GSM401674,35.0,male,frontal cortex
+466,E-GEOD-15745_GSM401652,20.0,female,cerebellum
+467,E-GEOD-15745_GSM401989,32.0,female,temporal cortex
+468,E-GEOD-15745_GSM401668,19.0,male,frontal cortex
+469,E-GEOD-15745_GSM401574,34.0,male,cerebellum
+470,E-GEOD-15745_GSM401904,47.0,male,pons
+471,E-GEOD-15745_GSM401884,79.0,male,pons
+472,E-GEOD-15745_GSM401680,43.0,male,frontal cortex
+473,E-GEOD-15745_GSM401686,48.0,male,frontal cortex
+474,E-GEOD-15745_GSM401734,95.0,female,frontal cortex
+475,E-GEOD-15745_GSM401562,20.0,male,cerebellum
+476,E-GEOD-15745_GSM401981,96.0,male,temporal cortex
+477,E-GEOD-15745_GSM401966,73.0,female,temporal cortex
+478,E-GEOD-15745_GSM401646,40.0,female,cerebellum
+479,E-GEOD-15745_GSM401688,18.0,male,frontal cortex
+480,E-GEOD-15745_GSM402029,45.0,male,temporal cortex
+481,E-GEOD-15745_GSM401846,39.0,male,pons
+482,E-GEOD-15745_GSM401763,92.0,male,frontal cortex
+483,E-GEOD-15745_GSM401568,18.0,male,cerebellum
+484,E-GEOD-15745_GSM401860,101.0,female,pons
+485,E-GEOD-15745_GSM401657,41.0,female,cerebellum
+486,E-GEOD-15745_GSM401709,40.0,female,frontal cortex
+487,E-GEOD-15745_GSM402032,72.0,female,temporal cortex
+488,E-GEOD-15745_GSM401777,24.0,male,frontal cortex
+489,E-GEOD-15745_GSM401629,56.0,male,cerebellum
+490,E-GEOD-15745_GSM401898,48.0,male,pons
+491,E-GEOD-15745_GSM401611,17.0,male,cerebellum
+492,E-GEOD-15745_GSM401597,49.0,male,cerebellum
+493,E-GEOD-15745_GSM401706,21.0,male,frontal cortex
+494,E-GEOD-15745_GSM401938,22.0,female,temporal cortex
+495,E-GEOD-15745_GSM402050,58.0,male,temporal cortex
+496,E-GEOD-15745_GSM401769,58.0,male,frontal cortex
+497,E-GEOD-15745_GSM401677,28.0,male,frontal cortex
+498,E-GEOD-15745_GSM401924,27.0,female,pons
+499,E-GEOD-15745_GSM402047,48.0,male,temporal cortex
+500,E-GEOD-15745_GSM401752,101.0,female,frontal cortex
+501,E-GEOD-15745_GSM401923,19.0,female,pons
+502,E-GEOD-15745_GSM401735,47.0,female,frontal cortex
+503,E-GEOD-15745_GSM402020,23.0,male,temporal cortex
+504,E-GEOD-15745_GSM401712,18.0,female,frontal cortex
+505,E-GEOD-15745_GSM401843,21.0,male,pons
+506,E-GEOD-15745_GSM401837,62.0,male,pons
+507,E-GEOD-36194_GSM401541,38.0,male,cerebellum
+508,E-GEOD-36194_GSM401691,46.0,male,frontal cortex
+509,E-GEOD-36194_GSM401601,43.0,male,cerebellum
+510,E-GEOD-36194_GSM401645,18.0,female,cerebellum
+511,E-GEOD-36194_GSM401649,72.0,female,cerebellum
+512,E-GEOD-36194_GSM401615,46.0,female,cerebellum
+513,E-GEOD-36194_GSM401622,39.0,female,cerebellum
+514,E-GEOD-36194_GSM401557,45.0,female,cerebellum
+515,E-GEOD-36194_GSM401643,28.0,male,cerebellum
+516,E-GEOD-36194_GSM401638,45.0,male,cerebellum
+517,E-GEOD-36194_GSM401551,58.0,male,cerebellum
+518,E-GEOD-36194_GSM401658,48.0,male,cerebellum
+519,E-GEOD-36194_GSM401689,56.0,male,frontal cortex
+520,E-GEOD-36194_GSM401563,90.0,female,cerebellum
+521,E-GEOD-36194_GSM401610,22.0,male,cerebellum
+522,E-GEOD-36194_GSM401582,25.0,male,cerebellum
+523,E-GEOD-36194_GSM401543,16.0,male,cerebellum
+524,E-GEOD-36194_GSM401559,48.0,male,cerebellum
+525,E-GEOD-36194_GSM401650,22.0,male,cerebellum
+526,E-GEOD-36194_GSM401592,95.0,female,cerebellum
+527,E-GEOD-36194_GSM401565,43.0,male,cerebellum
+528,E-GEOD-36194_GSM401624,88.0,male,cerebellum
+529,E-GEOD-36194_GSM401705,53.0,male,frontal cortex
+530,E-GEOD-36194_GSM401664,16.0,male,frontal cortex
+531,E-GEOD-36194_GSM401566,39.0,female,cerebellum
+532,E-GEOD-36194_GSM401590,20.0,male,cerebellum
+533,E-GEOD-36194_GSM401550,33.0,female,cerebellum
+534,E-GEOD-36194_GSM401623,92.0,female,cerebellum
+535,E-GEOD-36194_GSM401573,35.0,male,cerebellum
+536,E-GEOD-36194_GSM401572,67.0,male,cerebellum
+537,E-GEOD-36194_GSM401577,96.0,female,cerebellum
+538,E-GEOD-36194_GSM401693,28.0,male,frontal cortex
+539,E-GEOD-36194_GSM401600,42.0,male,cerebellum
+540,E-GEOD-36194_GSM401672,58.0,male,frontal cortex
+541,E-GEOD-36194_GSM401684,20.0,male,frontal cortex
+542,E-GEOD-36194_GSM401594,85.0,male,cerebellum
+543,E-GEOD-36194_GSM401660,44.0,male,frontal cortex
+544,E-GEOD-36194_GSM401593,45.0,male,cerebellum
+545,E-GEOD-36194_GSM401602,37.0,male,cerebellum
+546,E-GEOD-36194_GSM401561,39.0,female,cerebellum
+547,E-GEOD-36194_GSM401665,57.0,male,frontal cortex
+548,E-GEOD-36194_GSM401608,27.0,male,cerebellum
+549,E-GEOD-36194_GSM401708,45.0,female,frontal cortex
+550,E-GEOD-36194_GSM401648,20.0,male,cerebellum
+551,E-GEOD-36194_GSM401663,66.0,male,frontal cortex
+552,E-GEOD-36194_GSM401676,48.0,male,frontal cortex
+553,E-GEOD-36194_GSM401694,41.0,female,frontal cortex
+554,E-GEOD-36194_GSM401685,33.0,female,frontal cortex
+555,E-GEOD-36194_GSM401670,47.0,female,frontal cortex
+556,E-GEOD-36194_GSM401569,61.0,male,cerebellum
+557,E-GEOD-36194_GSM401656,33.0,male,cerebellum
+558,E-GEOD-36194_GSM401546,25.0,female,cerebellum
+559,E-GEOD-36194_GSM401667,25.0,female,frontal cortex
+560,E-GEOD-36194_GSM401583,86.0,male,cerebellum
+561,E-GEOD-36194_GSM401666,22.0,female,frontal cortex
+562,E-GEOD-36194_GSM401696,43.0,male,frontal cortex
+563,E-GEOD-36194_GSM401687,16.0,female,frontal cortex
+564,E-GEOD-36194_GSM401701,49.0,male,frontal cortex
+565,E-GEOD-36194_GSM401647,47.0,female,cerebellum
+566,E-GEOD-36194_GSM401692,34.0,male,frontal cortex
+567,E-GEOD-36194_GSM401636,31.0,male,cerebellum
+568,E-GEOD-36194_GSM401697,29.0,male,frontal cortex
+569,E-GEOD-36194_GSM401605,48.0,male,cerebellum
+570,E-GEOD-36194_GSM401614,28.0,male,cerebellum
+571,E-GEOD-36194_GSM401606,16.0,male,cerebellum
+572,E-GEOD-36194_GSM401690,19.0,female,frontal cortex
+573,E-GEOD-36194_GSM401618,85.0,female,cerebellum
+574,E-GEOD-36194_GSM401589,42.0,female,cerebellum
+575,E-GEOD-36194_GSM401619,92.0,male,cerebellum
+576,E-GEOD-36194_GSM401639,17.0,male,cerebellum
+577,E-GEOD-36194_GSM401591,54.0,male,cerebellum
+578,E-GEOD-36194_GSM401626,75.0,male,cerebellum
+579,E-GEOD-36194_GSM401567,57.0,male,cerebellum
+580,E-GEOD-36194_GSM401651,53.0,female,cerebellum
+581,E-GEOD-36194_GSM401682,33.0,female,frontal cortex
+582,E-GEOD-36194_GSM401617,48.0,male,cerebellum
+583,E-GEOD-36194_GSM401599,17.0,male,cerebellum
+584,E-GEOD-36194_GSM401613,20.0,male,cerebellum
+585,E-GEOD-36194_GSM401596,48.0,male,cerebellum
+586,E-GEOD-36194_GSM401655,19.0,female,cerebellum
+587,E-GEOD-36194_GSM401538,20.0,male,cerebellum
+588,E-GEOD-36194_GSM401625,96.0,male,cerebellum
+589,E-GEOD-36194_GSM401633,47.0,male,cerebellum
+590,E-GEOD-36194_GSM401630,20.0,male,cerebellum
+591,E-GEOD-36194_GSM401661,68.0,male,frontal cortex
+592,E-GEOD-36194_GSM401548,48.0,male,cerebellum
+593,E-GEOD-36194_GSM401635,33.0,male,cerebellum
+594,E-GEOD-36194_GSM401558,31.0,male,cerebellum
+595,E-GEOD-36194_GSM401704,39.0,male,frontal cortex
+596,E-GEOD-36194_GSM401628,86.0,male,cerebellum
+597,E-GEOD-36194_GSM401671,23.0,male,frontal cortex
+598,E-GEOD-36194_GSM401644,27.0,female,cerebellum
+599,E-GEOD-36194_GSM401547,57.0,male,cerebellum
+600,E-GEOD-36194_GSM401695,45.0,male,frontal cortex
+601,E-GEOD-36194_GSM401588,32.0,male,cerebellum
+602,E-GEOD-36194_GSM401637,66.0,male,cerebellum
+603,E-GEOD-36194_GSM401580,83.0,male,cerebellum
+604,E-GEOD-36194_GSM401556,58.0,male,cerebellum
+605,E-GEOD-36194_GSM401585,79.0,male,cerebellum
+606,E-GEOD-36194_GSM401654,48.0,female,cerebellum
+607,E-GEOD-36194_GSM401545,47.0,female,cerebellum
+608,E-GEOD-36194_GSM401575,49.0,female,cerebellum
+609,E-GEOD-36194_GSM401662,38.0,male,frontal cortex
+610,E-GEOD-36194_GSM401609,23.0,male,cerebellum
+611,E-GEOD-36194_GSM401544,57.0,male,cerebellum
+612,E-GEOD-36194_GSM401571,31.0,female,cerebellum
+613,E-GEOD-36194_GSM401632,28.0,male,cerebellum
+614,E-GEOD-36194_GSM401540,68.0,male,cerebellum
+615,E-GEOD-36194_GSM401595,19.0,male,cerebellum
+616,E-GEOD-36194_GSM401683,17.0,female,frontal cortex
+617,E-GEOD-36194_GSM401653,43.0,male,cerebellum
+618,E-GEOD-36194_GSM401621,89.0,male,cerebellum
+619,E-GEOD-36194_GSM401616,53.0,male,cerebellum
+620,E-GEOD-36194_GSM401627,18.0,male,cerebellum
+621,E-GEOD-36194_GSM401675,62.0,male,frontal cortex
+622,E-GEOD-36194_GSM401542,66.0,male,cerebellum
+623,E-GEOD-36194_GSM401604,20.0,female,cerebellum
+624,E-GEOD-36194_GSM401603,26.0,male,cerebellum
+625,E-GEOD-36194_GSM401607,55.0,male,cerebellum
+626,E-GEOD-36194_GSM401700,19.0,female,frontal cortex
+627,E-GEOD-36194_GSM401554,16.0,female,cerebellum
+628,E-GEOD-36194_GSM401539,44.0,male,cerebellum
+629,E-GEOD-36194_GSM401553,33.0,female,cerebellum
+630,E-GEOD-36194_GSM401669,48.0,male,frontal cortex
+631,E-GEOD-36194_GSM401678,47.0,male,frontal cortex
+632,E-GEOD-36194_GSM401586,93.0,female,cerebellum
+633,E-GEOD-36194_GSM401707,18.0,female,frontal cortex
+634,E-GEOD-36194_GSM401612,32.0,female,cerebellum
+635,E-GEOD-36194_GSM401560,24.0,male,cerebellum
+636,E-GEOD-36194_GSM401581,92.0,female,cerebellum
+637,E-GEOD-36194_GSM401640,46.0,male,cerebellum
+638,E-GEOD-36194_GSM401634,47.0,female,cerebellum
+639,E-GEOD-36194_GSM401703,59.0,male,frontal cortex
+640,E-GEOD-36194_GSM401576,40.0,male,cerebellum
+641,E-GEOD-36194_GSM401698,73.0,female,frontal cortex
+642,E-GEOD-36194_GSM401579,84.0,male,cerebellum
+643,E-GEOD-36194_GSM401631,41.0,male,cerebellum
+644,E-GEOD-36194_GSM401598,16.0,male,cerebellum
+645,E-GEOD-36194_GSM401549,48.0,male,cerebellum
+646,E-GEOD-36194_GSM401659,20.0,male,frontal cortex
+647,E-GEOD-36194_GSM401674,35.0,male,frontal cortex
+648,E-GEOD-36194_GSM401652,20.0,female,cerebellum
+649,E-GEOD-36194_GSM401552,23.0,male,cerebellum
+650,E-GEOD-36194_GSM401668,19.0,male,frontal cortex
+651,E-GEOD-36194_GSM401574,34.0,male,cerebellum
+652,E-GEOD-36194_GSM401680,43.0,male,frontal cortex
+653,E-GEOD-36194_GSM401587,43.0,female,cerebellum
+654,E-GEOD-36194_GSM401686,48.0,male,frontal cortex
+655,E-GEOD-36194_GSM401562,20.0,male,cerebellum
+656,E-GEOD-36194_GSM401584,82.0,male,cerebellum
+657,E-GEOD-36194_GSM401646,40.0,female,cerebellum
+658,E-GEOD-36194_GSM401641,42.0,male,cerebellum
+659,E-GEOD-36194_GSM401564,49.0,female,cerebellum
+660,E-GEOD-36194_GSM401688,18.0,male,frontal cortex
+661,E-GEOD-36194_GSM401568,18.0,male,cerebellum
+662,E-GEOD-36194_GSM401555,62.0,male,cerebellum
+663,E-GEOD-36194_GSM401657,41.0,female,cerebellum
+664,E-GEOD-36194_GSM401679,28.0,male,frontal cortex
+665,E-GEOD-36194_GSM401578,53.0,male,cerebellum
+666,E-GEOD-36194_GSM401699,32.0,male,frontal cortex
+667,E-GEOD-36194_GSM401702,48.0,female,frontal cortex
+668,E-GEOD-36194_GSM401629,56.0,male,cerebellum
+669,E-GEOD-36194_GSM401611,17.0,male,cerebellum
+670,E-GEOD-36194_GSM401597,49.0,male,cerebellum
+671,E-GEOD-36194_GSM401681,49.0,female,frontal cortex
+672,E-GEOD-36194_GSM401706,21.0,male,frontal cortex
+673,E-GEOD-36194_GSM401677,28.0,male,frontal cortex
+674,E-GEOD-36194_GSM401673,66.0,male,frontal cortex
+675,E-GEOD-36194_GSM401642,73.0,male,cerebellum
+676,E-GEOD-36194_GSM401570,39.0,male,cerebellum
+677,E-GEOD-36194_GSM401620,87.0,male,cerebellum
+678,E-GEOD-36194_GSM401739,33.0,male,frontal cortex
+679,E-GEOD-36194_GSM401733,46.0,female,frontal cortex
+680,E-GEOD-36194_GSM884527,24.0,female,cerebellum
+681,E-GEOD-36194_GSM401772,43.0,female,frontal cortex
+682,E-GEOD-36194_GSM884524,49.0,male,cerebellum
+683,E-GEOD-36194_GSM884451,42.0,male,cerebellum
+684,E-GEOD-36194_GSM401780,39.0,male,frontal cortex
+685,E-GEOD-36194_GSM401749,75.0,male,frontal cortex
+686,E-GEOD-36194_GSM884557,85.0,male,cerebellum
+687,E-GEOD-36194_GSM401773,45.0,male,frontal cortex
+688,E-GEOD-36194_GSM401724,16.0,male,frontal cortex
+689,E-GEOD-36194_GSM401726,20.0,female,frontal cortex
+690,E-GEOD-36194_GSM884518,63.0,female,cerebellum
+691,E-GEOD-36194_GSM884490,94.0,male,cerebellum
+692,E-GEOD-36194_GSM884494,7.0,male,cerebellum
+693,E-GEOD-36194_GSM884403,31.0,male,cerebellum
+694,E-GEOD-36194_GSM401776,54.0,male,frontal cortex
+695,E-GEOD-36194_GSM884565,76.0,male,cerebellum
+696,E-GEOD-36194_GSM884519,1.0,male,cerebellum
+697,E-GEOD-36194_GSM884381,19.0,female,cerebellum
+698,E-GEOD-36194_GSM884401,58.0,female,cerebellum
+699,E-GEOD-36194_GSM884411,17.0,male,cerebellum
+700,E-GEOD-36194_GSM884449,45.0,male,cerebellum
+701,E-GEOD-36194_GSM884523,11.0,male,cerebellum
+702,E-GEOD-36194_GSM884511,95.0,female,cerebellum
+703,E-GEOD-36194_GSM401751,92.0,female,frontal cortex
+704,E-GEOD-36194_GSM884405,16.0,female,cerebellum
+705,E-GEOD-36194_GSM401730,20.0,male,frontal cortex
+706,E-GEOD-36194_GSM884474,19.0,female,cerebellum
+707,E-GEOD-36194_GSM401736,48.0,male,frontal cortex
+708,E-GEOD-36194_GSM401715,49.0,female,frontal cortex
+709,E-GEOD-36194_GSM401787,67.0,male,frontal cortex
+710,E-GEOD-36194_GSM884532,81.0,male,cerebellum
+711,E-GEOD-36194_GSM884422,16.0,male,cerebellum
+712,E-GEOD-36194_GSM884515,19.0,female,cerebellum
+713,E-GEOD-36194_GSM401744,47.0,female,frontal cortex
+714,E-GEOD-36194_GSM884555,86.0,male,cerebellum
+715,E-GEOD-36194_GSM401790,27.0,female,frontal cortex
+716,E-GEOD-36194_GSM401774,89.0,male,frontal cortex
+717,E-GEOD-36194_GSM884559,83.0,male,cerebellum
+718,E-GEOD-36194_GSM884456,45.0,male,cerebellum
+719,E-GEOD-36194_GSM884491,52.0,male,cerebellum
+720,E-GEOD-36194_GSM884485,44.0,female,cerebellum
+721,E-GEOD-36194_GSM884471,12.0,female,cerebellum
+722,E-GEOD-36194_GSM884489,91.0,male,cerebellum
+723,E-GEOD-36194_GSM401723,17.0,male,frontal cortex
+724,E-GEOD-36194_GSM884461,50.0,male,cerebellum
+725,E-GEOD-36194_GSM884564,83.0,male,cerebellum
+726,E-GEOD-36194_GSM884426,44.0,male,cerebellum
+727,E-GEOD-36194_GSM884529,53.0,male,cerebellum
+728,E-GEOD-36194_GSM884388,42.0,male,cerebellum
+729,E-GEOD-36194_GSM401747,96.0,female,frontal cortex
+730,E-GEOD-36194_GSM884427,19.0,male,cerebellum
+731,E-GEOD-36194_GSM884459,12.0,male,cerebellum
+732,E-GEOD-36194_GSM884567,78.0,male,cerebellum
+733,E-GEOD-36194_GSM401767,48.0,male,frontal cortex
+734,E-GEOD-36194_GSM401754,82.0,male,frontal cortex
+735,E-GEOD-36194_GSM884538,88.0,female,cerebellum
+736,E-GEOD-36194_GSM401729,32.0,male,frontal cortex
+737,E-GEOD-36194_GSM884418,91.0,male,cerebellum
+738,E-GEOD-36194_GSM884470,25.0,female,cerebellum
+739,E-GEOD-36194_GSM884450,15.0,male,cerebellum
+740,E-GEOD-36194_GSM401716,16.0,male,frontal cortex
+741,E-GEOD-36194_GSM401781,72.0,female,frontal cortex
+742,E-GEOD-36194_GSM884395,102.0,female,cerebellum
+743,E-GEOD-36194_GSM884487,97.0,male,cerebellum
+744,E-GEOD-36194_GSM884541,92.0,male,cerebellum
+745,E-GEOD-36194_GSM884397,79.0,male,cerebellum
+746,E-GEOD-36194_GSM884505,32.0,female,cerebellum
+747,E-GEOD-36194_GSM884389,23.0,female,cerebellum
+748,E-GEOD-36194_GSM884377,42.0,male,cerebellum
+749,E-GEOD-36194_GSM884465,86.0,male,cerebellum
+750,E-GEOD-36194_GSM884539,90.0,female,cerebellum
+751,E-GEOD-36194_GSM884551,73.0,male,cerebellum
+752,E-GEOD-36194_GSM884412,73.0,male,cerebellum
+753,E-GEOD-36194_GSM401746,79.0,male,frontal cortex
+754,E-GEOD-36194_GSM884466,80.0,male,cerebellum
+755,E-GEOD-36194_GSM884495,42.0,male,cerebellum
+756,E-GEOD-36194_GSM401766,25.0,male,frontal cortex
+757,E-GEOD-36194_GSM884522,18.0,male,cerebellum
+758,E-GEOD-36194_GSM884501,19.0,male,cerebellum
+759,E-GEOD-36194_GSM401737,40.0,male,frontal cortex
+760,E-GEOD-36194_GSM401757,86.0,male,frontal cortex
+761,E-GEOD-36194_GSM884420,68.0,male,cerebellum
+762,E-GEOD-36194_GSM884504,20.0,male,cerebellum
+763,E-GEOD-36194_GSM884509,71.0,male,cerebellum
+764,E-GEOD-36194_GSM884415,90.0,female,cerebellum
+765,E-GEOD-36194_GSM884464,89.0,female,cerebellum
+766,E-GEOD-36194_GSM884386,51.0,male,cerebellum
+767,E-GEOD-36194_GSM401791,26.0,male,frontal cortex
+768,E-GEOD-36194_GSM884384,21.0,male,cerebellum
+769,E-GEOD-36194_GSM884477,51.0,female,cerebellum
+770,E-GEOD-36194_GSM884498,25.0,female,cerebellum
+771,E-GEOD-36194_GSM401783,61.0,male,frontal cortex
+772,E-GEOD-36194_GSM884376,19.0,female,cerebellum
+773,E-GEOD-36194_GSM884392,2.0,female,cerebellum
+774,E-GEOD-36194_GSM884554,89.0,male,cerebellum
+775,E-GEOD-36194_GSM401762,48.0,male,frontal cortex
+776,E-GEOD-36194_GSM884394,95.0,female,cerebellum
+777,E-GEOD-36194_GSM884431,45.0,male,cerebellum
+778,E-GEOD-36194_GSM884558,78.0,female,cerebellum
+779,E-GEOD-36194_GSM401789,33.0,male,frontal cortex
+780,E-GEOD-36194_GSM884417,66.0,male,cerebellum
+781,E-GEOD-36194_GSM884481,14.0,male,cerebellum
+782,E-GEOD-36194_GSM401771,57.0,male,frontal cortex
+783,E-GEOD-36194_GSM401710,19.0,male,frontal cortex
+784,E-GEOD-36194_GSM884407,15.0,female,cerebellum
+785,E-GEOD-36194_GSM884548,89.0,male,cerebellum
+786,E-GEOD-36194_GSM884430,79.0,male,cerebellum
+787,E-GEOD-36194_GSM884457,0.0,female,cerebellum
+788,E-GEOD-36194_GSM884453,36.0,female,cerebellum
+789,E-GEOD-36194_GSM884375,24.0,female,cerebellum
+790,E-GEOD-36194_GSM884525,14.0,male,cerebellum
+791,E-GEOD-36194_GSM884493,14.0,male,cerebellum
+792,E-GEOD-36194_GSM401778,43.0,male,frontal cortex
+793,E-GEOD-36194_GSM884448,13.0,male,cerebellum
+794,E-GEOD-36194_GSM884503,2.0,female,cerebellum
+795,E-GEOD-36194_GSM401738,23.0,male,frontal cortex
+796,E-GEOD-36194_GSM401725,93.0,female,frontal cortex
+797,E-GEOD-36194_GSM884438,42.0,male,cerebellum
+798,E-GEOD-36194_GSM884408,16.0,male,cerebellum
+799,E-GEOD-36194_GSM884540,81.0,male,cerebellum
+800,E-GEOD-36194_GSM884530,49.0,male,cerebellum
+801,E-GEOD-36194_GSM401741,84.0,male,frontal cortex
+802,E-GEOD-36194_GSM884550,82.0,male,cerebellum
+803,E-GEOD-36194_GSM401760,48.0,male,frontal cortex
+804,E-GEOD-36194_GSM884486,48.0,female,cerebellum
+805,E-GEOD-36194_GSM884421,63.0,male,cerebellum
+806,E-GEOD-36194_GSM884437,49.0,male,cerebellum
+807,E-GEOD-36194_GSM884452,4.0,male,cerebellum
+808,E-GEOD-36194_GSM401745,87.0,male,frontal cortex
+809,E-GEOD-36194_GSM884482,17.0,female,cerebellum
+810,E-GEOD-36194_GSM884536,87.0,female,cerebellum
+811,E-GEOD-36194_GSM884387,31.0,male,cerebellum
+812,E-GEOD-36194_GSM884469,46.0,male,cerebellum
+813,E-GEOD-36194_GSM884442,85.0,male,cerebellum
+814,E-GEOD-36194_GSM884374,14.0,male,cerebellum
+815,E-GEOD-36194_GSM884513,91.0,female,cerebellum
+816,E-GEOD-36194_GSM884446,75.0,female,cerebellum
+817,E-GEOD-36194_GSM884521,61.0,male,cerebellum
+818,E-GEOD-36194_GSM884400,2.0,female,cerebellum
+819,E-GEOD-36194_GSM884424,21.0,male,cerebellum
+820,E-GEOD-36194_GSM401748,95.0,male,frontal cortex
+821,E-GEOD-36194_GSM884409,4.0,male,cerebellum
+822,E-GEOD-36194_GSM884402,44.0,female,cerebellum
+823,E-GEOD-36194_GSM884497,35.0,male,cerebellum
+824,E-GEOD-36194_GSM401770,90.0,female,frontal cortex
+825,E-GEOD-36194_GSM884566,81.0,female,cerebellum
+826,E-GEOD-36194_GSM401740,39.0,female,frontal cortex
+827,E-GEOD-36194_GSM884467,11.0,male,cerebellum
+828,E-GEOD-36194_GSM884399,54.0,male,cerebellum
+829,E-GEOD-36194_GSM884506,37.0,male,cerebellum
+830,E-GEOD-36194_GSM884537,78.0,female,cerebellum
+831,E-GEOD-36194_GSM884520,61.0,male,cerebellum
+832,E-GEOD-36194_GSM884549,82.0,male,cerebellum
+833,E-GEOD-36194_GSM884378,4.0,male,cerebellum
+834,E-GEOD-36194_GSM401720,37.0,male,frontal cortex
+835,E-GEOD-36194_GSM884552,82.0,female,cerebellum
+836,E-GEOD-36194_GSM401786,26.0,female,frontal cortex
+837,E-GEOD-36194_GSM884414,16.0,female,cerebellum
+838,E-GEOD-36194_GSM884526,18.0,male,cerebellum
+839,E-GEOD-36194_GSM884413,45.0,male,cerebellum
+840,E-GEOD-36194_GSM884458,36.0,male,cerebellum
+841,E-GEOD-36194_GSM884445,59.0,female,cerebellum
+842,E-GEOD-36194_GSM884425,76.0,male,cerebellum
+843,E-GEOD-36194_GSM401753,92.0,female,frontal cortex
+844,E-GEOD-36194_GSM884496,16.0,female,cerebellum
+845,E-GEOD-36194_GSM884419,87.0,female,cerebellum
+846,E-GEOD-36194_GSM884544,91.0,male,cerebellum
+847,E-GEOD-36194_GSM884462,50.0,female,cerebellum
+848,E-GEOD-36194_GSM401755,96.0,male,frontal cortex
+849,E-GEOD-36194_GSM884432,8.0,male,cerebellum
+850,E-GEOD-36194_GSM884492,19.0,male,cerebellum
+851,E-GEOD-36194_GSM884435,48.0,male,cerebellum
+852,E-GEOD-36194_GSM884488,91.0,female,cerebellum
+853,E-GEOD-36194_GSM884441,94.0,female,cerebellum
+854,E-GEOD-36194_GSM884379,24.0,male,cerebellum
+855,E-GEOD-36194_GSM884472,17.0,male,cerebellum
+856,E-GEOD-36194_GSM884383,28.0,male,cerebellum
+857,E-GEOD-36194_GSM884398,30.0,male,cerebellum
+858,E-GEOD-36194_GSM884507,57.0,female,cerebellum
+859,E-GEOD-36194_GSM884542,95.0,male,cerebellum
+860,E-GEOD-36194_GSM884508,1.0,female,cerebellum
+861,E-GEOD-36194_GSM401714,53.0,male,frontal cortex
+862,E-GEOD-36194_GSM884531,15.0,male,cerebellum
+863,E-GEOD-36194_GSM401764,88.0,male,frontal cortex
+864,E-GEOD-36194_GSM884484,13.0,male,cerebellum
+865,E-GEOD-36194_GSM884560,87.0,male,cerebellum
+866,E-GEOD-36194_GSM884475,18.0,female,cerebellum
+867,E-GEOD-36194_GSM884396,70.0,male,cerebellum
+868,E-GEOD-36194_GSM401765,39.0,female,frontal cortex
+869,E-GEOD-36194_GSM401719,39.0,female,frontal cortex
+870,E-GEOD-36194_GSM401727,48.0,female,frontal cortex
+871,E-GEOD-36194_GSM401743,82.0,male,frontal cortex
+872,E-GEOD-36194_GSM401717,57.0,male,frontal cortex
+873,E-GEOD-36194_GSM884382,40.0,female,cerebellum
+874,E-GEOD-36194_GSM401758,86.0,male,frontal cortex
+875,E-GEOD-36194_GSM401731,20.0,male,frontal cortex
+876,E-GEOD-36194_GSM884543,83.0,female,cerebellum
+877,E-GEOD-36194_GSM884563,82.0,male,cerebellum
+878,E-GEOD-36194_GSM884553,88.0,female,cerebellum
+879,E-GEOD-36194_GSM884562,78.0,male,cerebellum
+880,E-GEOD-36194_GSM884500,22.0,male,cerebellum
+881,E-GEOD-36194_GSM401722,20.0,female,frontal cortex
+882,E-GEOD-36194_GSM884385,38.0,female,cerebellum
+883,E-GEOD-36194_GSM884443,5.0,male,cerebellum
+884,E-GEOD-36194_GSM884429,15.0,male,cerebellum
+885,E-GEOD-36194_GSM401742,83.0,male,frontal cortex
+886,E-GEOD-36194_GSM884534,75.0,female,cerebellum
+887,E-GEOD-36194_GSM884547,73.0,male,cerebellum
+888,E-GEOD-36194_GSM884528,82.0,male,cerebellum
+889,E-GEOD-36194_GSM884416,38.0,male,cerebellum
+890,E-GEOD-36194_GSM401718,42.0,male,frontal cortex
+891,E-GEOD-36194_GSM884447,56.0,male,cerebellum
+892,E-GEOD-36194_GSM884460,48.0,male,cerebellum
+893,E-GEOD-36194_GSM401711,38.0,female,frontal cortex
+894,E-GEOD-36194_GSM884444,17.0,male,cerebellum
+895,E-GEOD-36194_GSM401732,90.0,female,frontal cortex
+896,E-GEOD-36194_GSM884499,37.0,male,cerebellum
+897,E-GEOD-36194_GSM884380,32.0,male,cerebellum
+898,E-GEOD-36194_GSM884406,38.0,male,cerebellum
+899,E-GEOD-36194_GSM884390,17.0,male,cerebellum
+900,E-GEOD-36194_GSM884476,36.0,male,cerebellum
+901,E-GEOD-36194_GSM401784,40.0,male,frontal cortex
+902,E-GEOD-36194_GSM884454,52.0,male,cerebellum
+903,E-GEOD-36194_GSM884535,84.0,male,cerebellum
+904,E-GEOD-36194_GSM401759,89.0,male,frontal cortex
+905,E-GEOD-36194_GSM401734,95.0,female,frontal cortex
+906,E-GEOD-36194_GSM401721,41.0,male,frontal cortex
+907,E-GEOD-36194_GSM884391,77.0,female,cerebellum
+908,E-GEOD-36194_GSM401788,31.0,female,frontal cortex
+909,E-GEOD-36194_GSM884478,1.0,male,cerebellum
+910,E-GEOD-36194_GSM884545,80.0,male,cerebellum
+911,E-GEOD-36194_GSM884479,27.0,male,cerebellum
+912,E-GEOD-36194_GSM884423,50.0,female,cerebellum
+913,E-GEOD-36194_GSM884439,78.0,male,cerebellum
+914,E-GEOD-36194_GSM884473,35.0,male,cerebellum
+915,E-GEOD-36194_GSM401728,22.0,male,frontal cortex
+916,E-GEOD-36194_GSM401763,92.0,male,frontal cortex
+917,E-GEOD-36194_GSM884428,15.0,female,cerebellum
+918,E-GEOD-36194_GSM401709,40.0,female,frontal cortex
+919,E-GEOD-36194_GSM884393,17.0,female,cerebellum
+920,E-GEOD-36194_GSM884561,85.0,male,cerebellum
+921,E-GEOD-36194_GSM401785,22.0,male,frontal cortex
+922,E-GEOD-36194_GSM884517,52.0,male,cerebellum
+923,E-GEOD-36194_GSM884546,82.0,female,cerebellum
+924,E-GEOD-36194_GSM884480,47.0,male,cerebellum
+925,E-GEOD-36194_GSM401775,55.0,male,frontal cortex
+926,E-GEOD-36194_GSM884463,87.0,female,cerebellum
+927,E-GEOD-36194_GSM884502,36.0,male,cerebellum
+928,E-GEOD-36194_GSM401777,24.0,male,frontal cortex
+929,E-GEOD-36194_GSM401713,73.0,male,frontal cortex
+930,E-GEOD-36194_GSM401782,43.0,male,frontal cortex
+931,E-GEOD-36194_GSM401761,27.0,male,frontal cortex
+932,E-GEOD-36194_GSM884468,19.0,male,cerebellum
+933,E-GEOD-36194_GSM884510,1.0,male,cerebellum
+934,E-GEOD-36194_GSM401768,42.0,female,frontal cortex
+935,E-GEOD-36194_GSM401750,42.0,male,frontal cortex
+936,E-GEOD-36194_GSM884483,33.0,female,cerebellum
+937,E-GEOD-36194_GSM884434,55.0,male,cerebellum
+938,E-GEOD-36194_GSM884404,86.0,female,cerebellum
+939,E-GEOD-36194_GSM884410,16.0,female,cerebellum
+940,E-GEOD-36194_GSM884514,90.0,male,cerebellum
+941,E-GEOD-36194_GSM401756,85.0,female,frontal cortex
+942,E-GEOD-36194_GSM401769,58.0,male,frontal cortex
+943,E-GEOD-36194_GSM401752,101.0,female,frontal cortex
+944,E-GEOD-36194_GSM884533,76.0,female,cerebellum
+945,E-GEOD-36194_GSM884556,86.0,male,cerebellum
+946,E-GEOD-36194_GSM884436,22.0,male,cerebellum
+947,E-GEOD-36194_GSM884433,16.0,male,cerebellum
+948,E-GEOD-36194_GSM401735,47.0,female,frontal cortex
+949,E-GEOD-36194_GSM884455,18.0,female,cerebellum
+950,E-GEOD-36194_GSM884516,38.0,male,cerebellum
+951,E-GEOD-36194_GSM401712,18.0,female,frontal cortex
+952,E-GEOD-36194_GSM884440,91.0,male,cerebellum
+953,E-GEOD-36194_GSM401779,18.0,male,frontal cortex
+954,E-GEOD-36194_GSM884512,91.0,female,cerebellum

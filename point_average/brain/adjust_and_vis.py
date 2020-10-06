@@ -83,14 +83,14 @@ def vis_age_distr(age_df, age_points):
 
     #Plot cutoffs
     fig,ax = plt.subplots(figsize=(9/2.54, 6/2.54))
-    y=0.03/len(age_points)
+    y=0.02/len(age_points)
     sns.distplot(ages,color='grey')
     age=0
     for i in range(len(age_points)):
         agesel = ages[np.array(age_points[i,:],dtype='int32')]
         plt.plot([min(agesel),max(agesel)],[y,y],alpha=0.5, color='royalblue',linewidth=1)
         plt.scatter(age,y,color='k',marker='|',s=1)
-        y+=0.03/len(age_points)
+        y+=0.02/len(age_points)
         age+=1
 
 
@@ -150,7 +150,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive or neg in sel
     pos_neg_sel = []
     #Loop through the significant markers
-    norm=False
+    norm=True
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         if norm == True:
@@ -416,7 +416,7 @@ outdir = args.outdir[0]
 vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
 vis_age_distr(age_df, age_points)
-pdb.set_trace()
+
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
 #Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)

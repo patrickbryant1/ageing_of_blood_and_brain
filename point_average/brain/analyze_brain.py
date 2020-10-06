@@ -17,6 +17,7 @@ from scipy.stats import pearsonr
 from scipy.stats import ttest_ind
 from scipy.interpolate import Rbf #Radian basis function
 
+from sklearn.metrics import mutual_info_score
 from collections import Counter
 import pdb
 
@@ -66,6 +67,34 @@ def get_ages(joined_betas, sample_sheet1575, sample_sheet36194):
             else:
                 pdb.set_trace()
     return sample_ages, sample_sexes, sample_tissues
+
+def clean_outliers(X, outdir, tissue):
+    '''Remove the outlier samples by investigating the entropy btw the mean beta value distribution
+    and each sample's beta value distribution
+    '''
+
+    #Calculate KL-divergence
+    entropies = []
+    mean_beta_distr = np.average(X, axis = 1)
+    for i in range(X.shape[1]):
+        entropies.append(mutual_info_score(mean_beta_distr, X[:,i]))
+    entropies = np.array(entropies)
+    #Plot
+    sns.distplot(entropies)
+    plt.savefig(outdir+tissue+'_entropies.png', format='png')
+    plt.close()
+    #Plot betas, color in deviations
+    dev_samples = np.where(entropies<(np.mean(entropies)-(np.std(entropies)*3)))[0] #select all 3 stds away
+    for i in range(X.shape[1]):
+        if i in dev_samples:
+            color = 'r'
+        else:
+            color = 'b'
+        sns.distplot(X[:,i], color = color, hist = False, kde_kws={"lw": 1},)
+    plt.title('Beta values colored by mutual information to mean.\nblue=kept|red=removed')
+    plt.savefig(outdir+tissue+'_betaplot.png', format='png', dpi=300)
+
+    return np.where(entropies>=(np.mean(entropies)-(np.std(entropies)*3)))[0]
 
 def get_point_indices(ages):
 
@@ -136,6 +165,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     '''
 
 
+
     #Merge on probe id
     merged = pd.merge(joined_betas, gene_annotations, left_on='Reporter Identifier', right_on='Name',how='left')
     #Check how many are zeros (unquantified, beta can't be 0)
@@ -173,9 +203,17 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     for tissue in [ 'cerebellum','frontal cortex']:
         #Get frontal cortex ages
         tissue_indices = age_df[age_df['Tissue']==tissue].index
-        tissue_ages = ages[tissue_indices]
-        print(tissue, len(tissue_indices),'samples')
 
+        print(tissue, len(tissue_indices),'samples')
+        #Get tissue marker values
+        X_tissue = X[:,tissue_indices]
+        #Clean outliers
+        remain_tissue_indices = clean_outliers(X_tissue, outdir, tissue)
+        tissue_indices = tissue_indices[remain_tissue_indices]
+        #Get cleaned samples
+        X_tissue = X[:,tissue_indices]
+        #Get tissue ages
+        tissue_ages = ages[tissue_indices]
         #Save the tissue ages
         age_df.loc[tissue_indices].to_csv(outdir+tissue+'_ages.csv')
 
@@ -184,8 +222,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         #Save point_indices
         np.save(outdir+tissue+'_age_points.npy',np.array(point_indices))
 
-        #Get tissue marker values
-        X_tissue = X[:,tissue_indices]
+        pdb.set_trace()
         #Save X
         np.save(outdir+tissue+'_marker_values.npy',X_tissue)
         #Min and max age
