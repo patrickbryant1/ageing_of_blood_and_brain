@@ -36,19 +36,24 @@ def get_ages(joined_betas, sample_sheet1575, sample_sheet36194):
     sample_names = joined_betas.columns[2:]
     sample_ages = []
     sample_sexes = []
+    sample_tissues = []
     for name in sample_names:
         sheet, id = name.split('_')
         if sheet=='E-GEOD-36194':
             sample_sheet = sample_sheet36194
             agelabel='Characteristics[age (y)]'
             sexlabel='Characteristics[sex]'
+            tissue_label='Characteristics[organism part]'
         else:
             sample_sheet = sample_sheet1575
             agelabel='Characteristics[age]'
             sexlabel='Characteristics[gender]'
+            tissue_label='Characteristics[tissue]'
 
         #Save sex
         sample_sexes.append(sample_sheet[sample_sheet['Source Name']==id+' 1'][sexlabel].values[0])
+        #Save tissue type
+        sample_tissues.append(sample_sheet[sample_sheet['Source Name']==id+' 1'][tissue_label].values[0])
         #Save age
         try:
             sample_ages.append(float(sample_sheet[sample_sheet['Source Name']==id+' 1'][agelabel].values[0]))
@@ -58,7 +63,7 @@ def get_ages(joined_betas, sample_sheet1575, sample_sheet36194):
                 sample_ages.append(90.0)
             else:
                 pdb.set_trace()
-    return sample_ages, sample_sexes
+    return sample_ages, sample_sexes, sample_tissues
 
 def get_point_indices(ages):
 
@@ -135,7 +140,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     zeros = (merged[merged.columns[2:-3]] == 0).astype(int).sum(axis=1)
     zero_indices = np.where(zeros<10)
     #Get ages
-    ages, sexes = get_ages(joined_betas, sample_sheet1575, sample_sheet36194)
+    ages, sexes, sample_tissues = get_ages(joined_betas, sample_sheet1575, sample_sheet36194)
 
     #Round ages
     ages = np.round(ages)
@@ -144,7 +149,8 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     age_df = pd.DataFrame()
     age_df['Sample'] = joined_betas.columns[2:]
     age_df['Age'] = ages
-    pdb.set_trace()
+    age_df['Sex'] = sexes
+    age_df['Tissue'] = sample_tissues
     age_df.to_csv(outdir+'ages.csv')
 
     #Get point indices

@@ -62,17 +62,15 @@ def vis_pvals(comparison_df):
     plt.savefig(outdir+'pval_distribution.png', format='png', dpi=300)
     plt.close()
 
-def vis_age_distr(ages, age_points):
+def vis_age_distr(age_df, age_points):
     '''Visualize the distribution of ages and the age points
     '''
     #Merge dfs
-    ages['Sample'] = ages['Sample']+ ' 1'
-    merged = pd.merge(ages, sample_sheet, left_on='Sample', right_on = 'Source Name', how='left')
-    ages = np.array(ages['Age'])
+    ages = np.array(age_df['Age'])
     fig,ax = plt.subplots(figsize=(9/2.54, 6/2.54))
     sns.distplot(ages,color='grey', label='All')
-    sns.distplot(merged[merged['Characteristics [sex]']=='female']['Age'],color='darkred', hist=False,label='Female')
-    sns.distplot(merged[merged['Characteristics [sex]']=='male']['Age'], color='royalblue', hist=False,label='Male')
+    sns.distplot(age_df[age_df['Sex']=='female']['Age'],color='darkred', hist=False,label='Female')
+    sns.distplot(age_df[age_df['Sex']=='male']['Age'], color='royalblue', hist=False,label='Male')
     plt.title('Age distribution')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -87,7 +85,7 @@ def vis_age_distr(ages, age_points):
     fig,ax = plt.subplots(figsize=(9/2.54, 6/2.54))
     y=0.03/len(age_points)
     sns.distplot(ages,color='grey')
-    age=19
+    age=0
     for i in range(len(age_points)):
         agesel = ages[np.array(age_points[i,:],dtype='int32')]
         plt.plot([min(agesel),max(agesel)],[y,y],alpha=0.5, color='royalblue',linewidth=1)
@@ -180,13 +178,13 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
+        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
 
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
     print('Positively correlated markers:', len(pos_sel_ra))
     pos_sel_marker_values = np.array(pos_sel_marker_values)
-    ax1.plot(np.arange(19,102),np.average(pos_sel_ra,axis=0),color='k', linewidth=1)
+    ax1.plot(np.arange(0,103),np.average(pos_sel_ra,axis=0),color='k', linewidth=1)
     ax1.scatter(ages,np.average(pos_sel_marker_values,axis=0),color='k',s=0.1)
     ax1.set_title('Positive running averages')
     ax1.spines['top'].set_visible(False)
@@ -202,12 +200,12 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Negative
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='lightcoral', linewidth=0.5,alpha=0.4)
+        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.5,alpha=0.4)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
     neg_sel_marker_values = np.array(neg_sel_marker_values)
-    ax1.plot(np.arange(19,102),np.average(neg_sel_ra,axis=0),color='k', linewidth=1)
+    ax1.plot(np.arange(0,103),np.average(neg_sel_ra,axis=0),color='k', linewidth=1)
     ax1.scatter(ages,np.average(neg_sel_marker_values,axis=0),color='k',s=0.1)
     ax1.set_title('Negative running averages')
     ax1.spines['top'].set_visible(False)
@@ -223,12 +221,12 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
 
     #Plot total gradients
     fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    ax2.plot(np.arange(19,102),np.average(np.array(pos_sel_gradients),axis=0),color='royalblue', linewidth=1)
-    ax2.plot(np.arange(19,102),np.average(np.array(neg_sel_gradients),axis=0),color='lightcoral', linewidth=1)
+    ax2.plot(np.arange(0,103),np.average(np.array(pos_sel_gradients),axis=0),color='royalblue', linewidth=1)
+    ax2.plot(np.arange(0,103),np.average(np.array(neg_sel_gradients),axis=0),color='lightcoral', linewidth=1)
     neg_sm = savgol_filter(np.average(np.array(neg_sel_gradients),axis=0),window_length=21,polyorder=2)
     pos_sm = savgol_filter(np.average(np.array(pos_sel_gradients),axis=0),window_length=21,polyorder=2)
-    ax2.plot(np.arange(19,102),neg_sm,color='maroon', linewidth=1, label = 'Negative')
-    ax2.plot(np.arange(19,102),pos_sm,color='midnightblue', linewidth=1, label = 'Positive')
+    ax2.plot(np.arange(0,103),neg_sm,color='maroon', linewidth=1, label = 'Negative')
+    ax2.plot(np.arange(0,103),pos_sm,color='midnightblue', linewidth=1, label = 'Positive')
     ax2.set_title('Gradients')
     plt.legend()
     ax2.spines['top'].set_visible(False)
@@ -313,7 +311,7 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         for i in range(len(multi_markers)):
             row = multi_markers.loc[i]
             index = row['Unnamed: 0_x']
-            plt.plot(np.arange(19,102),running_averages[index,:],color = colors[i], linewidth=1,label=row['Reporter Identifier'])
+            plt.plot(np.arange(0,103),running_averages[index,:],color = colors[i], linewidth=1,label=row['Reporter Identifier'])
             plt.scatter(ages, marker_values[index,:], color=colors[i],s=0.1)
 
         #Format plot
@@ -406,7 +404,7 @@ gene_annotations = pd.read_csv(args.gene_annotations[0],low_memory=False)
 running_averages = np.load(args.running_averages[0], allow_pickle=True)
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
 marker_values = np.load(args.marker_values[0], allow_pickle=True)
-ages = pd.read_csv(args.ages[0])
+age_df = pd.read_csv(args.ages[0])
 age_points = np.load(args.age_points[0],allow_pickle=True)
 sample_sheet36194 = pd.read_csv(args.sample_sheet36194[0], sep = '\t')
 sample_sheet1575 = pd.read_csv(args.sample_sheet1575[0], sep = '\t')
@@ -417,7 +415,7 @@ outdir = args.outdir[0]
 #Visualize pvals
 vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(ages, age_points, sample_sheet)
+vis_age_distr(age_df, age_points)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
@@ -430,7 +428,7 @@ print(len(sel),'selected markers out of', len(max_fold_change_df))
 ###NOTE!!! This resets the index!!!
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
-
+pdb.set_trace()
 #Calculate derivatives
 sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
