@@ -33,7 +33,7 @@ parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'P
 def get_ages(joined_betas, sample_sheet1575, sample_sheet36194):
     '''Get the age for each participant
     '''
-    sample_names = joined_betas.columns[4:]
+    sample_names = joined_betas.columns[2:]
     sample_ages = []
 
     for name in sample_names:
@@ -56,6 +56,7 @@ def get_ages(joined_betas, sample_sheet1575, sample_sheet36194):
 
 def get_point_indices(ages):
 
+
     #Get unique ages
     unique_ages = np.unique(ages)
     unique_ages = np.sort(unique_ages)
@@ -69,7 +70,7 @@ def get_point_indices(ages):
         indices_per_age.append(np.where(ages==unique_ages[i])[0])
 
 
-    #Get 5% of points for each year
+    #Get 10% of points for each year
     mina = min(unique_ages)
     maxa = max(unique_ages)
     point_indices = [] #save point indices
@@ -123,13 +124,15 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
 
 
     #Merge on probe id
-    merged = pd.merge(joined_betas, gene_annotations, left_on='Reporter Identifier', right_on='Name')
+    merged = pd.merge(joined_betas, gene_annotations, left_on='Reporter Identifier', right_on='Name',how='left')
     #Check how many are zeros (unquantified, beta can't be 0)
-    zeros = (merged[merged.columns[2:-34]] == 0).astype(int).sum(axis=1)
+    zeros = (merged[merged.columns[2:-3]] == 0).astype(int).sum(axis=1)
     zero_indices = np.where(zeros<10)
     #Get ages
     ages = get_ages(joined_betas, sample_sheet1575, sample_sheet36194)
-    pdb.set_trace()
+    #Round ages
+    ages = np.round(ages)
+
     #Save ages
     age_df = pd.DataFrame()
     age_df['Sample'] = joined_betas.columns[2:]
@@ -147,9 +150,9 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
 
 
     #Methylation values
-    X = np.array(merged[merged.columns[2:-34]])
+    X = np.array(merged[merged.columns[2:-3]])
     #Check how many are zeros (unquantified, beta can't be 0)
-    print(np.round(100*X[X==0].shape[0]/(X.shape[0]*X.shape[1]),2), '% zeros')
+    print(np.round(100*X[X==0].shape[0]/(X.shape[0]*X.shape[1]),3), '% zeros')
     #Take all samples with less than 10 zeros
     X = X[zero_indices,:][0]
 
@@ -164,6 +167,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     running_averages = np.zeros((X.shape[0],len(point_ages)))
     max_fold_changes = np.zeros(X.shape[0])
     max_fold_change_pvals = np.zeros(X.shape[0])
+    pdb.set_trace()
     #Calculate running point average
     for xi in range(len(X)):
         if xi%1000==0: #Print if congruent with 1000
@@ -228,6 +232,7 @@ np.random.seed(42) #Answer to everything
 args = parser.parse_args()
 gene_annotations = pd.read_csv(args.gene_annotations[0],low_memory=False)
 joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
+joined_betas = joined_betas.fillna(0) #Fill nans with 0
 print('Read betas')
 sample_sheet36194 = pd.read_csv(args.sample_sheet36194[0], sep = '\t')
 sample_sheet1575 = pd.read_csv(args.sample_sheet1575[0], sep = '\t')
