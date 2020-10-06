@@ -53,7 +53,7 @@ def comb_a_b(a,b):
     a_fac = striling_aprroximation(a)
     a_b_fac = striling_aprroximation(a-b)
     b_fac = striling_aprroximation(b)
-    pdb.set_trace()
+
     return a_fac/(a_b_fac*b_fac)
 
 def hypergeometric_pmf(i,n,D,N,C_N_n):
