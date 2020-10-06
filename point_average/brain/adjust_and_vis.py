@@ -137,6 +137,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     gradients = np.zeros((len(sel),running_averages.shape[1])) #Save gradients
     max_grad_diff = np.zeros(len(sel))
     sel_indices = np.array(sel['Unnamed: 0_x']) #Indices
+
     #Save the positive and neg corr in different lists
     pos_sel_ra = []
     pos_sel_marker_values = []
@@ -149,7 +150,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive or neg in sel
     pos_neg_sel = []
     #Loop through the significant markers
-    norm=True
+    norm=False
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         if norm == True:
@@ -173,12 +174,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
             pos_neg_sel.append('neg')
 
 
-
     #Plot running averages with pos and neg gradients
     #Positive
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
+        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.1,alpha=0.2)
 
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
@@ -200,7 +200,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Negative
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.5,alpha=0.4)
+        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.1,alpha=0.2)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
@@ -413,10 +413,10 @@ correlation_results = pd.read_csv(args.correlation_results[0])
 outdir = args.outdir[0]
 
 #Visualize pvals
-vis_pvals(max_fold_change_df)
+#vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(age_df, age_points)
-
+#vis_age_distr(age_df, age_points)
+pdb.set_trace()
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
 #Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)
@@ -426,20 +426,21 @@ sel = sel[np.absolute(sel['fold_change'])>2]
 print(len(sel),'selected markers out of', len(max_fold_change_df))
 #Get the gene annotations for the selected markers
 ###NOTE!!! This resets the index!!!
-sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
-unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
-pdb.set_trace()
+
+sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Name', how='left')
+unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
+
 #Calculate derivatives
-sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values)
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
-#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'])
 
 #Analyze Hannum markers
 #Get gene annotations
 hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
 #Group hannum markers
-unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
+unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique())
 #analyze_hannum(hannum_markers,sel)
 
 #Analyze overlap with correlations

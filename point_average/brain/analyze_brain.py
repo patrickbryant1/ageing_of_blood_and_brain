@@ -16,6 +16,8 @@ from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
 from scipy.stats import ttest_ind
 from scipy.interpolate import Rbf #Radian basis function
+
+from collections import Counter
 import pdb
 
 
@@ -151,12 +153,8 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     age_df['Age'] = ages
     age_df['Sex'] = sexes
     age_df['Tissue'] = sample_tissues
+    age_df['Tissue']=age_df['Tissue'].replace('FCTX','frontal cortex') #Rename FCTX to frontal cortex
     age_df.to_csv(outdir+'ages.csv')
-
-    #Get point indices
-    point_indices = get_point_indices(ages)
-    #Save point_indices
-    np.save(outdir+'age_points.npy',np.array(point_indices))
 
     #Looking at single marker comparisons
     markers = np.array(merged['Reporter Identifier'])
@@ -171,65 +169,78 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
     X = X[zero_indices,:][0]
 
     print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
-    #Save X
-    np.save(outdir+'marker_values.npy',X)
-    #Min and max age
-    minage = min(ages)
-    maxage = max(ages)
-    point_ages = np.arange(minage,maxage+1)
-    #Save running averages
-    running_averages = np.zeros((X.shape[0],len(point_ages)))
-    max_fold_changes = np.zeros(X.shape[0])
-    max_fold_change_pvals = np.zeros(X.shape[0])
-    pdb.set_trace()
-    #Calculate running point average
-    for xi in range(len(X)):
-        if xi%1000==0: #Print if congruent with 1000
-            print(xi)
-        Xsel = X[xi,:]
-        #Go through all point indices
-        for pi in range(len(point_indices)):
-            age_points = point_indices[pi]
-            running_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
 
-        maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0]
-        mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0][0]
-        max_fold_changes[xi] = running_averages[xi,maxi]/running_averages[xi,mini]
+    for tissue in ['frontal cortex', 'cerebellum']:
+        #Get frontal cortex ages
+        tissue_indices = age_df[age_df['Tissue']==tissue].index
+        tissue_ages = ages[tissue_indices]
+        print(tissue, len(tissue_indices),'samples')
+        pdb.set_trace()
+        #Get point indices
+        point_indices = get_point_indices(tissue_ages)
+        #Save point_indices
+        np.save(outdir+tissue+'_age_points.npy',np.array(point_indices))
 
-        #Calculate p-value between samples belonging to max/min fold change
-        xmax = Xsel[np.array(point_indices[maxi],dtype='int32')]
-        xmin = Xsel[np.array(point_indices[mini],dtype='int32')]
-        stat, pval = ttest_ind(xmax,xmin)
-        max_fold_change_pvals[xi]=pval
+        #Get tissue marker values
+        X_tissue = X[:,tissue_indices]
+        #Save X
+        np.save(outdir+tissue+'_marker_values.npy',X_tissue)
+        #Min and max age
+        minage = min(tissue_ages)
+        maxage = max(tissue_ages)
+        point_ages = np.arange(minage,maxage+1)
+        #Save running averages
+        running_averages = np.zeros((X_tissue.shape[0],len(point_ages)))
+        max_fold_changes = np.zeros(X_tissue.shape[0])
+        max_fold_change_pvals = np.zeros(X_tissue.shape[0])
+        pdb.set_trace()
+        #Calculate running point average
+        for xi in range(len(X_tissue)):
+            if xi%1000==0: #Print if congruent with 1000
+                print(xi)
+            Xsel = X_tissue[xi,:]
+            #Go through all point indices
+            for pi in range(len(point_indices)):
+                age_points = point_indices[pi]
+                running_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
 
-    #Save running averages and fold changes
-    np.save(outdir+'running_averages.npy', running_averages)
-    np.save(outdir+'max_fold_changes.npy', max_fold_changes)
-    np.save(outdir+'max_fold_change_pvals.npy', max_fold_change_pvals)
-    pdb.set_trace()
-    df = pd.DataFrame()
+            maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0]
+            mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0][0]
+            max_fold_changes[xi] = running_averages[xi,maxi]/running_averages[xi,mini]
 
-    df['Reporter Identifier']=markers
-    df['p']=max_fold_change_pvals
-    df['fold_change']=max_fold_changes
-    #Save df
-    df.to_csv(outdir+'marker_max_FC_pval.csv')
+            #Calculate p-value between samples belonging to max/min fold change
+            xmax = Xsel[np.array(point_indices[maxi],dtype='int32')]
+            xmin = Xsel[np.array(point_indices[mini],dtype='int32')]
+            stat, pval = ttest_ind(xmax,xmin)
+            max_fold_change_pvals[xi]=pval
+
+        #Save running averages and fold changes
+        np.save(outdir+tissue+'_running_averages.npy', running_averages)
+        np.save(outdir+tissue+'_max_fold_changes.npy', max_fold_changes)
+        np.save(outdir+tissue+'_max_fold_change_pvals.npy', max_fold_change_pvals)
+        df = pd.DataFrame()
+
+        df['Reporter Identifier']=markers
+        df['p']=max_fold_change_pvals
+        df['fold_change']=max_fold_changes
+        #Save df
+        df.to_csv(outdir+tissue+'_marker_max_FC_pval.csv')
 
 
-    #Correlate probe values with age
-    R = np.zeros(X.shape[0])
-    p = np.zeros(X.shape[0])
-    for xi in range(X.shape[0]):
-        if xi%1000==0:
-            print(xi)
-        R[xi], p[xi] = pearsonr(X[xi,:], ages)
+        #Correlate probe values with age
+        R = np.zeros(X_tissue.shape[0])
+        p = np.zeros(X_tissue.shape[0])
+        for xi in range(X.shape[0]):
+            if xi%1000==0:
+                print(xi)
+            R[xi], p[xi] = pearsonr(X_tissue[xi,:], ages)
 
-    #Save marker-age correlations
-    corr_df = pd.DataFrame()
-    corr_df['Reporter Identifier']=markers
-    corr_df['R']=R
-    corr_df['p']=p
-    corr_df.to_csv(outdir+'correlation_results.csv')
+        #Save marker-age correlations
+        corr_df = pd.DataFrame()
+        corr_df['Reporter Identifier']=markers
+        corr_df['R']=R
+        corr_df['p']=p
+        corr_df.to_csv(outdir+tissue+'_correlation_results.csv')
 
 
 
