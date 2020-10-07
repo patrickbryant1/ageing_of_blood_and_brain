@@ -28,10 +28,10 @@ parser.add_argument('--running_averages', nargs=1, type= str, default=sys.stdin,
 parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdin, help = 'Path to marker max fold changes and pvals.')
 parser.add_argument('--marker_values', nargs=1, type= str, default=sys.stdin, help = 'Path to marker values.')
 parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Path to sample ages.')
-parser.add_argument('--age_points', nargs=1, type= str, default=sys.stdin, help = 'Path to age points.')
+parser.add_argument('--point_indices', nargs=1, type= str, default=sys.stdin, help = 'Path to age points.')
 parser.add_argument('--sample_sheet36194', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet with accession 36194.')
 parser.add_argument('--sample_sheet1575', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet with accession 1575.')
-parser.add_argument('--hannum_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to Hannum markers (71).')
+parser.add_argument('--horvath_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to horvath markers (71).')
 parser.add_argument('--correlation_results', nargs=1, type= str, default=sys.stdin, help = 'Path to correlation results.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
@@ -62,7 +62,7 @@ def vis_pvals(comparison_df):
     plt.savefig(outdir+'pval_distribution.png', format='png', dpi=300)
     plt.close()
 
-def vis_age_distr(age_df, age_points):
+def vis_age_distr(age_df, point_indices):
     '''Visualize the distribution of ages and the age points
     '''
     #Merge dfs
@@ -83,14 +83,14 @@ def vis_age_distr(age_df, age_points):
 
     #Plot cutoffs
     fig,ax = plt.subplots(figsize=(9/2.54, 6/2.54))
-    y=0.02/len(age_points)
+    y=0.02/len(point_indices)
     sns.distplot(ages,color='grey')
     age=0
-    for i in range(len(age_points)):
-        agesel = ages[np.array(age_points[i,:],dtype='int32')]
+    for i in range(len(point_indices)):
+        agesel = ages[np.array(point_indices[i,:],dtype='int32')]
         plt.plot([min(agesel),max(agesel)],[y,y],alpha=0.5, color='royalblue',linewidth=1)
         plt.scatter(age,y,color='k',marker='|',s=1)
-        y+=0.02/len(age_points)
+        y+=0.02/len(point_indices)
         age+=1
 
 
@@ -130,7 +130,7 @@ def group_genes(unique_genes):
     return unique_genes_grouped
 
 
-def calc_derivatives(sel, ages, running_averages, marker_values):
+def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
@@ -150,6 +150,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive or neg in sel
     pos_neg_sel = []
     #Loop through the significant markers
+    keep_indices = [] #keep the markers with sufficiently small std compared to the median
     norm=True
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
@@ -157,6 +158,22 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
             divider = max(marker_values[si,:])
         else:
             divider=1
+
+        #Calculate the standard deviation for the running medians
+        #Go through all point indices
+        running_std = []
+        for pi in range(len(point_indices)):
+            age_points = point_indices[pi]
+            running_std.append(np.std(marker_values[si,:][np.array(age_points,dtype='int32')]))
+
+        #Check how big the std is compared to the mean on average
+        running_std = np.array(running_std)
+        rel_std_size = running_std/running_averages[si,:]
+
+        if np.average(rel_std_size) >0.5:
+            continue
+
+        keep_indices.append(i)
         #Calculate the maximal gradient difference
         gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient without norm
         max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
@@ -178,7 +195,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.1,alpha=0.2)
+        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.3,alpha=0.5)
 
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
@@ -186,7 +203,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     pos_sel_marker_values = np.array(pos_sel_marker_values)
     ax1.plot(np.arange(0,103),np.median(pos_sel_ra,axis=0),color='k', linewidth=1)
     ax1.scatter(ages,np.median(pos_sel_marker_values,axis=0),color='k',s=0.1)
-    ax1.set_title('Positive running averages')
+    ax1.set_title('Positive running medians')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
     if norm==True:
@@ -200,14 +217,14 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Negative
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.1,alpha=0.2)
+        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.3,alpha=0.5)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
     neg_sel_marker_values = np.array(neg_sel_marker_values)
     ax1.plot(np.arange(0,103),np.median(neg_sel_ra,axis=0),color='k', linewidth=1)
     ax1.scatter(ages,np.median(neg_sel_marker_values,axis=0),color='k',s=0.1)
-    ax1.set_title('Negative running averages')
+    ax1.set_title('Negative running medians')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
     if norm==True:
@@ -257,7 +274,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     matplotlib.rc('lines', linewidth=0.5, linestyle='--')
     plt.scatter(max_grad_diff, np.log10(sel['fold_change']),s=0.1,color='cornflowerblue')
-    sns.kdeplot(max_grad_diff, np.log10(sel['fold_change']),shade_lowest =False,color="w", ax=ax)
+    #sns.kdeplot(max_grad_diff, np.log10(sel['fold_change']),shade_lowest =False,color="w", ax=ax)
     #Format plot
     plt.title('Max grad. diff. vs FC')
     ax.spines['top'].set_visible(False)
@@ -270,7 +287,8 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
 
     #Plot the top 10 gradient changes
 
-
+    #Select the keep indices
+    sel = sel.loc[keep_indices]
     #Add to sel
     sel['pos_neg_grad']=pos_neg_sel
 
@@ -325,21 +343,22 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         plt.savefig(outdir+'genes/'+gene+'.png', format='png', dpi=300)
         plt.close()
 
-def analyze_hannum(hannum_markers,sel):
-    '''Analyze which of the significant markers are used in the Hannum clock
+def analyze_horvath(horvath_markers,sel):
+    '''Analyze which of the significant markers are used in the horvath clock
     '''
-    overlap = pd.merge(hannum_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
+    overlap = pd.merge(horvath_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
+    print(len(overlap), 'of the selected markers overlap with the Horvath markers.')
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    plt.hist(hannum_markers['Coefficient'],bins=30,label='Hannum', color='cornflowerblue')
-    plt.hist(overlap['Coefficient'],bins=30,label='Running average',color='darkgreen')
+    sns.distplot(horvath_markers['Coefficient'],bins=30,label='Horvath', color='cornflowerblue')
+    sns.distplot(overlap['Coefficient'],bins=30,label='Running median',color='darkgreen')
     plt.legend()
-    plt.xlabel('Hannum coeffecient')
-    plt.ylabel('Count')
-    plt.title('Hannum markers and coefficients')
+    plt.xlabel('Horvath coeffecient')
+    plt.ylabel('Density')
+    plt.title('Horvath markers and coefficients')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.tight_layout()
-    plt.savefig(outdir+'hannum_markers.png', format='png', dpi=300)
+    plt.savefig(outdir+'horvath_markers.png', format='png', dpi=300)
     plt.close()
 
 def correlation_overlap(correlation_results, sel):
@@ -362,7 +381,7 @@ def correlation_overlap(correlation_results, sel):
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
 
     sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
-    sns.distplot(sel['R'], color='darkgreen', label='Running average')
+    sns.distplot(sel['R'], color='darkgreen', label='Running median')
     plt.xlabel('Pearson R')
     plt.ylabel('Density')
     plt.title('Marker correlations')
@@ -380,7 +399,6 @@ def reg_feature_groups(sel):
 
     pos = sel[sel['pos_neg_grad']=='pos']
     neg = sel[sel['pos_neg_grad']=='neg']
-    pdb.set_trace()
     #Plot
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     pos_counts = Counter(pos['Regulatory_Feature_Group'])
@@ -405,48 +423,50 @@ running_averages = np.load(args.running_averages[0], allow_pickle=True)
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
 marker_values = np.load(args.marker_values[0], allow_pickle=True)
 age_df = pd.read_csv(args.ages[0])
-age_points = np.load(args.age_points[0],allow_pickle=True)
+point_indices = np.load(args.point_indices[0],allow_pickle=True)
 sample_sheet36194 = pd.read_csv(args.sample_sheet36194[0], sep = '\t')
 sample_sheet1575 = pd.read_csv(args.sample_sheet1575[0], sep = '\t')
-hannum_markers = pd.read_csv(args.hannum_markers[0])
+horvath_markers = pd.read_csv(args.horvath_markers[0])
 correlation_results = pd.read_csv(args.correlation_results[0])
 outdir = args.outdir[0]
 
 #Visualize pvals
 vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(age_df, age_points)
+vis_age_distr(age_df, point_indices)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
 #Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)
 sel = max_fold_change_df[max_fold_change_df['Rejection on 0.05']==True]
 sel = sel[np.absolute(sel['fold_change'])>2]
-#Print the number selected
-print(len(sel),'selected markers out of', len(max_fold_change_df))
+
 #Get the gene annotations for the selected markers
 ###NOTE!!! This resets the index!!!
 
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Name', how='left')
-unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
-
 #Calculate derivatives
-sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values)
+sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, point_indices)
+#Print the number selected
+print(len(sel),'selected markers out of', len(max_fold_change_df))
+#Group genes
+unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
+#Get the genes regulated by multiple markers
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
-#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'])
+plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'])
 
-#Analyze Hannum markers
+#Analyze horvath markers
 #Get gene annotations
-#hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
-#Group hannum markers
-unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique())
-#analyze_hannum(hannum_markers,sel)
+horvath_markers = pd.merge(horvath_markers, gene_annotations,left_on='Marker', right_on='Name', how='left')
+#Group horvath markers
+unique_genes_grouped = group_genes(horvath_markers['UCSC_RefGene_Name'].dropna().unique())
+analyze_horvath(horvath_markers,sel)
 
 #Analyze overlap with correlations
 correlation_overlap(correlation_results, sel)
 
 #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
-reg_feature_groups(sel)
+#reg_feature_groups(sel)
 #Save sel
 sel.to_csv(outdir+'ra_sig_markers.csv')

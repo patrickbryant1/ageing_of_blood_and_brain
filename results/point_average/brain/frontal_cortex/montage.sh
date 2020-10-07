@@ -18,12 +18,12 @@ convert  neg_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" neg_ra.p
 convert  gradients.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  gradients.png
 montage pos_ra.png neg_ra.png gradients.png -tile 3x1 -geometry +2+2 Figure3.png
 
-# #Figure 4
-# convert  hannum_markers.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  hannum_markers.png
-# convert  correlations.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" correlations.png
-# montage hannum_markers.png correlations.png -tile 2x1 -geometry +2+2 Figure4.png
-#
-# #Figure 5
-# convert  ./genes/go_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  ./genes/go_ra.png
-# convert  ./genes/Hannum/go_hannum.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./genes/Hannum/go_hannum.png
-# montage ./genes/go_ra.png ./genes/Hannum/go_hannum.png -tile 1x2 -geometry +2+2 Figure5.png
+#Figure 4
+convert  horvath_markers.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  horvath_markers.png
+convert  correlations.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" correlations.png
+montage horvath_markers.png correlations.png -tile 2x1 -geometry +2+2 Figure4.png
+
+#Figure 5
+convert  ./genes/go_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  ./genes/go_ra.png
+convert  ./genes/horvath/go_horvath.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./genes/horvath/go_horvath.png
+montage ./genes/go_ra.png ./genes/horvath/go_horvath.png -tile 1x2 -geometry +2+2 Figure5.png
