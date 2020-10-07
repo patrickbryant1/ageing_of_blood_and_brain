@@ -268,12 +268,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     plt.savefig(outdir+'grad_diff_distribution.png', format='png', dpi=300)
     plt.close()
 
-
     #Plot max grad diff vs fold change
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     matplotlib.rc('lines', linewidth=0.5, linestyle='--')
     plt.scatter(max_grad_diff, np.log10(sel['fold_change']),s=0.1,color='cornflowerblue')
-    sns.kdeplot(max_grad_diff, np.log10(sel['fold_change']),shade_lowest =False,color="w", ax=ax)
+    #sns.kdeplot(max_grad_diff, np.log10(sel['fold_change']),shade_lowest =False,color="w", ax=ax)
     #Format plot
     plt.title('Max grad. diff. vs FC')
     ax.spines['top'].set_visible(False)
@@ -454,17 +453,17 @@ unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique()) #
 #Get the genes regulated by multiple markers
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped,outdir)
 #Plot
-plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
 
 #Analyze Hannum markers
 #Get gene annotations
-hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
+#hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
 #Group hannum markers
 unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-analyze_hannum(hannum_markers,sel,outdir)
+#analyze_hannum(hannum_markers,sel,outdir)
 
 #Analyze overlap with correlations
-correlation_overlap(correlation_results, sel)
+#correlation_overlap(correlation_results, sel)
 
 #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
 #reg_feature_groups(sel)
