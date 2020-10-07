@@ -28,7 +28,7 @@ parser.add_argument('--running_averages', nargs=1, type= str, default=sys.stdin,
 parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdin, help = 'Path to marker max fold changes and pvals.')
 parser.add_argument('--marker_values', nargs=1, type= str, default=sys.stdin, help = 'Path to marker values.')
 parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Path to sample ages.')
-parser.add_argument('--age_points', nargs=1, type= str, default=sys.stdin, help = 'Path to age points.')
+parser.add_argument('--point_indices', nargs=1, type= str, default=sys.stdin, help = 'Path to age point indices.')
 parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet.')
 parser.add_argument('--hannum_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to Hannum markers (71).')
 parser.add_argument('--correlation_results', nargs=1, type= str, default=sys.stdin, help = 'Path to correlation results.')
@@ -61,7 +61,7 @@ def vis_pvals(comparison_df):
     plt.savefig(outdir+'pval_distribution.png', format='png', dpi=300)
     plt.close()
 
-def vis_age_distr(ages, age_points, sample_sheet):
+def vis_age_distr(ages, point_indices, sample_sheet):
     '''Visualize the distribution of ages and the age points
     '''
     #Merge dfs
@@ -84,14 +84,14 @@ def vis_age_distr(ages, age_points, sample_sheet):
 
     #Plot cutoffs
     fig,ax = plt.subplots(figsize=(9/2.54, 6/2.54))
-    y=0.03/len(age_points)
+    y=0.03/len(point_indices)
     sns.distplot(ages,color='grey')
     age=19
-    for i in range(len(age_points)):
-        agesel = ages[np.array(age_points[i,:],dtype='int32')]
+    for i in range(len(point_indices)):
+        agesel = ages[np.array(point_indices[i,:],dtype='int32')]
         plt.plot([min(agesel),max(agesel)],[y,y],alpha=0.5, color='royalblue',linewidth=1)
         plt.scatter(age,y,color='k',marker='|',s=1)
-        y+=0.03/len(age_points)
+        y+=0.03/len(point_indices)
         age+=1
 
 
@@ -131,7 +131,7 @@ def group_genes(unique_genes):
     return unique_genes_grouped
 
 
-def calc_derivatives(sel, ages, running_averages, marker_values):
+def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
@@ -150,6 +150,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive or neg in sel
     pos_neg_sel = []
     #Loop through the significant markers
+    keep_indices = [] #keep the markers with sufficiently small std compared to the median
     norm=True
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
@@ -157,6 +158,22 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
             divider = max(marker_values[si,:])
         else:
             divider=1
+
+        #Calculate the standard deviation for the running medians
+        #Go through all point indices
+        running_std = []
+        for pi in range(len(point_indices)):
+            age_points = point_indices[pi]
+            running_std.append(np.std(marker_values[si,:][np.array(age_points,dtype='int32')]))
+
+        #Check how big the std is compared to the mean on average
+        running_std = np.array(running_std)
+        rel_std_size = running_std/running_averages[si,:]
+
+        if np.average(rel_std_size) >0.5:
+            continue
+
+        keep_indices.append(i)
         #Calculate the maximal gradient difference
         gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient without norm
         max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
@@ -173,13 +190,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
             neg_sel_gradients.append(gradients[i,:])
             pos_neg_sel.append('neg')
 
-
-
     #Plot running averages with pos and neg gradients
     #Positive
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.2,alpha=0.2)
+        ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.3,alpha=0.5)
 
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
@@ -187,7 +202,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     pos_sel_marker_values = np.array(pos_sel_marker_values)
     ax1.plot(np.arange(19,102),np.median(pos_sel_ra,axis=0),color='k', linewidth=1)
     ax1.scatter(ages,np.median(pos_sel_marker_values,axis=0),color='k',s=0.1)
-    ax1.set_title('Positive running averages')
+    ax1.set_title('Positive running medians')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
     if norm==True:
@@ -197,18 +212,18 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     ax1.set_xlabel('Age')
     fig1.tight_layout()
     fig1.savefig(outdir+'pos_ra.png', format='png', dpi=300)
-
+    plt.close()
     #Negative
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='lightcoral', linewidth=0.2,alpha=0.2)
+        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='lightcoral', linewidth=0.3,alpha=0.5)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
     neg_sel_marker_values = np.array(neg_sel_marker_values)
     ax1.plot(np.arange(19,102),np.median(neg_sel_ra,axis=0),color='k', linewidth=1)
     ax1.scatter(ages,np.median(neg_sel_marker_values,axis=0),color='k',s=0.1)
-    ax1.set_title('Negative running averages')
+    ax1.set_title('Negative running medians')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
     if norm==True:
@@ -270,8 +285,8 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     plt.close()
 
     #Plot the top 10 gradient changes
-
-
+    #Select the keep indices
+    sel = sel.loc[keep_indices]
     #Add to sel
     sel['pos_neg_grad']=pos_neg_sel
 
@@ -284,7 +299,7 @@ def group_markers_by_gene(sel, unique_genes_grouped, outdir):
     multi_marker_gene_df = pd.DataFrame()
     unique_gene_file = open(outdir+'genes/unique_genes.txt','w')
     for gene_group in unique_genes_grouped:
-        unique_gene_file.write(gene_group+',')
+        unique_gene_file.write(gene_group+',\n')
         gene_df = pd.DataFrame()
         for gene in unique_genes_grouped[gene_group]:
             if type(gene) == list and len(gene)>1:
@@ -329,10 +344,12 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         plt.savefig(outdir+'genes/'+gene+'.png', format='png', dpi=300)
         plt.close()
 
-def analyze_hannum(hannum_markers,sel):
+def analyze_hannum(hannum_markers,sel,outdir):
     '''Analyze which of the significant markers are used in the Hannum clock
     '''
     overlap = pd.merge(hannum_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
+    #Save overlap
+    overlap.to_csv(outdir+'overlap_with_hannum_markers.csv')
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     plt.hist(hannum_markers['Coefficient'],bins=30,label='Hannum', color='cornflowerblue')
     plt.hist(overlap['Coefficient'],bins=30,label='Running average',color='darkgreen')
@@ -358,13 +375,12 @@ def correlation_overlap(correlation_results, sel):
 
     #Get only the sig
     sig_correlation_results =  correlation_results[correlation_results['Rejection on 0.05']==True]
-    pdb.set_trace()
+
     #See how many markers overlap
     print(len(sel[sel['Rejection on 0.05_y']==True]),'markers out of',len(sel),'were found in the correlation analysis')
 
     #Plot
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-
     sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
     sns.distplot(sel['R'], color='darkgreen', label='Running average')
     plt.xlabel('Pearson R')
@@ -409,7 +425,7 @@ running_averages = np.load(args.running_averages[0], allow_pickle=True)
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
 marker_values = np.load(args.marker_values[0], allow_pickle=True)
 ages = pd.read_csv(args.ages[0])
-age_points = np.load(args.age_points[0],allow_pickle=True)
+point_indices = np.load(args.point_indices[0],allow_pickle=True)
 sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
 hannum_markers = pd.read_csv(args.hannum_markers[0])
 correlation_results = pd.read_csv(args.correlation_results[0])
@@ -418,7 +434,7 @@ outdir = args.outdir[0]
 #Visualize pvals
 vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(ages, age_points, sample_sheet)
+vis_age_distr(ages, point_indices, sample_sheet)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
@@ -430,20 +446,22 @@ print(len(sel),'selected markers out of', len(max_fold_change_df))
 #Get the gene annotations for the selected markers
 ###NOTE!!! This resets the index!!!
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
-unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
 
 #Calculate derivatives
-sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values)
+sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices)
+#Group genes
+unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
+#Get the genes regulated by multiple markers
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped,outdir)
 #Plot
-#plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
 
 #Analyze Hannum markers
 #Get gene annotations
 hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
 #Group hannum markers
 unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-analyze_hannum(hannum_markers,sel)
+analyze_hannum(hannum_markers,sel,outdir)
 
 #Analyze overlap with correlations
 correlation_overlap(correlation_results, sel)
