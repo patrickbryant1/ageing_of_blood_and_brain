@@ -178,14 +178,14 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.1,alpha=0.1)
+        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.1,alpha=0.2)
 
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
     print('Positively correlated markers:', len(pos_sel_ra))
     pos_sel_marker_values = np.array(pos_sel_marker_values)
-    ax1.plot(np.arange(0,103),np.average(pos_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.average(pos_sel_marker_values,axis=0),color='k',s=0.1)
+    ax1.plot(np.arange(0,103),np.median(pos_sel_ra,axis=0),color='k', linewidth=1)
+    ax1.scatter(ages,np.median(pos_sel_marker_values,axis=0),color='k',s=0.1)
     ax1.set_title('Positive running averages')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
@@ -200,13 +200,13 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Negative
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.1,alpha=0.1)
+        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.1,alpha=0.2)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
     neg_sel_marker_values = np.array(neg_sel_marker_values)
-    ax1.plot(np.arange(0,103),np.average(neg_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.average(neg_sel_marker_values,axis=0),color='k',s=0.1)
+    ax1.plot(np.arange(0,103),np.median(neg_sel_ra,axis=0),color='k', linewidth=1)
+    ax1.scatter(ages,np.median(neg_sel_marker_values,axis=0),color='k',s=0.1)
     ax1.set_title('Negative running averages')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)

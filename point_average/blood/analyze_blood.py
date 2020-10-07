@@ -40,7 +40,6 @@ def get_ages(sample_sheet, sample_names, agelabel):
         try:
             sample_ages.append(float(sample_sheet[sample_sheet['Source Name']==name+' 1'][agelabel].values[0]))
         except:
-            pdb.set_trace()
             if sample_sheet[sample_sheet['Source Name']==name+' 1'][agelabel].values[0] == '>90':
                 sample_ages.append(90.0)
             else:
@@ -63,7 +62,7 @@ def get_point_indices(ages):
         indices_per_age.append(np.where(ages==unique_ages[i])[0])
 
 
-    #Get 5% of points for each year
+    #Get 10% of points for each year
     mina = min(unique_ages)
     maxa = max(unique_ages)
     point_indices = [] #save point indices
@@ -165,7 +164,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
         #Go through all point indices
         for pi in range(len(point_indices)):
             age_points = point_indices[pi]
-            running_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
+            running_averages[xi,pi]=np.median(Xsel[np.array(age_points,dtype='int32')])
 
         maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0]
         mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0][0]
@@ -181,7 +180,6 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     np.save(outdir+'running_averages.npy', running_averages)
     np.save(outdir+'max_fold_changes.npy', max_fold_changes)
     np.save(outdir+'max_fold_change_pvals.npy', max_fold_change_pvals)
-    pdb.set_trace()
     df = pd.DataFrame()
 
     df['Reporter Identifier']=markers

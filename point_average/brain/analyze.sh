@@ -17,7 +17,7 @@ AGEPOINTS=../../results/point_average/brain/cerebellum_age_points.npy
 HANNUM_MARKERS=./hannum_markers.csv
 CORRELATIONRESULTS=../../results/point_average/brain/cerebellum_correlation_results.csv
 OUTDIR=../../results/point_average/brain/cerebellum/
-#./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --age_points $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
+./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --age_points $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
 
 ###frontal_cortex
 RA='../../results/point_average/brain/frontal_cortex_running_averages.npy'
@@ -28,7 +28,7 @@ AGEPOINTS='../../results/point_average/brain/frontal_cortex_age_points.npy'
 HANNUM_MARKERS='./hannum_markers.csv'
 CORRELATIONRESULTS='../../results/point_average/brain/frontal_cortex_correlation_results.csv'
 OUTDIR=../../results/point_average/brain/frontal_cortex/
-./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --age_points $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
+#./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --age_points $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
 
 #Plot the GO
 RAGO=../../results/point_average/brain/genes/gene_chart_ra.txt

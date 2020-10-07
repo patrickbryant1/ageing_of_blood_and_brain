@@ -179,14 +179,14 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Positive
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.5,alpha=0.2)
+        ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.2,alpha=0.2)
 
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
     print('Positively correlated markers:', len(pos_sel_ra))
     pos_sel_marker_values = np.array(pos_sel_marker_values)
-    ax1.plot(np.arange(19,102),np.average(pos_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.average(pos_sel_marker_values,axis=0),color='k',s=0.1)
+    ax1.plot(np.arange(19,102),np.median(pos_sel_ra,axis=0),color='k', linewidth=1)
+    ax1.scatter(ages,np.median(pos_sel_marker_values,axis=0),color='k',s=0.1)
     ax1.set_title('Positive running averages')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
@@ -201,13 +201,13 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
     #Negative
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='lightcoral', linewidth=0.5,alpha=0.4)
+        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='lightcoral', linewidth=0.2,alpha=0.2)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
     neg_sel_marker_values = np.array(neg_sel_marker_values)
-    ax1.plot(np.arange(19,102),np.average(neg_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.average(neg_sel_marker_values,axis=0),color='k',s=0.1)
+    ax1.plot(np.arange(19,102),np.median(neg_sel_ra,axis=0),color='k', linewidth=1)
+    ax1.scatter(ages,np.median(neg_sel_marker_values,axis=0),color='k',s=0.1)
     ax1.set_title('Negative running averages')
     ax1.spines['top'].set_visible(False)
     ax1.spines['right'].set_visible(False)
@@ -222,10 +222,10 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
 
     #Plot total gradients
     fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    ax2.plot(np.arange(19,102),np.average(np.array(pos_sel_gradients),axis=0),color='royalblue', linewidth=1)
-    ax2.plot(np.arange(19,102),np.average(np.array(neg_sel_gradients),axis=0),color='lightcoral', linewidth=1)
-    neg_sm = savgol_filter(np.average(np.array(neg_sel_gradients),axis=0),window_length=21,polyorder=2)
-    pos_sm = savgol_filter(np.average(np.array(pos_sel_gradients),axis=0),window_length=21,polyorder=2)
+    ax2.plot(np.arange(19,102),np.median(np.array(pos_sel_gradients),axis=0),color='royalblue', linewidth=1)
+    ax2.plot(np.arange(19,102),np.median(np.array(neg_sel_gradients),axis=0),color='lightcoral', linewidth=1)
+    neg_sm = savgol_filter(np.median(np.array(neg_sel_gradients),axis=0),window_length=21,polyorder=2)
+    pos_sm = savgol_filter(np.median(np.array(pos_sel_gradients),axis=0),window_length=21,polyorder=2)
     ax2.plot(np.arange(19,102),neg_sm,color='maroon', linewidth=1, label = 'Negative')
     ax2.plot(np.arange(19,102),pos_sm,color='midnightblue', linewidth=1, label = 'Positive')
     ax2.set_title('Gradients')
@@ -277,12 +277,14 @@ def calc_derivatives(sel, ages, running_averages, marker_values):
 
     return sel
 
-def group_markers_by_gene(sel, unique_genes_grouped):
+def group_markers_by_gene(sel, unique_genes_grouped, outdir):
     '''Group the selected markers per gene and return the
     genes that are regulated by at least 2 markers
     '''
     multi_marker_gene_df = pd.DataFrame()
+    unique_gene_file = open(outdir+'genes/unique_genes.txt','w')
     for gene_group in unique_genes_grouped:
+        unique_gene_file.write(gene_group+',')
         gene_df = pd.DataFrame()
         for gene in unique_genes_grouped[gene_group]:
             if type(gene) == list and len(gene)>1:
@@ -294,6 +296,7 @@ def group_markers_by_gene(sel, unique_genes_grouped):
             multi_marker_gene_df = pd.concat([multi_marker_gene_df,gene_df])
             print(gene_group)
 
+    unique_gene_file.close()
     return multi_marker_gene_df
 
 
@@ -355,7 +358,7 @@ def correlation_overlap(correlation_results, sel):
 
     #Get only the sig
     sig_correlation_results =  correlation_results[correlation_results['Rejection on 0.05']==True]
-
+    pdb.set_trace()
     #See how many markers overlap
     print(len(sel[sel['Rejection on 0.05_y']==True]),'markers out of',len(sel),'were found in the correlation analysis')
 
@@ -381,7 +384,7 @@ def reg_feature_groups(sel):
 
     pos = sel[sel['pos_neg_grad']=='pos']
     neg = sel[sel['pos_neg_grad']=='neg']
-    pdb.set_trace()
+
     #Plot
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     pos_counts = Counter(pos['Regulatory_Feature_Group'])
@@ -413,9 +416,9 @@ correlation_results = pd.read_csv(args.correlation_results[0])
 outdir = args.outdir[0]
 
 #Visualize pvals
-#vis_pvals(max_fold_change_df)
+vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-#vis_age_distr(ages, age_points, sample_sheet)
+vis_age_distr(ages, age_points, sample_sheet)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
@@ -427,11 +430,11 @@ print(len(sel),'selected markers out of', len(max_fold_change_df))
 #Get the gene annotations for the selected markers
 ###NOTE!!! This resets the index!!!
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
-unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].unique()[1:]) #The first is nan
+unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
 
 #Calculate derivatives
 sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values)
-multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
+multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped,outdir)
 #Plot
 #plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
 
@@ -440,10 +443,10 @@ multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
 #Group hannum markers
 unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-#analyze_hannum(hannum_markers,sel)
+analyze_hannum(hannum_markers,sel)
 
 #Analyze overlap with correlations
-#correlation_overlap(correlation_results, sel)
+correlation_overlap(correlation_results, sel)
 
 #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
 reg_feature_groups(sel)

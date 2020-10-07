@@ -7,10 +7,10 @@ OUTDIR=../../results/point_average/blood/
 #./analyze_blood.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --outdir $OUTDIR
 
 #Adjust the pvals, select markers and and visualize
-RA=/home/pbryant/results/methylation/aging_of_blood/running_averages.npy
+RA=/home/pbryant/results/methylation/aging_of_blood/10/median/running_averages.npy
 FCDF=../../results/point_average/blood/marker_max_FC_pval.csv
-MV=/home/pbryant/results/methylation/aging_of_blood/marker_values.npy
-AGES=.../../results/point_average/blood/ages.csv
+MV=/home/pbryant/results/methylation/aging_of_blood/10/median/marker_values.npy
+AGES=../../results/point_average/blood/ages.csv
 AGEPOINTS=../../results/point_average/blood/age_points.npy
 HANNUM_MARKERS=./hannum_markers.csv
 CORRELATIONRESULTS=../../results/point_average/blood/correlation_results.csv

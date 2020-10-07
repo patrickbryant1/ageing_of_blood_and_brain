@@ -241,7 +241,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
             #Go through all point indices
             for pi in range(len(point_indices)):
                 age_points = point_indices[pi]
-                running_averages[xi,pi]=np.average(Xsel[np.array(age_points,dtype='int32')])
+                running_averages[xi,pi]=np.median(Xsel[np.array(age_points,dtype='int32')])
 
             maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0]
             mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0][0]
