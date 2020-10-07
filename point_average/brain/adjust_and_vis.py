@@ -50,7 +50,7 @@ def vis_pvals(comparison_df):
     '''Visualize the pvals
     '''
 
-    fig,ax = plt.subplots(figsize=(9/2.54, 9/2.54))
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     sns.distplot(comparison_df['p'])
     #Format plot
     plt.title('p-value distribution')

@@ -47,6 +47,35 @@ def get_ages(sample_sheet, sample_names, agelabel):
 
     return np.array(sample_ages)
 
+def clean_outliers(X, outdir, tissue):
+    '''Remove the outlier samples by investigating the entropy btw the mean beta value distribution
+    and each sample's beta value distribution
+    '''
+
+    #Calculate KL-divergence
+    entropies = []
+    mean_beta_distr = np.average(X, axis = 1)
+    for i in range(X.shape[1]):
+        entropies.append(mutual_info_score(mean_beta_distr, X[:,i]))
+    entropies = np.array(entropies)
+    #Plot
+    sns.distplot(entropies)
+    plt.savefig(outdir+tissue+'_entropies.png', format='png')
+    plt.close()
+    #Plot betas, color in deviations
+    dev_samples = np.where(entropies<(np.mean(entropies)-(np.std(entropies)*3)))[0] #select all 3 stds away
+    for i in range(X.shape[1]):
+        if i in dev_samples:
+            color = 'r'
+        else:
+            color = 'b'
+        sns.distplot(X[:,i], color = color, hist = False, kde_kws={"lw": 1},)
+    plt.title('Beta values colored by mutual information to mean.\nblue=kept|red=removed')
+    plt.savefig(outdir+tissue+'_betaplot.png', format='png', dpi=300)
+
+    print(len(dev_samples), 'samples had MI 3 stds aeay from average.')
+    return np.where(entropies>=(np.mean(entropies)-(np.std(entropies)*3)))[0]
+
 def get_point_indices(ages):
 
     #Get unique ages
@@ -144,8 +173,11 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     print(np.round(100*X[X==0].shape[0]/(X.shape[0]*X.shape[1]),2), '% zeros')
     #Take all samples with less than 10 zeros
     X = X[zero_indices,:][0]
-
     print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
+
+    #Clean outliers
+    remain_indices = clean_outliers(X, outdir, 'blood')
+    X = X[:,remain_indices]
     #Save X
     np.save(outdir+'marker_values.npy',X)
     #Min and max age

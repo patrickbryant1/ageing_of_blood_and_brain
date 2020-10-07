@@ -1,8 +1,8 @@
 #Figure 1
 #Add labels
-convert  ag_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  ag_distribution.png
-convert  ag_point_cutoffs.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B"  ag_point_cutoffs.png
-montage ag_distribution.png ag_point_cutoffs.png -tile 2x1 -geometry +2+2 Figure1.png
+convert  ag_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "E"  ag_distribution.png
+convert  ag_point_cutoffs.png -pointsize 60 -gravity NorthWest -annotate +0+0 "F"  ag_point_cutoffs.png
+montage ag_distribution.png ag_point_cutoffs.png -tile 2x1 -geometry +2+2 -title 'Cerebellum' -pointsize 30 Figure1.png
 
 
 #Figure 2
