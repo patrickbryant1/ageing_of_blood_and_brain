@@ -380,6 +380,7 @@ def correlation_overlap(correlation_results, sel):
     print(len(sel[sel['Rejection on 0.05_y']==True]),'markers out of',len(sel),'were found in the correlation analysis')
 
     #Plot
+    plt.close()
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
     sns.distplot(sel['R'], color='darkgreen', label='Running average')
@@ -410,10 +411,9 @@ def reg_feature_groups(sel):
     plt.title('Marker correlations')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
-    plt.legend()
     plt.tight_layout()
     plt.savefig(outdir+'correlations.png', format='png', dpi=300)
-    plt.close()
+
 
 ###########MAIN###########
 #Plt
@@ -467,6 +467,6 @@ analyze_hannum(hannum_markers,sel,outdir)
 correlation_overlap(correlation_results, sel)
 
 #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
-reg_feature_groups(sel)
+#reg_feature_groups(sel)
 #Save sel
 sel.to_csv(outdir+'ra_sig_markers.csv')
