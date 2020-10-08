@@ -7,9 +7,10 @@ montage ag_distribution.png ag_point_cutoffs.png -tile 2x1 -geometry +2+2 -title
 
 #Figure 2
 #Add labels
-convert  grad_diff_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" grad_diff_distribution.png
-convert  grad_diff_vs_FC.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B"  grad_diff_vs_FC.png
-montage grad_diff_distribution.png grad_diff_vs_FC.png -tile 2x1 -geometry +2+2 Figure2.png
+convert  pval_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" pval_distribution.png
+convert  grad_diff_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" grad_diff_distribution.png
+convert  grad_diff_vs_FC.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  grad_diff_vs_FC.png
+montage pval_distribution.png grad_diff_distribution.png grad_diff_vs_FC.png -tile 3x1 -geometry +2+2 -title 'Blood' -pointsize 30  Figure2.png
 
 
 #Figure 3

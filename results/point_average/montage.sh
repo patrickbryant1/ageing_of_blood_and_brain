@@ -3,6 +3,9 @@
 montage ./blood/Figure1.png ./brain/frontal_cortex/Figure1.png ./brain/cerebellum/Figure1.png -tile 1x3 -geometry +2+2 Figure1.png
 
 #Figure 3
+montage ./blood/Figure2.png ./brain/frontal_cortex/Figure2.png ./brain/cerebellum/Figure2.png -tile 1x3 -geometry +2+2 Figure2.png
+
+#Figure 3
 montage ./blood/Figure3.png ./brain/frontal_cortex/Figure3.png ./brain/cerebellum/Figure3.png -tile 1x3 -geometry +2+2 Figure3.png
 
 
