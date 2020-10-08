@@ -16,6 +16,7 @@ from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
 from scipy.stats import ttest_ind
 from scipy.interpolate import Rbf #Radian basis function
+from sklearn.metrics import mutual_info_score
 import pdb
 
 
@@ -151,21 +152,10 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     zero_indices = np.where(zeros<10)
     #Get ages
     ages = get_ages(sample_sheet, joined_betas.columns[2:], agelabel)
-    #Save ages
-    age_df = pd.DataFrame()
-    age_df['Sample'] = joined_betas.columns[2:]
-    age_df['Age'] = ages
-    age_df.to_csv(outdir+'ages.csv')
-
-    #Get point indices
-    point_indices = get_point_indices(ages)
-    #Save point_indices
-    np.save(outdir+'age_points.npy',np.array(point_indices))
 
     #Looking at single marker comparisons
     markers = np.array(merged['Reporter Identifier'])
     markers = markers[zero_indices]
-
 
     #Methylation values
     X = np.array(merged[merged.columns[2:-34]])
@@ -178,6 +168,18 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
     #Clean outliers
     remain_indices = clean_outliers(X, outdir, 'blood')
     X = X[:,remain_indices]
+    ages = ages[remain_indices]
+    #Get point indices
+    point_indices = get_point_indices(ages)
+    #Save point_indices
+    np.save(outdir+'age_points.npy',np.array(point_indices))
+
+    #Save ages
+    age_df = pd.DataFrame()
+    age_df['Sample'] = joined_betas.columns[2:][remain_indices]
+    age_df['Age'] = ages
+    age_df.to_csv(outdir+'ages.csv')
+
     #Save X
     np.save(outdir+'marker_values.npy',X)
     #Min and max age
