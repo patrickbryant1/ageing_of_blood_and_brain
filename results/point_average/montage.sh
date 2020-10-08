@@ -24,7 +24,8 @@ convert  ./blood/genes/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A
 convert  ./blood/genes/Hannum/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./blood/genes/Hannum/go.png
 montage ./blood/genes/go.png ./blood/genes/Hannum/go.png  -tile 1x2 -geometry +2+2 FigureS6.png
 
-#Figure S6
-convert  ./blood/genes/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./blood/genes/go.png
-convert  ./blood/genes/Hannum/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./blood/genes/Hannum/go.png
-montage ./blood/genes/go.png ./blood/genes/Hannum/go.png  -tile 1x2 -geometry +2+2 FigureS6.png
+#Figure S7
+convert  ./brain/frontal_cortex/genes/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./brain/frontal_cortex/genes/go.png
+convert  ./brain/cerebellum/genes/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./brain/cerebellum/genes/go.png
+convert  ./brain/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C" ./brain/go.png
+montage ./brain/frontal_cortex/genes/go.png ./brain/cerebellum/genes/go.png ./brain/go.png -tile 1x3 -geometry +2+2 FigureS7.png
