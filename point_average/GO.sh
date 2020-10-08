@@ -5,4 +5,4 @@ CEREBELLUMGO=../results/point_average/brain/cerebellum/genes/pantherChart.txt
 HANNUMGO=../results/point_average/blood/genes/Hannum/pantherChart.txt
 HORVATHGO=../results/point_average/brain/cerebellum/genes/horvath/pantherChart.txt
 OUTDIR=../results/point_average/
-./gene_ontology.py --blood $BLOODGO --frontal_cortex $FTCXGO --cerebellum $CEREBELLUMGO --horvath $HORVATHGO --hannum $HANNUMGO --outdir $OUTDIR
+./gene_ontology.py --blood $BLOODGO --frontal_cortex $FCTXGO --cerebellum $CEREBELLUMGO --horvath $HORVATHGO --hannum $HANNUMGO --outdir $OUTDIR
