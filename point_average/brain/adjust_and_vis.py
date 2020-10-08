@@ -368,11 +368,11 @@ def correlation_overlap(correlation_results, sel):
 
     #Adjust pvals for correlation results
     correlation_results = adjust_pvals(correlation_results)
-    #Get  correlations for sel
-    sel = pd.merge(sel,correlation_results,on='Reporter Identifier', how='left')
-
     #Get only the sig
     sig_correlation_results =  correlation_results[correlation_results['Rejection on 0.05']==True]
+    print(len(sig_correlation_results), 'are significant on FDR 0.05.')
+    #Get  correlations for sel
+    sel = pd.merge(sel,sig_correlation_results,on='Reporter Identifier', how='left')
 
     #See how many markers overlap
     print(len(sel[sel['Rejection on 0.05_y']==True]),'markers out of',len(sel),'were found in the correlation analysis')

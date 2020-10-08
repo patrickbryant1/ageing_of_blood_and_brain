@@ -350,11 +350,11 @@ def analyze_hannum(hannum_markers,sel,outdir):
     #Save overlap
     overlap.to_csv(outdir+'overlap_with_hannum_markers.csv')
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    plt.hist(hannum_markers['Coefficient'],bins=30,label='Hannum', color='cornflowerblue')
-    plt.hist(overlap['Coefficient'],bins=30,label='Running average',color='darkgreen')
+    sns.distplot(hannum_markers['Coefficient'],bins=30,label='Hannum', color='cornflowerblue')
+    sns.distplot(overlap['Coefficient'],bins=30,label='Running average',color='darkgreen')
     plt.legend()
     plt.xlabel('Hannum coeffecient')
-    plt.ylabel('Count')
+    plt.ylabel('Density')
     plt.title('Hannum markers and coefficients')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -369,11 +369,11 @@ def correlation_overlap(correlation_results, sel):
 
     #Adjust pvals for correlation results
     correlation_results = adjust_pvals(correlation_results)
-    #Get  correlations for sel
-    sel = pd.merge(sel,correlation_results,on='Reporter Identifier', how='left')
-
     #Get only the sig
     sig_correlation_results =  correlation_results[correlation_results['Rejection on 0.05']==True]
+    print(len(sig_correlation_results), 'are significant on FDR 0.05.')
+    #Get  correlations for sel
+    sel = pd.merge(sel,sig_correlation_results,on='Reporter Identifier', how='left')
 
     #See how many markers overlap
     print(len(sel[sel['Rejection on 0.05_y']==True]),'markers out of',len(sel),'were found in the correlation analysis')
