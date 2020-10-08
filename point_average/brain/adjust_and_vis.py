@@ -299,7 +299,9 @@ def group_markers_by_gene(sel, unique_genes_grouped):
     genes that are regulated by at least 2 markers
     '''
     multi_marker_gene_df = pd.DataFrame()
+    unique_gene_file = open(outdir+'genes/unique_genes.txt','w')
     for gene_group in unique_genes_grouped:
+        unique_gene_file.write(gene_group+',\n')
         gene_df = pd.DataFrame()
         for gene in unique_genes_grouped[gene_group]:
             if type(gene) == list and len(gene)>1:
@@ -310,7 +312,7 @@ def group_markers_by_gene(sel, unique_genes_grouped):
         if len(gene_df)>1:
             multi_marker_gene_df = pd.concat([multi_marker_gene_df,gene_df])
             print(gene_group)
-
+    unique_gene_file.close()
     return multi_marker_gene_df
 
 
@@ -451,6 +453,7 @@ sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, poin
 print(len(sel),'selected markers out of', len(max_fold_change_df))
 #Group genes
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
+print(len(unique_genes_grouped.keys()),'unique genes')
 #Get the genes regulated by multiple markers
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
 #Plot
@@ -459,6 +462,8 @@ plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['A
 #Analyze horvath markers
 #Get gene annotations
 horvath_markers = pd.merge(horvath_markers, gene_annotations,left_on='Marker', right_on='Name', how='left')
+#Save Horvath gene annotations
+horvath_markers.to_csv(outdir+'genes/horvath/horvath_genes.csv')
 #Group horvath markers
 unique_genes_grouped = group_genes(horvath_markers['UCSC_RefGene_Name'].dropna().unique())
 analyze_horvath(horvath_markers,sel)

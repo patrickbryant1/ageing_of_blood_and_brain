@@ -450,6 +450,7 @@ sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unna
 sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices)
 #Group genes
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
+print(len(unique_genes_grouped.keys()),'unique genes')
 #Get the genes regulated by multiple markers
 multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped,outdir)
 #Plot
