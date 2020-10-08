@@ -29,8 +29,3 @@ HORVATH_MARKERS='./horvath_markers.csv'
 CORRELATIONRESULTS='../../results/point_average/brain/frontal_cortex_correlation_results.csv'
 OUTDIR=../../results/point_average/brain/frontal_cortex/
 ./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --point_indices $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --horvath_markers $HORVATH_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
-
-#Plot the GO
-RAGO=../../results/point_average/brain/genes/gene_chart_ra.txt
-HANNUMGO=../../results/point_average/brain/genes/Hannum/gene_chart_hannum.txt
-#./gene_ontology.py --ra_GO $RAGO --horvath_GO $HANNUMGO --outdir $OUTDIR
