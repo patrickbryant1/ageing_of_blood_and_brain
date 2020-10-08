@@ -70,7 +70,7 @@ all_categories = np.unique(all_categories)
 colors = pl.cm.tab20b(np.linspace(0,1,len(all_categories)))
 
 
-plot_GO(blood,colors,all_categories,'Blood GO enrichment',outdir+'blood/genes/go_blood.png')
+plot_GO(blood,colors,all_categories,'Blood GO enrichment',outdir+'blood/genes/go.png')
 plot_GO(frontal_cortex,colors,all_categories,'Frontal cortex GO enrichment',outdir+'brain/frontal_cortex/genes/go.png')
 plot_GO(cerebellum,colors,all_categories,'Cerebellum GO enrichment',outdir+'brain/cerebellum/genes/go.png')
 
