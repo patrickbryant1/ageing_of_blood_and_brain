@@ -151,7 +151,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     pos_neg_sel = []
     #Loop through the significant markers
     keep_indices = [] #keep the markers with sufficiently small std compared to the median
-    norm=True
+    norm=False
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         if norm == True:
