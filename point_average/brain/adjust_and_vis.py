@@ -195,7 +195,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     #Positive
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.3,alpha=0.5)
+        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.3,alpha=0.3)
 
     #Plot total ra
     pos_sel_ra = np.array(pos_sel_ra)
@@ -217,7 +217,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     #Negative
     fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.3,alpha=0.5)
+        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.3,alpha=0.6)
     #Plot total ra
     neg_sel_ra = np.array(neg_sel_ra)
     print('Negatively correlated markers:', len(neg_sel_ra))
