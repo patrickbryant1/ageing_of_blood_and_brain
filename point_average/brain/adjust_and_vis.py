@@ -96,8 +96,7 @@ def vis_age_distr(age_df, point_indices, median_range):
         agesel = ages[np.array(point_indices[i,:],dtype='int32')]
 
         #Check if the current age is the median in the group
-        if age == int(np.median(agesel)):
-            print(age)
+        print(age, min(agesel), max(agesel))
         if age >= min(median_range) and age <= max(median_range):
             color = 'darkred'
         else:
@@ -201,7 +200,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     #Visualize the gradient clustering
     colors = pl.cm.viridis(np.linspace(0,1,k))
     fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    age_representatives = np.arange(median_range[0],median_range[1])
+    age_representatives = np.arange(median_range[0],median_range[1]+1)
     for cl in range(k):
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]

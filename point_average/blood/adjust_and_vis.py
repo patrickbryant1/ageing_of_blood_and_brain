@@ -96,8 +96,7 @@ def vis_age_distr(ages, point_indices, sample_sheet, median_range):
 
         agesel = ages[np.array(point_indices[i,:],dtype='int32')]
         #Check if the current age is the median in the group
-        if age == int(np.median(agesel)):
-            print(age)
+        print(age, min(agesel), max(agesel))
         if age >= min(median_range) and age <= max(median_range):
             color = 'darkred'
         else:
@@ -203,18 +202,18 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     #Visualize the gradient clustering
     colors = pl.cm.viridis(np.linspace(0,1,k))
     fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    age_representatives = np.arange(median_range[0],median_range[1])-19
+    age_representatives = np.arange(median_range[0],median_range[1]+1)-19
     pdb.set_trace()
     for cl in range(k):
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]
         for i in cluster_indices:
-            ax.plot(age_representatives,sel_ra[i][age_representatives],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
+            ax.plot(age_representatives+19,sel_ra[i][age_representatives],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
 
-        ax.plot(age_representatives, np.median(np.array(sel_ra)[cluster_indices],axis=0)[age_representatives],color='k', linewidth=3)
+        ax.plot(age_representatives+19, np.median(np.array(sel_ra)[cluster_indices],axis=0)[age_representatives],color='k', linewidth=3)
         ax.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
         #Plot gradients
-        ax2.plot(age_representatives, savgol_filter(np.median(np.array(gradients)[cluster_indices],axis=0)[age_representatives],window_length=21,polyorder=2),color=colors[cl], linewidth=2, label = cl+1, alpha = 0.8)
+        ax2.plot(age_representatives+19, savgol_filter(np.median(np.array(gradients)[cluster_indices],axis=0)[age_representatives],window_length=21,polyorder=2),color=colors[cl], linewidth=2, label = cl+1, alpha = 0.8)
         #Format plot
         ax.set_title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
         ax.spines['top'].set_visible(False)
