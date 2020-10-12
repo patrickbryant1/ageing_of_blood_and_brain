@@ -14,7 +14,7 @@ AGES=../../results/point_average/blood/ages.csv
 AGEPOINTS=../../results/point_average/blood/age_points.npy
 HANNUM_MARKERS=./hannum_markers.csv
 CORRELATIONRESULTS=../../results/point_average/blood/correlation_results.csv
-NCLUSTERS=10
+NCLUSTERS=2
 ./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --point_indices $AGEPOINTS --sample_sheet $SAMPLES --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --n_clusters $NCLUSTERS --outdir $OUTDIR
 
 #Plot the GO
