@@ -129,7 +129,16 @@ def group_genes(unique_genes):
     unique_genes_grouped=single_genes
     return unique_genes_grouped
 
+def cluster_gradients(gradients):
+    '''Calculate the distance between all gradients
+    '''
 
+    dist_matrix = np.zeros((len(gradients),len(gradients))) #Distance matrix
+    for i in range(len(gradients)):
+        for j in range(i+1,len(gradients)):
+            dist_matrix[i,j]=np.average(np.absolute(gradients[i]-gradients[j]))
+
+    pdb.set_trace()
 def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
@@ -138,20 +147,13 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     max_grad_diff = np.zeros(len(sel))
     sel_indices = np.array(sel['Unnamed: 0_x']) #Indices
 
-    #Save the positive and neg corr in different lists
-    pos_sel_ra = []
-    pos_sel_marker_values = []
-    neg_sel_ra = []
-    neg_sel_marker_values = []
-    #Save the positive and negative gradients
-    pos_sel_gradients = []
-    neg_sel_gradients = []
+    #Save the corr in different lists
+    sel_ra = []
+    sel_marker_values = []
 
-    #Positive or neg in sel
-    pos_neg_sel = []
     #Loop through the significant markers
     keep_indices = [] #keep the markers with sufficiently small std compared to the median
-    norm=False
+    norm=True
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         if norm == True:
@@ -170,127 +172,23 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
         running_std = np.array(running_std)
         rel_std_size = running_std/running_averages[si,:]
 
-        if np.average(rel_std_size) >0.5:
+        if np.average(rel_std_size) >0.5: #If the average rel std is above 0.5
             continue
 
         keep_indices.append(i)
         #Calculate the maximal gradient difference
-        gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient without norm
-        max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
         gradients[i,:]=np.gradient(running_averages[si,:]/divider) #Calc gradient with norm
+        max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
+
         #Save normalized selected ra
-        if np.sum(gradients[i,:]) >0:
-            pos_sel_ra.append(running_averages[si,:]/divider)
-            pos_sel_marker_values.append(marker_values[si,:]/divider)
-            pos_sel_gradients.append(gradients[i,:])
-            pos_neg_sel.append('pos')
-        else:
-            neg_sel_ra.append(running_averages[si,:]/divider)
-            neg_sel_marker_values.append(marker_values[si,:]/divider)
-            neg_sel_gradients.append(gradients[i,:])
-            pos_neg_sel.append('neg')
+        sel_ra.append(running_averages[si,:]/divider)
+        sel_marker_values.append(marker_values[si,:]/divider)
 
-
-    #Plot running averages with pos and neg gradients
-    #Positive
-    fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(0,103),pos_sel_ra[pi],color='royalblue', linewidth=0.3,alpha=0.3)
-
-    #Plot total ra
-    pos_sel_ra = np.array(pos_sel_ra)
-    print('Positively correlated markers:', len(pos_sel_ra))
-    pos_sel_marker_values = np.array(pos_sel_marker_values)
-    ax1.plot(np.arange(0,103),np.median(pos_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.median(pos_sel_marker_values,axis=0),color='k',s=0.1)
-    ax1.set_title('Positive running medians')
-    ax1.spines['top'].set_visible(False)
-    ax1.spines['right'].set_visible(False)
-    if norm==True:
-        ax1.set_ylabel('Normalized beta value')
-    else:
-        ax1.set_ylabel('Beta value')
-    ax1.set_xlabel('Age')
-    fig1.tight_layout()
-    fig1.savefig(outdir+'pos_ra.png', format='png', dpi=300)
-
-    #Negative
-    fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(0,103),neg_sel_ra[pi],color='lightcoral', linewidth=0.3,alpha=0.6)
-    #Plot total ra
-    neg_sel_ra = np.array(neg_sel_ra)
-    print('Negatively correlated markers:', len(neg_sel_ra))
-    neg_sel_marker_values = np.array(neg_sel_marker_values)
-    ax1.plot(np.arange(0,103),np.median(neg_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.median(neg_sel_marker_values,axis=0),color='k',s=0.1)
-    ax1.set_title('Negative running medians')
-    ax1.spines['top'].set_visible(False)
-    ax1.spines['right'].set_visible(False)
-    if norm==True:
-        ax1.set_ylabel('Normalized beta value')
-    else:
-        ax1.set_ylabel('Beta value')
-    ax1.set_xlabel('Age')
-    fig1.tight_layout()
-    fig1.savefig(outdir+'neg_ra.png', format='png', dpi=300)
-    plt.close()
-
-    #Plot total gradients
-    fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    ax2.plot(np.arange(0,103),np.average(np.array(pos_sel_gradients),axis=0),color='royalblue', linewidth=1)
-    ax2.plot(np.arange(0,103),np.average(np.array(neg_sel_gradients),axis=0),color='lightcoral', linewidth=1)
-    neg_sm = savgol_filter(np.average(np.array(neg_sel_gradients),axis=0),window_length=21,polyorder=2)
-    pos_sm = savgol_filter(np.average(np.array(pos_sel_gradients),axis=0),window_length=21,polyorder=2)
-    ax2.plot(np.arange(0,103),neg_sm,color='maroon', linewidth=1, label = 'Negative')
-    ax2.plot(np.arange(0,103),pos_sm,color='midnightblue', linewidth=1, label = 'Positive')
-    ax2.set_title('Gradients')
-    plt.legend()
-    ax2.spines['top'].set_visible(False)
-    ax2.spines['right'].set_visible(False)
-    if norm==True:
-        ax2.set_ylabel('Gradient of ormalized beta value')
-    else:
-        ax2.set_ylabel('Gradient of beta value')
-    ax2.set_xlabel('Age')
-    fig2.tight_layout()
-    fig2.savefig(outdir+'gradients.png', format='png', dpi=300)
-
-    #Plot distribution of the max grad diff
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    sns.distplot(max_grad_diff)
-    #Format plot
-    plt.title('Max gradient difference')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    plt.ylabel('Density')
-    plt.xlabel('Max gradient difference')
-    plt.tight_layout()
-    plt.savefig(outdir+'grad_diff_distribution.png', format='png', dpi=300)
-    plt.close()
-
-
-    #Plot max grad diff vs fold change
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    matplotlib.rc('lines', linewidth=0.5, linestyle='--')
-    plt.scatter(max_grad_diff, np.log10(sel['fold_change']),s=0.1,color='cornflowerblue')
-    #sns.kdeplot(max_grad_diff, np.log10(sel['fold_change']),shade_lowest =False,color="w", ax=ax)
-    #Format plot
-    plt.title('Max grad. diff. vs FC')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    plt.ylabel('log10(FC)')
-    plt.xlabel('Max gradient difference')
-    plt.tight_layout()
-    plt.savefig(outdir+'grad_diff_vs_FC.png', format='png', dpi=300)
-    plt.close()
-
-    #Plot the top 10 gradient changes
+    pdb.set_trace()
 
     #Select the keep indices
     sel = sel.loc[keep_indices]
-    #Add to sel
-    sel['pos_neg_grad']=pos_neg_sel
+
 
     return sel
 
