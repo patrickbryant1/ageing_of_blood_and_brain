@@ -18,6 +18,7 @@ from scipy.signal import savgol_filter
 
 from collections import Counter
 from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
 import pdb
 
 
@@ -226,11 +227,23 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     #Visualize the gradient clustering
     colors = pl.cm.viridis(np.linspace(0,1,k))
     for cl in range(k):
+        fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]
         for i in cluster_indices:
-            plt.plot(np.arange(0,103),sel_ra[i],color=colors[cl])
+            plt.plot(np.arange(0,103),sel_ra[i],color=colors[cl],linewidth=1,alpha=0.5)
         plt.plot(np.arange(0,103), np.average(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
-        plt.show()
+        plt.scatter(ages,np.average(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
+
+        #Format plot
+        plt.title('Cluster '+str(cl)+'|'+str(len(cluster_indices))+' markers')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        plt.ylabel('Normalized beta value')
+        plt.xlabel('Age')
+        plt.tight_layout()
+        plt.savefig(outdir+'/clustering/'+str(cl)+'.png', format='png', dpi=300)
+        plt.close()
+
     pdb.set_trace()
     #Select the keep indices
     sel = sel.loc[keep_indices]
