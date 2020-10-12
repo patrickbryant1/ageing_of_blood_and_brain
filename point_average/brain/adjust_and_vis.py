@@ -35,6 +35,7 @@ parser.add_argument('--sample_sheet36194', nargs=1, type= str, default=sys.stdin
 parser.add_argument('--sample_sheet1575', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet with accession 1575.')
 parser.add_argument('--horvath_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to horvath markers (71).')
 parser.add_argument('--correlation_results', nargs=1, type= str, default=sys.stdin, help = 'Path to correlation results.')
+parser.add_argument('--n_clusters', nargs=1, type= int, default=sys.stdin, help = 'n_clusters for kmeans clustering.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -132,7 +133,7 @@ def group_genes(unique_genes):
     return unique_genes_grouped
 
 
-def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
+def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n_clusters):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
@@ -180,7 +181,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     gradients = gradients[keep_indices]
 
     #Cluster the gradients
-    k=5 #Number of clusters
+    k=n_clusters #Number of clusters
     kmeans = KMeans(n_clusters=k, random_state=0).fit(gradients)
     #In practice, the k-means algorithm is very fast (one of the fastest clustering algorithms available),
     #but it falls in local minima.
@@ -193,11 +194,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
         cluster_indices = np.where(cluster_labels==cl)[0]
         for i in cluster_indices:
             plt.plot(np.arange(0,103),sel_ra[i],color=colors[cl],linewidth=1,alpha=0.5)
-        plt.plot(np.arange(0,103), np.average(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
-        plt.scatter(ages,np.average(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
+        plt.plot(np.arange(0,103), np.median(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
+        plt.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
 
         #Format plot
-        plt.title('Cluster '+str(cl)+'|'+str(len(cluster_indices))+' markers')
+        plt.title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         plt.ylabel('Normalized beta value')
@@ -208,12 +209,12 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
 
     #Look at the clusters cin tsne
     #Tsne
-    gradients_embedded = TSNE(n_components=2).fit_transform(gradients)
+    gradients_embedded = TSNE(n_components=2,random_state=0).fit_transform(gradients)
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     for cl in range(k):
         cluster_indices = np.where(cluster_labels==cl)[0]
         sel_emb_grads = gradients_embedded[cluster_indices]
-        plt.scatter(sel_emb_grads[:,0],sel_emb_grads[:,1],color=colors[cl],label=cl,s=1)
+        plt.scatter(sel_emb_grads[:,0],sel_emb_grads[:,1],color=colors[cl],label=cl+1,s=1)
     #Format plot
     plt.title('T-sne of gradient clusters')
     ax.spines['top'].set_visible(False)
@@ -367,6 +368,7 @@ sample_sheet36194 = pd.read_csv(args.sample_sheet36194[0], sep = '\t')
 sample_sheet1575 = pd.read_csv(args.sample_sheet1575[0], sep = '\t')
 horvath_markers = pd.read_csv(args.horvath_markers[0])
 correlation_results = pd.read_csv(args.correlation_results[0])
+n_clusters = args.n_clusters[0]
 outdir = args.outdir[0]
 
 #Visualize pvals
@@ -385,7 +387,7 @@ sel = sel[np.absolute(sel['fold_change'])>2]
 
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Name', how='left')
 #Calculate derivatives
-sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, point_indices)
+sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, point_indices,n_clusters)
 #Print the number selected
 print(len(sel),'selected markers out of', len(max_fold_change_df))
 #Group genes

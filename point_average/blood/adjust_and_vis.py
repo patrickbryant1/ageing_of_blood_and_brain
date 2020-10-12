@@ -17,6 +17,8 @@ import matplotlib.pylab as pl
 from scipy.signal import savgol_filter
 
 from collections import Counter
+from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
 import pdb
 
 
@@ -32,6 +34,7 @@ parser.add_argument('--point_indices', nargs=1, type= str, default=sys.stdin, he
 parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet.')
 parser.add_argument('--hannum_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to Hannum markers (71).')
 parser.add_argument('--correlation_results', nargs=1, type= str, default=sys.stdin, help = 'Path to correlation results.')
+parser.add_argument('--n_clusters', nargs=1, type= int, default=sys.stdin, help = 'n_clusters for kmeans clustering.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -131,27 +134,21 @@ def group_genes(unique_genes):
     return unique_genes_grouped
 
 
-def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
+def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n_clusters):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
     gradients = np.zeros((len(sel),running_averages.shape[1])) #Save gradients
     max_grad_diff = np.zeros(len(sel))
     sel_indices = np.array(sel['Unnamed: 0_x']) #Indices
-    #Save the positive and neg corr in different lists
-    pos_sel_ra = []
-    pos_sel_marker_values = []
-    neg_sel_ra = []
-    neg_sel_marker_values = []
-    #Save the positive and negative gradients
-    pos_sel_gradients = []
-    neg_sel_gradients = []
 
-    #Positive or neg in sel
-    pos_neg_sel = []
+    #Save the corr in different lists
+    sel_ra = []
+    sel_marker_values = []
+
     #Loop through the significant markers
     keep_indices = [] #keep the markers with sufficiently small std compared to the median
-    norm=False
+    norm=True
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         if norm == True:
@@ -175,115 +172,62 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
 
         keep_indices.append(i)
         #Calculate the maximal gradient difference
-        gradients[i,:]=np.gradient(running_averages[si,:]) #Calc gradient without norm
-        max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
         gradients[i,:]=np.gradient(running_averages[si,:]/divider) #Calc gradient with norm
+        max_grad_diff[i] = (max(gradients[i,:])-min(gradients[i,:]))
+
         #Save normalized selected ra
-        if np.sum(gradients[i,:]) >0:
-            pos_sel_ra.append(running_averages[si,:]/divider)
-            pos_sel_marker_values.append(marker_values[si,:]/divider)
-            pos_sel_gradients.append(gradients[i,:])
-            pos_neg_sel.append('pos')
-        else:
-            neg_sel_ra.append(running_averages[si,:]/divider)
-            neg_sel_marker_values.append(marker_values[si,:]/divider)
-            neg_sel_gradients.append(gradients[i,:])
-            pos_neg_sel.append('neg')
+        sel_ra.append(running_averages[si,:]/divider)
+        sel_marker_values.append(marker_values[si,:]/divider)
 
-    #Plot running averages with pos and neg gradients
-    #Positive
-    fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    for pi in range(len(pos_sel_ra)):
-        ax1.plot(np.arange(19,102),pos_sel_ra[pi],color='royalblue', linewidth=0.3,alpha=0.5)
+    #Select the gradients associated with the markers that had sufficiently low spread
+    gradients = gradients[keep_indices]
 
-    #Plot total ra
-    pos_sel_ra = np.array(pos_sel_ra)
-    print('Positively correlated markers:', len(pos_sel_ra))
-    pos_sel_marker_values = np.array(pos_sel_marker_values)
-    ax1.plot(np.arange(19,102),np.median(pos_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.median(pos_sel_marker_values,axis=0),color='k',s=0.1)
-    ax1.set_title('Positive running medians')
-    ax1.spines['top'].set_visible(False)
-    ax1.spines['right'].set_visible(False)
-    if norm==True:
-        ax1.set_ylabel('Normalized beta value')
-    else:
-        ax1.set_ylabel('Beta value')
-    ax1.set_xlabel('Age')
-    fig1.tight_layout()
-    fig1.savefig(outdir+'pos_ra.png', format='png', dpi=300)
-    plt.close()
-    #Negative
-    fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    for pi in range(len(neg_sel_ra)):
-        ax1.plot(np.arange(19,102),neg_sel_ra[pi],color='lightcoral', linewidth=0.3,alpha=0.5)
-    #Plot total ra
-    neg_sel_ra = np.array(neg_sel_ra)
-    print('Negatively correlated markers:', len(neg_sel_ra))
-    neg_sel_marker_values = np.array(neg_sel_marker_values)
-    ax1.plot(np.arange(19,102),np.median(neg_sel_ra,axis=0),color='k', linewidth=1)
-    ax1.scatter(ages,np.median(neg_sel_marker_values,axis=0),color='k',s=0.1)
-    ax1.set_title('Negative running medians')
-    ax1.spines['top'].set_visible(False)
-    ax1.spines['right'].set_visible(False)
-    if norm==True:
-        ax1.set_ylabel('Normalized beta value')
-    else:
-        ax1.set_ylabel('Beta value')
-    ax1.set_xlabel('Age')
-    fig1.tight_layout()
-    fig1.savefig(outdir+'neg_ra.png', format='png', dpi=300)
-    plt.close()
+    #Cluster the gradients
+    k=n_clusters #Number of clusters
+    kmeans = KMeans(n_clusters=k, random_state=0).fit(gradients)
+    #In practice, the k-means algorithm is very fast (one of the fastest clustering algorithms available),
+    #but it falls in local minima.
+    #That’s why it can be useful to restart it several times.
+    cluster_labels = kmeans.labels_
+    #Visualize the gradient clustering
+    colors = pl.cm.viridis(np.linspace(0,1,k))
+    for cl in range(k):
+        fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+        cluster_indices = np.where(cluster_labels==cl)[0]
+        for i in cluster_indices:
+            plt.plot(np.arange(19,102),sel_ra[i],color=colors[cl],linewidth=1,alpha=0.5)
+        plt.plot(np.arange(19,102), np.median(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
+        plt.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
 
-    #Plot total gradients
-    fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    ax2.plot(np.arange(19,102),np.median(np.array(pos_sel_gradients),axis=0),color='royalblue', linewidth=1)
-    ax2.plot(np.arange(19,102),np.median(np.array(neg_sel_gradients),axis=0),color='lightcoral', linewidth=1)
-    neg_sm = savgol_filter(np.median(np.array(neg_sel_gradients),axis=0),window_length=21,polyorder=2)
-    pos_sm = savgol_filter(np.median(np.array(pos_sel_gradients),axis=0),window_length=21,polyorder=2)
-    ax2.plot(np.arange(19,102),neg_sm,color='maroon', linewidth=1, label = 'Negative')
-    ax2.plot(np.arange(19,102),pos_sm,color='midnightblue', linewidth=1, label = 'Positive')
-    ax2.set_title('Gradients')
+        #Format plot
+        plt.title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        plt.ylabel('Normalized beta value')
+        plt.xlabel('Age')
+        plt.tight_layout()
+        plt.savefig(outdir+'/clustering/'+str(cl+1)+'.png', format='png', dpi=300)
+        plt.close()
+
+    #Look at the clusters cin tsne
+    #Tsne
+    gradients_embedded = TSNE(n_components=2,random_state=0).fit_transform(gradients)
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    for cl in range(k):
+        cluster_indices = np.where(cluster_labels==cl)[0]
+        sel_emb_grads = gradients_embedded[cluster_indices]
+        plt.scatter(sel_emb_grads[:,0],sel_emb_grads[:,1],color=colors[cl],label=cl+1,s=1)
+    #Format plot
+    plt.title('T-sne of gradient clusters')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.ylabel('Component 2')
+    plt.xlabel('Component 1')
     plt.legend()
-    ax2.spines['top'].set_visible(False)
-    ax2.spines['right'].set_visible(False)
-    if norm==True:
-        ax2.set_ylabel('Gradient of ormalized beta value')
-    else:
-        ax2.set_ylabel('Gradient of beta value')
-    ax2.set_xlabel('Age')
-    fig2.tight_layout()
-    fig2.savefig(outdir+'gradients.png', format='png', dpi=300)
-
-    #Plot distribution of the max grad diff
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    sns.distplot(max_grad_diff)
-    #Format plot
-    plt.title('Max gradient difference')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    plt.ylabel('Density')
-    plt.xlabel('Max gradient difference')
     plt.tight_layout()
-    plt.savefig(outdir+'grad_diff_distribution.png', format='png', dpi=300)
+    plt.savefig(outdir+'/clustering/tsne.png', format='png', dpi=300)
     plt.close()
-
-    #Plot max grad diff vs fold change
-    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-    matplotlib.rc('lines', linewidth=0.5, linestyle='--')
-    plt.scatter(max_grad_diff, np.log10(sel['fold_change']),s=0.1,color='cornflowerblue')
-    #sns.kdeplot(max_grad_diff, np.log10(sel['fold_change']),shade_lowest =False,color="w", ax=ax)
-    #Format plot
-    plt.title('Max grad. diff. vs FC')
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    plt.ylabel('log10(FC)')
-    plt.xlabel('Max gradient difference')
-    plt.tight_layout()
-    plt.savefig(outdir+'grad_diff_vs_FC.png', format='png', dpi=300)
-    plt.close()
-
-    #Plot the top 10 gradient changes
+    pdb.set_trace()
     #Select the keep indices
     sel = sel.loc[keep_indices]
     #Add to sel
@@ -428,12 +372,13 @@ point_indices = np.load(args.point_indices[0],allow_pickle=True)
 sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
 hannum_markers = pd.read_csv(args.hannum_markers[0])
 correlation_results = pd.read_csv(args.correlation_results[0])
+n_clusters = args.n_clusters[0]
 outdir = args.outdir[0]
 
 #Visualize pvals
-vis_pvals(max_fold_change_df)
+#vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(ages, point_indices, sample_sheet)
+#vis_age_distr(ages, point_indices, sample_sheet)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
@@ -447,7 +392,7 @@ print(len(sel),'selected markers out of', len(max_fold_change_df))
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
 
 #Calculate derivatives
-sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices)
+sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices,n_clusters)
 #Group genes
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
 print(len(unique_genes_grouped.keys()),'unique genes')

@@ -16,8 +16,9 @@ AGES=../../results/point_average/brain/cerebellum_ages.csv
 AGEPOINTS=../../results/point_average/brain/cerebellum_age_points.npy
 HORVATH_MARKERS=./horvath_markers.csv
 CORRELATIONRESULTS=../../results/point_average/brain/cerebellum_correlation_results.csv
+NCLUSTERS=5
 OUTDIR=../../results/point_average/brain/cerebellum/
-./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --point_indices $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --horvath_markers $HORVATH_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
+./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --point_indices $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --horvath_markers $HORVATH_MARKERS --correlation_results $CORRELATIONRESULTS --n_clusters $NCLUSTERS --outdir $OUTDIR
 
 ###frontal_cortex
 RA='../../results/point_average/brain/frontal_cortex_running_averages.npy'
@@ -28,4 +29,5 @@ AGEPOINTS='../../results/point_average/brain/frontal_cortex_age_points.npy'
 HORVATH_MARKERS='./horvath_markers.csv'
 CORRELATIONRESULTS='../../results/point_average/brain/frontal_cortex_correlation_results.csv'
 OUTDIR=../../results/point_average/brain/frontal_cortex/
-#./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --point_indices $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --horvath_markers $HORVATH_MARKERS --correlation_results $CORRELATIONRESULTS --outdir $OUTDIR
+NCLUSTERS=1
+./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --point_indices $AGEPOINTS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --horvath_markers $HORVATH_MARKERS --correlation_results $CORRELATIONRESULTS --n_clusters $NCLUSTERS --outdir $OUTDIR
