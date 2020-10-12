@@ -189,24 +189,36 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     cluster_labels = kmeans.labels_
     #Visualize the gradient clustering
     colors = pl.cm.viridis(np.linspace(0,1,k))
+    fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
     for cl in range(k):
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]
         for i in cluster_indices:
-            plt.plot(np.arange(0,103),sel_ra[i],color=colors[cl],linewidth=1,alpha=0.5)
-        plt.plot(np.arange(0,103), np.median(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
-        plt.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
+            ax.plot(np.arange(19,102),sel_ra[i],color=colors[cl],linewidth=1,alpha=0.5)
 
+        ax.plot(np.arange(19,102), np.median(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
+        ax.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
+        #Plot gradients
+        ax2.plot(np.arange(19,102), np.median(np.array(gradients)[cluster_indices],axis=0),color=colors[cl], linewidth=1)
         #Format plot
-        plt.title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
+        ax.set_title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
-        plt.ylabel('Normalized beta value')
-        plt.xlabel('Age')
-        plt.tight_layout()
-        plt.savefig(outdir+'/clustering/'+str(cl)+'.png', format='png', dpi=300)
-        plt.close()
+        ax.set_ylabel('Normalized beta value')
+        ax.set_xlabel('Age')
+        fig.tight_layout()
+        fig.savefig(outdir+'/clustering/'+str(cl+1)+'.png', format='png', dpi=300)
 
+
+    #Format plot
+    ax2.set_title('Cluster gradients')
+    ax2.spines['top'].set_visible(False)
+    ax2.spines['right'].set_visible(False)
+    ax2.set_ylabel('Normalized beta value per year')
+    ax2.set_xlabel('Age')
+    fig2.tight_layout()
+    fig2.savefig(outdir+'/clustering/gradients.png', format='png', dpi=300)
+    plt.close()
     #Look at the clusters cin tsne
     #Tsne
     gradients_embedded = TSNE(n_components=2,random_state=0).fit_transform(gradients)
