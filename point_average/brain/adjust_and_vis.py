@@ -17,6 +17,7 @@ import matplotlib.pylab as pl
 from scipy.signal import savgol_filter
 
 from collections import Counter
+from sklearn.cluster import KMeans
 import pdb
 
 
@@ -129,16 +130,46 @@ def group_genes(unique_genes):
     unique_genes_grouped=single_genes
     return unique_genes_grouped
 
-def cluster_gradients(gradients):
-    '''Calculate the distance between all gradients
-    '''
+# def cluster_gradients(gradients):
+#     '''Calculate the distance between all gradients
+#     '''
+#
+#     #1. Calcualte all pairwise distances
+#     dist_matrix = np.zeros((len(gradients),len(gradients))) #Distance matrix
+#     for i in range(len(gradients)):
+#         for j in range(i+1,len(gradients)):
+#             dist_matrix[i,j]=np.average(np.absolute(gradients[i]-gradients[j]))
+#
+#     #2. Cluster
+#     clusters = []
+#     fecthed_indices = [] #Save the indices that have been clustered
+#     for i in range(len(dist_matrix)):
+#         #Calculate the distance to all clusters
+#         cluster_dists = [] #Save the cluster distances
+#         if len(clusters)>0:
+#             for c in clusters:
+#                 center_c = np.average(gradients[c],axis=0)
+#                 cluster_dists.append(np.absolute(np.average(gradients[i]-center_c))) #Calculate the distance to the cluster center
+#
+#             #Get the minimum distance to the remaining gradients to see if a new cluster should be created
+#             min_grad_dist = min(dist_matrix[i,i+1:]) #check the distance to all subsequent gradients - the rows before will have been clustered
+#             min_clust_dists = min(cluster_dists)
+#             if min_grad_dist<min_clust_dists:
+#                 #Create new cluster
+#                 min_indices = np.where(dist_matrix[i,:]==min_grad_dist)[0]
+#                 clusters.append(np.concatenate([min_indices,np.array([i])]))
+#                 #Remove fetched gradients from comparisons
+#                 dist_matrix[min_indices]
+#             else:
+#                 #Save to cluster
+#                 np.append(clusters[np.where(np.array(cluster_dists)==min_clust_dists)[0][0]],i)
+#
+#         else: #If no clusters
+#             clusters.append(np.array([i]))
 
-    dist_matrix = np.zeros((len(gradients),len(gradients))) #Distance matrix
-    for i in range(len(gradients)):
-        for j in range(i+1,len(gradients)):
-            dist_matrix[i,j]=np.average(np.absolute(gradients[i]-gradients[j]))
 
-    pdb.set_trace()
+
+
 def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
@@ -150,7 +181,6 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     #Save the corr in different lists
     sel_ra = []
     sel_marker_values = []
-
     #Loop through the significant markers
     keep_indices = [] #keep the markers with sufficiently small std compared to the median
     norm=True
@@ -184,8 +214,24 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
         sel_ra.append(running_averages[si,:]/divider)
         sel_marker_values.append(marker_values[si,:]/divider)
 
+    #Select the gradients associated with the markers that had sufficiently low spread
+    gradients = gradients[keep_indices]
+    #Cluster the gradients
+    k=5 #Number of clusters
+    kmeans = KMeans(n_clusters=k, random_state=0).fit(gradients)
+    #In practice, the k-means algorithm is very fast (one of the fastest clustering algorithms available),
+    #but it falls in local minima.
+    #That’s why it can be useful to restart it several times.
+    cluster_labels = kmeans.labels_
+    #Visualize the gradient clustering
+    colors = pl.cm.viridis(np.linspace(0,1,k))
+    for cl in range(k):
+        cluster_indices = np.where(cluster_labels==cl)[0]
+        for i in cluster_indices:
+            plt.plot(np.arange(0,103),sel_ra[i],color=colors[cl])
+        plt.plot(np.arange(0,103), np.average(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
+        plt.show()
     pdb.set_trace()
-
     #Select the keep indices
     sel = sel.loc[keep_indices]
 
@@ -331,9 +377,9 @@ correlation_results = pd.read_csv(args.correlation_results[0])
 outdir = args.outdir[0]
 
 #Visualize pvals
-vis_pvals(max_fold_change_df)
+#vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(age_df, point_indices)
+#vis_age_distr(age_df, point_indices)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
