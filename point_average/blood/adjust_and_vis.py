@@ -376,9 +376,9 @@ n_clusters = args.n_clusters[0]
 outdir = args.outdir[0]
 
 #Visualize pvals
-#vis_pvals(max_fold_change_df)
+vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-#vis_age_distr(ages, point_indices, sample_sheet)
+vis_age_distr(ages, point_indices, sample_sheet)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
