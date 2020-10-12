@@ -131,45 +131,6 @@ def group_genes(unique_genes):
     unique_genes_grouped=single_genes
     return unique_genes_grouped
 
-# def cluster_gradients(gradients):
-#     '''Calculate the distance between all gradients
-#     '''
-#
-#     #1. Calcualte all pairwise distances
-#     dist_matrix = np.zeros((len(gradients),len(gradients))) #Distance matrix
-#     for i in range(len(gradients)):
-#         for j in range(i+1,len(gradients)):
-#             dist_matrix[i,j]=np.average(np.absolute(gradients[i]-gradients[j]))
-#
-#     #2. Cluster
-#     clusters = []
-#     fecthed_indices = [] #Save the indices that have been clustered
-#     for i in range(len(dist_matrix)):
-#         #Calculate the distance to all clusters
-#         cluster_dists = [] #Save the cluster distances
-#         if len(clusters)>0:
-#             for c in clusters:
-#                 center_c = np.average(gradients[c],axis=0)
-#                 cluster_dists.append(np.absolute(np.average(gradients[i]-center_c))) #Calculate the distance to the cluster center
-#
-#             #Get the minimum distance to the remaining gradients to see if a new cluster should be created
-#             min_grad_dist = min(dist_matrix[i,i+1:]) #check the distance to all subsequent gradients - the rows before will have been clustered
-#             min_clust_dists = min(cluster_dists)
-#             if min_grad_dist<min_clust_dists:
-#                 #Create new cluster
-#                 min_indices = np.where(dist_matrix[i,:]==min_grad_dist)[0]
-#                 clusters.append(np.concatenate([min_indices,np.array([i])]))
-#                 #Remove fetched gradients from comparisons
-#                 dist_matrix[min_indices]
-#             else:
-#                 #Save to cluster
-#                 np.append(clusters[np.where(np.array(cluster_dists)==min_clust_dists)[0][0]],i)
-#
-#         else: #If no clusters
-#             clusters.append(np.array([i]))
-
-
-
 
 def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
     '''Calculate the derivatives for all significant probes
@@ -217,6 +178,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
 
     #Select the gradients associated with the markers that had sufficiently low spread
     gradients = gradients[keep_indices]
+
     #Cluster the gradients
     k=5 #Number of clusters
     kmeans = KMeans(n_clusters=k, random_state=0).fit(gradients)
@@ -244,6 +206,24 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices):
         plt.savefig(outdir+'/clustering/'+str(cl)+'.png', format='png', dpi=300)
         plt.close()
 
+    #Look at the clusters cin tsne
+    #Tsne
+    gradients_embedded = TSNE(n_components=2).fit_transform(gradients)
+    fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    for cl in range(k):
+        cluster_indices = np.where(cluster_labels==cl)[0]
+        sel_emb_grads = gradients_embedded[cluster_indices]
+        plt.scatter(sel_emb_grads[:,0],sel_emb_grads[:,1],color=colors[cl],label=cl,s=1)
+    #Format plot
+    plt.title('T-sne of gradient clusters')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.ylabel('Component 2')
+    plt.xlabel('Component 1')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(outdir+'/clustering/tsne.png', format='png', dpi=300)
+    plt.close()
     pdb.set_trace()
     #Select the keep indices
     sel = sel.loc[keep_indices]
