@@ -196,12 +196,12 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]
         for i in cluster_indices:
-            ax.plot(np.arange(19,102),sel_ra[i],color=colors[cl],linewidth=1,alpha=0.5)
+            ax.plot(np.arange(19,102),sel_ra[i],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
 
         ax.plot(np.arange(19,102), np.median(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
         ax.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
         #Plot gradients
-        ax2.plot(np.arange(19,102), np.median(np.array(gradients)[cluster_indices],axis=0),color=colors[cl], linewidth=1)
+        ax2.plot(np.arange(19,102), savgol_filter(np.median(np.array(gradients)[cluster_indices],axis=0),window_length=21,polyorder=2),color=colors[cl], linewidth=2, label = cl+1, alpha = 0.8)
         #Format plot
         ax.set_title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
         ax.spines['top'].set_visible(False)
@@ -213,11 +213,13 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
 
 
     #Format plot
-    ax2.set_title('Cluster gradients')
+    ax2.set_title('Gradients')
     ax2.spines['top'].set_visible(False)
     ax2.spines['right'].set_visible(False)
     ax2.set_ylabel('Normalized beta value per year')
     ax2.set_xlabel('Age')
+    ax2.set_ylim([-0.03,0.015])
+    plt.legend()
     fig2.tight_layout()
     fig2.savefig(outdir+'/clustering/gradients.png', format='png', dpi=300)
     plt.close()
@@ -230,7 +232,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         sel_emb_grads = gradients_embedded[cluster_indices]
         plt.scatter(sel_emb_grads[:,0],sel_emb_grads[:,1],color=colors[cl],label=cl+1,s=1)
     #Format plot
-    plt.title('T-sne of gradient clusters')
+    plt.title('t-SNE of gradient clusters')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.ylabel('Component 2')
