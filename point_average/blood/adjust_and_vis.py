@@ -35,6 +35,7 @@ parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, hel
 parser.add_argument('--hannum_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to Hannum markers (71).')
 parser.add_argument('--correlation_results', nargs=1, type= str, default=sys.stdin, help = 'Path to correlation results.')
 parser.add_argument('--n_clusters', nargs=1, type= int, default=sys.stdin, help = 'n_clusters for kmeans clustering.')
+parser.add_argument('--median_range', nargs=1, type=str, default=sys.stdin, help = 'Range for which group median is the current age.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -64,7 +65,7 @@ def vis_pvals(comparison_df):
     plt.savefig(outdir+'pval_distribution.png', format='png', dpi=300)
     plt.close()
 
-def vis_age_distr(ages, point_indices, sample_sheet):
+def vis_age_distr(ages, point_indices, sample_sheet, median_range):
     '''Visualize the distribution of ages and the age points
     '''
     #Merge dfs
@@ -90,9 +91,18 @@ def vis_age_distr(ages, point_indices, sample_sheet):
     y=0.03/len(point_indices)
     sns.distplot(ages,color='grey')
     age=19
+
     for i in range(len(point_indices)):
+
         agesel = ages[np.array(point_indices[i,:],dtype='int32')]
-        plt.plot([min(agesel),max(agesel)],[y,y],alpha=0.5, color='royalblue',linewidth=1)
+        #Check if the current age is the median in the group
+        if age == int(np.median(agesel)):
+            print(age)
+        if age >= min(median_range) and age <= max(median_range):
+            color = 'darkred'
+        else:
+            color='royalblue'
+        plt.plot([min(agesel),max(agesel)],[y,y],alpha=0.5, color=color,linewidth=1)
         plt.scatter(age,y,color='k',marker='|',s=1)
         y+=0.03/len(point_indices)
         age+=1
@@ -106,6 +116,7 @@ def vis_age_distr(ages, point_indices, sample_sheet):
     plt.tight_layout()
     plt.savefig(outdir+'ag_point_cutoffs.png', format='png', dpi=300)
     plt.close()
+
 
 def group_genes(unique_genes):
     '''Go through all unique genes and group them according to overlaps
@@ -134,7 +145,7 @@ def group_genes(unique_genes):
     return unique_genes_grouped
 
 
-def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n_clusters):
+def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n_clusters, median_range):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
@@ -192,16 +203,18 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     #Visualize the gradient clustering
     colors = pl.cm.viridis(np.linspace(0,1,k))
     fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
+    age_representatives = np.arange(median_range[0],median_range[1])-19
+    pdb.set_trace()
     for cl in range(k):
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]
         for i in cluster_indices:
-            ax.plot(np.arange(19,102),sel_ra[i],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
+            ax.plot(age_representatives,sel_ra[i][age_representatives],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
 
-        ax.plot(np.arange(19,102), np.median(np.array(sel_ra)[cluster_indices],axis=0),color='k', linewidth=3)
+        ax.plot(age_representatives, np.median(np.array(sel_ra)[cluster_indices],axis=0)[age_representatives],color='k', linewidth=3)
         ax.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
         #Plot gradients
-        ax2.plot(np.arange(19,102), savgol_filter(np.median(np.array(gradients)[cluster_indices],axis=0),window_length=21,polyorder=2),color=colors[cl], linewidth=2, label = cl+1, alpha = 0.8)
+        ax2.plot(age_representatives, savgol_filter(np.median(np.array(gradients)[cluster_indices],axis=0)[age_representatives],window_length=21,polyorder=2),color=colors[cl], linewidth=2, label = cl+1, alpha = 0.8)
         #Format plot
         ax.set_title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
         ax.spines['top'].set_visible(False)
@@ -389,12 +402,13 @@ sample_sheet = pd.read_csv(args.sample_sheet[0],sep='\t')
 hannum_markers = pd.read_csv(args.hannum_markers[0])
 correlation_results = pd.read_csv(args.correlation_results[0])
 n_clusters = args.n_clusters[0]
+median_range = np.array(args.median_range[0].split(','),dtype='int32')
 outdir = args.outdir[0]
 
 #Visualize pvals
 vis_pvals(max_fold_change_df)
 #Visualize age distribution and cutoffs
-vis_age_distr(ages, point_indices, sample_sheet)
+vis_age_distr(ages, point_indices, sample_sheet, median_range)
 
 #Adjust pvals
 max_fold_change_df = adjust_pvals(max_fold_change_df)
@@ -408,7 +422,7 @@ print(len(sel),'selected markers out of', len(max_fold_change_df))
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
 
 #Calculate derivatives
-sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices,n_clusters)
+sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices,n_clusters,median_range)
 #Group genes
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
 print(len(unique_genes_grouped.keys()),'unique genes')
