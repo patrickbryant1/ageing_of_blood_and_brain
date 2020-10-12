@@ -239,10 +239,10 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     plt.tight_layout()
     plt.savefig(outdir+'/clustering/tsne.png', format='png', dpi=300)
     plt.close()
-    pdb.set_trace()
+
     #Select the keep indices
     sel = sel.loc[keep_indices]
-
+    sel['cluster']=cluster_labels
 
     return sel
 
@@ -283,7 +283,7 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         for i in range(len(multi_markers)):
             row = multi_markers.loc[i]
             index = row['Unnamed: 0_x']
-            plt.plot(np.arange(0,103),running_averages[index,:],color = colors[i], linewidth=1,label=row['Reporter Identifier'])
+            plt.plot(np.arange(0,103),running_averages[index,:],color = colors[i], linewidth=1,label=row['Reporter Identifier']+'|'+str(row['cluster']+1))
             plt.scatter(ages, marker_values[index,:], color=colors[i],s=0.1)
 
         #Format plot
@@ -302,6 +302,7 @@ def analyze_horvath(horvath_markers,sel):
     '''
     overlap = pd.merge(horvath_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
     print(len(overlap), 'of the selected markers overlap with the Horvath markers.')
+    print('These belong to the clusters:',Counter(overlap['cluster']))
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     sns.distplot(horvath_markers['Coefficient'],bins=30,label='Horvath', color='cornflowerblue')
     sns.distplot(overlap['Coefficient'],bins=30,label='Running median',color='darkgreen')
