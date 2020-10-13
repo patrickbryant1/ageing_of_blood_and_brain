@@ -178,6 +178,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         if np.average(rel_std_size) >0.5: #If the average rel std is above 0.5
             continue
 
+        #Check that the fold change within the median range is large enough
+        min_in_range = min(running_averages[si,:][median_range[0]-1:median_range[1]])
+        max_in_range = max(running_averages[si,:][median_range[0]-1:median_range[1]])
+        if max_in_range/min_in_range<2:
+            continue
         keep_indices.append(i)
         #Calculate the maximal gradient difference
         gradients[i,:]=np.gradient(running_averages[si,:]/divider) #Calc gradient with norm
@@ -200,7 +205,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     #Visualize the gradient clustering
     colors = pl.cm.viridis(np.linspace(0,1,k))
     fig2,ax2 = plt.subplots(figsize=(6/2.54, 6/2.54))
-    age_representatives = np.arange(median_range[0],median_range[1]+1)
+    age_representatives = np.arange(median_range[0]-1,median_range[1]) #e.g. age 8 is at position 7
     for cl in range(k):
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]
@@ -228,6 +233,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     ax2.set_ylabel('Normalized beta value per year')
     ax2.set_xlabel('Age')
     ax2.set_ylim([-0.015,0.015])
+    ax2.set_xlim([0,102])
     fig2.legend()
     fig2.tight_layout()
     fig2.savefig(outdir+'/clustering/gradients.png', format='png', dpi=300)
@@ -254,7 +260,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     #Select the keep indices
     sel = sel.loc[keep_indices]
     sel['cluster']=cluster_labels
-
+    pdb.set_trace()
     return sel
 
 def group_markers_by_gene(sel, unique_genes_grouped):
