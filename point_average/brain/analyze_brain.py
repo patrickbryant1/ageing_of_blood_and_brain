@@ -243,7 +243,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
                 age_points = point_indices[pi]
                 running_averages[xi,pi]=np.median(Xsel[np.array(age_points,dtype='int32')])
 
-            maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0]
+            maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0] #[median_range[0]-1:median_range[1]]
             mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0][0]
             max_fold_changes[xi] = running_averages[xi,maxi]/running_averages[xi,mini]
 

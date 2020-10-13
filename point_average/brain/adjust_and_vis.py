@@ -19,6 +19,7 @@ from scipy.signal import savgol_filter
 from collections import Counter
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
+from scipy.stats import ttest_ind
 import pdb
 
 
@@ -96,7 +97,7 @@ def vis_age_distr(age_df, point_indices, median_range):
         agesel = ages[np.array(point_indices[i,:],dtype='int32')]
 
         #Check if the current age is the median in the group
-        print(age, min(agesel), max(agesel))
+        #print(age, min(agesel), max(agesel))
         if age >= min(median_range) and age <= max(median_range):
             color = 'darkred'
         else:
@@ -183,6 +184,8 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         max_in_range = max(running_averages[si,:][median_range[0]-1:median_range[1]])
         if max_in_range/min_in_range<2:
             continue
+        #Need to redo the t-test from the beginning wihtin the median range
+        
         keep_indices.append(i)
         #Calculate the maximal gradient difference
         gradients[i,:]=np.gradient(running_averages[si,:]/divider) #Calc gradient with norm
@@ -318,6 +321,8 @@ def analyze_horvath(horvath_markers,sel):
     '''Analyze which of the significant markers are used in the horvath clock
     '''
     overlap = pd.merge(horvath_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
+    #Save overlap
+    overlap.to_csv(outdir+'overlap_with_horvath_markers.csv')
     print(len(overlap), 'of the selected markers overlap with the Horvath markers.')
     print('These belong to the clusters:',Counter(overlap['cluster']))
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
