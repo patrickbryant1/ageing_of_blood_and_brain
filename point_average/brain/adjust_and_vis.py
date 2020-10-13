@@ -260,7 +260,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     #Select the keep indices
     sel = sel.loc[keep_indices]
     sel['cluster']=cluster_labels
-    pdb.set_trace()
+
     return sel
 
 def group_markers_by_gene(sel, unique_genes_grouped):
