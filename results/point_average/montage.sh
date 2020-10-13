@@ -5,11 +5,8 @@ montage ./blood/Figure1.png ./brain/frontal_cortex/Figure1.png ./brain/cerebellu
 #Figure 2
 montage ./blood/Figure2.png ./brain/frontal_cortex/Figure2.png ./brain/cerebellum/Figure2.png -tile 3x1 -geometry +2+2 Figure2.png
 
-#Figure 3
-montage ./blood/clustering/Figure3.png ./brain/frontal_cortex/clustering/Figure3.png ./brain/cerebellum/clustering/Figure3.png -tile 1x3 -geometry +2+2 Figure3.png
-
-#Figure 4
-montage ./blood/Figure4.png ./brain/frontal_cortex/Figure4.png ./brain/cerebellum/Figure4.png -tile 3x1 -geometry +2+2 Figure4.png
+#Figure 6
+montage ./blood/Figure4.png ./brain/frontal_cortex/Figure4.png ./brain/cerebellum/Figure4.png -tile 3x1 -geometry +2+2 Figure6.png
 
 
 #Figure S1
@@ -27,5 +24,7 @@ montage ./blood/genes/go.png ./blood/genes/Hannum/go.png  -tile 1x2 -geometry +2
 #Figure S7
 convert  ./brain/frontal_cortex/genes/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./brain/frontal_cortex/genes/go.png
 convert  ./brain/cerebellum/genes/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./brain/cerebellum/genes/go.png
-convert  ./brain/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C" ./brain/go.png
-montage ./brain/frontal_cortex/genes/go.png ./brain/cerebellum/genes/go.png ./brain/go.png -tile 1x3 -geometry +2+2 FigureS7.png
+montage ./brain/frontal_cortex/genes/go.png ./brain/cerebellum/genes/go.png -tile 1x2 -geometry +2+2 FigureS7.png
+
+#Figure S8
+montage ./brain/go.png -geometry +2+2 FigureS8.png
