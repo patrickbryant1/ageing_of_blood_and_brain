@@ -197,6 +197,8 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
 
     #Select the gradients associated with the markers that had sufficiently low spread
     gradients = gradients[keep_indices]
+    #Get the unnormalized runnning averages and marker values
+    unnorm_ra = running_averages[sel_indices[keep_indices]]
 
     #Cluster the gradients
     k=n_clusters #Number of clusters
@@ -212,9 +214,12 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
 
     for cl in range(k):
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+        fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]
         for i in cluster_indices:
             ax.plot(age_representatives+19,sel_ra[i][age_representatives],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
+            #unnormalized
+            ax1.plot(age_representatives+19,unnorm_ra[i][age_representatives],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
 
         ax.plot(age_representatives+19, np.median(np.array(sel_ra)[cluster_indices],axis=0)[age_representatives],color='k', linewidth=3)
         ax.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
@@ -229,6 +234,16 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         fig.tight_layout()
         fig.savefig(outdir+'/clustering/'+str(cl+1)+'.png', format='png', dpi=300)
 
+        #unnormalized
+        #Format plot
+        ax1.set_title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['right'].set_visible(False)
+        ax1.set_ylabel('Beta value')
+        ax1.set_xlabel('Age')
+        ax1.set_xlim([19,101])
+        fig1.tight_layout()
+        fig1.savefig(outdir+'/clustering/'+str(cl+1)+'_unnormalized.png', format='png', dpi=300)
 
     #Format plot
     ax2.set_title('Gradients')

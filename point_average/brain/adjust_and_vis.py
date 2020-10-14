@@ -157,13 +157,11 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     sel_marker_values = []
     #Loop through the significant markers
     keep_indices = [] #keep the markers with sufficiently small std compared to the median
-    norm=True
+
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
-        if norm == True:
-            divider = max(marker_values[si,:])
-        else:
-            divider=1
+        divider = max(marker_values[si,:])
+
 
         #Calculate the standard deviation for the running medians
         #Go through all point indices
@@ -183,12 +181,10 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         min_in_range = min(running_averages[si,:][median_range[0]-1:median_range[1]])
         max_in_range = max(running_averages[si,:][median_range[0]-1:median_range[1]])
 
-        maxi = np.where(running_averages[si,:]==max(running_averages[si,:][median_range[0]-1:median_range[1]]))[0][0] #[median_range[0]-1:median_range[1]]
-        mini = np.where(running_averages[si,:]==min(running_averages[si,:][median_range[0]-1:median_range[1]]))[0][0]
-
-        if running_averages[si,maxi]/running_averages[si,mini]<2:
+        if max_in_range/min_in_range<2:
             print(max_in_range/min_in_range)
             print(max_in_range,min_in_range)
+            pdb.set_trace()
 
         #Need to redo the t-test from the beginning wihtin the median range
         keep_indices.append(i)
@@ -202,6 +198,8 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
 
     #Select the gradients associated with the markers that had sufficiently low spread
     gradients = gradients[keep_indices]
+    #Get the unnormalized runnning averages and marker values
+    unnorm_ra = running_averages[sel_indices[keep_indices]]
 
     #Cluster the gradients
     k=n_clusters #Number of clusters
@@ -216,12 +214,16 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     age_representatives = np.arange(median_range[0]-1,median_range[1]) #e.g. age 8 is at position 7
     for cl in range(k):
         fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+        fig1,ax1 = plt.subplots(figsize=(6/2.54, 6/2.54))
         cluster_indices = np.where(cluster_labels==cl)[0]
         for i in cluster_indices:
             ax.plot(age_representatives,sel_ra[i][age_representatives],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
+            #unnormalized
+            ax1.plot(age_representatives,unnorm_ra[i][age_representatives],color=colors[cl],linewidth=1,alpha=min(1,(20/len(cluster_indices))))
 
         ax.plot(age_representatives, np.median(np.array(sel_ra)[cluster_indices],axis=0)[age_representatives],color='k', linewidth=3)
         ax.scatter(ages,np.median(np.array(sel_marker_values)[cluster_indices],axis=0),color='k',s=1)
+
         #Plot gradients
         ax2.plot(age_representatives, savgol_filter(np.median(np.array(gradients)[cluster_indices],axis=0)[age_representatives],window_length=21,polyorder=2),color=colors[cl], linewidth=2, label = cl+1, alpha =0.8)
         #Format plot
@@ -233,6 +235,16 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         fig.tight_layout()
         fig.savefig(outdir+'/clustering/'+str(cl+1)+'.png', format='png', dpi=300)
 
+        #unnormalized
+        #Format plot
+        ax1.set_title('Cluster '+str(cl+1)+'|'+str(len(cluster_indices))+' markers')
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['right'].set_visible(False)
+        ax1.set_ylabel('Beta value')
+        ax1.set_xlabel('Age')
+        ax1.set_xlim([0,102])
+        fig1.tight_layout()
+        fig1.savefig(outdir+'/clustering/'+str(cl+1)+'_unnormalized.png', format='png', dpi=300)
 
     #Format plot
     ax2.set_title('Gradients')
