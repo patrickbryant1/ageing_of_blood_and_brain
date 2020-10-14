@@ -96,7 +96,7 @@ def vis_age_distr(ages, point_indices, sample_sheet, median_range):
 
         agesel = ages[np.array(point_indices[i,:],dtype='int32')]
         #Check if the current age is the median in the group
-        print(age, min(agesel), max(agesel))
+        #print(age, min(agesel), max(agesel))
         if age >= min(median_range) and age <= max(median_range):
             color = 'darkred'
         else:
@@ -181,10 +181,10 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
             continue
 
         #Check that the fold change within the median range is large enough
-        min_in_range = min(running_averages[si,:][median_range[0]-1:median_range[1]])
-        max_in_range = max(running_averages[si,:][median_range[0]-1:median_range[1]])
+        min_in_range = min(running_averages[si,:][median_range[0]-20:median_range[1]-19])
+        max_in_range = max(running_averages[si,:][median_range[0]-20:median_range[1]-19])
         if max_in_range/min_in_range<2:
-            continue
+            pdb.set_trace()
 
         keep_indices.append(i)
         #Calculate the maximal gradient difference
@@ -265,7 +265,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     sel = sel.loc[keep_indices]
     #Add the cluster info
     sel['cluster']=cluster_labels
-    pdb.set_trace()
+
     return sel
 
 def group_markers_by_gene(sel, unique_genes_grouped, outdir):
