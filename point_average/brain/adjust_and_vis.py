@@ -179,13 +179,18 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         if np.average(rel_std_size) >0.5: #If the average rel std is above 0.5
             continue
 
-        #Check that the fold change within the median range is large enough
+        #Check that the fold change within the median range really is large enough
         min_in_range = min(running_averages[si,:][median_range[0]-1:median_range[1]])
         max_in_range = max(running_averages[si,:][median_range[0]-1:median_range[1]])
-        if max_in_range/min_in_range<2:
-            continue
+
+        maxi = np.where(running_averages[si,:]==max(running_averages[si,:][median_range[0]-1:median_range[1]]))[0][0] #[median_range[0]-1:median_range[1]]
+        mini = np.where(running_averages[si,:]==min(running_averages[si,:][median_range[0]-1:median_range[1]]))[0][0]
+
+        if running_averages[si,maxi]/running_averages[si,mini]<2:
+            print(max_in_range/min_in_range)
+            print(max_in_range,min_in_range)
+
         #Need to redo the t-test from the beginning wihtin the median range
-        
         keep_indices.append(i)
         #Calculate the maximal gradient difference
         gradients[i,:]=np.gradient(running_averages[si,:]/divider) #Calc gradient with norm
@@ -422,7 +427,6 @@ sel = sel[np.absolute(sel['fold_change'])>2]
 
 #Get the gene annotations for the selected markers
 ###NOTE!!! This resets the index!!!
-
 sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Name', how='left')
 #Calculate derivatives
 sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, point_indices,n_clusters,median_range)

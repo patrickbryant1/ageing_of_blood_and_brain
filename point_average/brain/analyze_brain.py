@@ -29,6 +29,7 @@ parser.add_argument('--joined_betas', nargs=1, type= str, default=sys.stdin, hel
 parser.add_argument('--sample_sheet36194', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet with accession 36194.')
 parser.add_argument('--sample_sheet1575', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet with accession 1575.')
 parser.add_argument('--gene_annotations', nargs=1, type= str, default=sys.stdin, help = 'Path to gene annotations.')
+parser.add_argument('--median_range', nargs=1, type=str, default=sys.stdin, help = 'Range for which group median is the current age.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -200,12 +201,14 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
 
     print('Removed ', len(merged)-len(X), 'markers that had over 10 missing values (Beta=0)')
     #Go through the tissues
+    median_ranges = {'cerebellum':[8,95],'frontal cortex':[8,96]}
     for tissue in [ 'cerebellum','frontal cortex']:
         #Get frontal cortex ages
         tissue_indices = age_df[age_df['Tissue']==tissue].index
 
         #Get tissue marker values
         X_tissue = X[:,tissue_indices]
+        pdb.set_trace()
         #Clean outliers
         remain_tissue_indices = clean_outliers(X_tissue, outdir, tissue)
         tissue_indices = tissue_indices[remain_tissue_indices]
@@ -234,6 +237,8 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         max_fold_changes = np.zeros(X_tissue.shape[0])
         max_fold_change_pvals = np.zeros(X_tissue.shape[0])
         #Calculate running point average
+        #Get the median range
+        median_range = median_ranges[tissue]
         for xi in range(len(X_tissue)):
             if xi%1000==0: #Print if congruent with 1000
                 print(xi)
@@ -243,8 +248,8 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
                 age_points = point_indices[pi]
                 running_averages[xi,pi]=np.median(Xsel[np.array(age_points,dtype='int32')])
 
-            maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0] #[median_range[0]-1:median_range[1]]
-            mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0][0]
+            maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:][median_range[0]-1:median_range[1]]))[0][0] #[median_range[0]-1:median_range[1]]
+            mini = np.where(running_averages[xi,:]==min(running_averages[xi,:][median_range[0]-1:median_range[1]]))[0][0]
             max_fold_changes[xi] = running_averages[xi,maxi]/running_averages[xi,mini]
 
             #Calculate p-value between samples belonging to max/min fold change

@@ -27,6 +27,7 @@ parser.add_argument('--joined_betas', nargs=1, type= str, default=sys.stdin, hel
 parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet.')
 parser.add_argument('--gene_annotations', nargs=1, type= str, default=sys.stdin, help = 'Path to gene annotations.')
 parser.add_argument('--agelabel', nargs=1, type= str, default=sys.stdin, help = 'Agelabel.')
+parser.add_argument('--median_range', nargs=1, type=str, default=sys.stdin, help = 'Range for which group median is the current age.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -140,7 +141,7 @@ def get_point_indices(ages):
 
     return point_indices
 
-def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
+def compare_probes(joined_betas, sample_sheet, gene_annotations, median_range, outdir):
     '''Analyze the relationship between probe beta values and age
     '''
 
@@ -200,8 +201,8 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, outdir):
             age_points = point_indices[pi]
             running_averages[xi,pi]=np.median(Xsel[np.array(age_points,dtype='int32')])
 
-        maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:]))[0][0]
-        mini = np.where(running_averages[xi,:]==min(running_averages[xi,:]))[0][0]
+        maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:][median_range[0]-20:median_range[1]-19]))[0][0] #Starts at year 19 --> first index is age-20
+        mini = np.where(running_averages[xi,:]==min(running_averages[xi,:][median_range[0]-20:median_range[1]-19]))[0][0]
         max_fold_changes[xi] = running_averages[xi,maxi]/running_averages[xi,mini]
 
         #Calculate p-value between samples belonging to max/min fold change
@@ -257,7 +258,8 @@ gene_annotations = pd.read_csv(args.gene_annotations[0],low_memory=False)
 joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
 print('Read betas')
 sample_sheet = pd.read_csv(args.sample_sheet[0], sep = '\t')
+median_range = np.array(args.median_range[0].split(','),dtype='int32')
 outdir = args.outdir[0]
 
 #Compare probes btw age stratified samples
-compare_probes(joined_betas, sample_sheet, gene_annotations, outdir)
+compare_probes(joined_betas, sample_sheet, gene_annotations, median_range, outdir)
