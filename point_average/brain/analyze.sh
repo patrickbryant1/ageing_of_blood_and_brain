@@ -4,7 +4,7 @@ BETAS=/hdd/pbryant/data/Methylation/Brain/joined_betas.csv #27k samples
 SAMPLES36194=/hdd/pbryant/data/Methylation/Brain/sample_sheet_36194.tsv
 SAMPLES1575=/hdd/pbryant/data/Methylation/Brain/sample_sheet_15745.tsv
 OUTDIR=../../results/point_average/brain/
-#./analyze_brain.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --outdir $OUTDIR
+./analyze_brain.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet36194 $SAMPLES36194 --sample_sheet1575 $SAMPLES1575 --outdir $OUTDIR
 
 #Adjust the pvals, select markers and and visualize
 ###Cerebellum

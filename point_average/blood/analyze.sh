@@ -5,7 +5,7 @@ SAMPLES=/hdd/pbryant/data/Methylation/Hannum_blood/sample_sheet.tsv
 AL='blood'
 MEDIANRANGE='32,90'
 OUTDIR=../../results/point_average/blood/
-#./analyze_blood.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --median_range $MEDIANRANGE --outdir $OUTDIR
+./analyze_blood.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES --agelabel $AL --median_range $MEDIANRANGE --outdir $OUTDIR
 
 #Adjust the pvals, select markers and and visualize
 RA=/home/pbryant/results/methylation/aging_of_blood/10/median/running_averages.npy
