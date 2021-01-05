@@ -33,8 +33,7 @@ plt.rcParams.update({'font.size': 7})
 #Args
 args = parser.parse_args()
 selected_markers = pd.read_csv(args.selected_markers[0],low_memory=False)
-
 marker_values = np.load(args.marker_values[0], allow_pickle=True)
 age_df = pd.read_csv(args.ages[0])
-
 outdir = args.outdir[0]
+pdb.set_trace()
