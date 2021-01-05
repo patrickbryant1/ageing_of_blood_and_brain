@@ -26,15 +26,21 @@ parser.add_argument('--horvath_markers', nargs=1, type= str, default=sys.stdin, 
 parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdin, help = 'Path to marker max fold changes and pvals. This df contains the marker ids in order.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
-def create_horvath_df(age_df, horvath_marker_values,horvath_marker_ids, outdir):
+def create_horvath_df(age_df, all_marker_values,all_marker_ids, horvath_markers, outdir):
     '''Get Horvath marker values
     '''
 
     samples = age_df['Sample'].values
     df_to_horvath_clock = pd.DataFrame()
-    df_to_horvath_clock['ProbeID']=horvath_marker_ids
+    df_to_horvath_clock['Name']=all_marker_ids
     for i in range(len(samples)):
-        df_to_horvath_clock[samples[i]]=horvath_marker_values[:,i]
+        df_to_horvath_clock[samples[i]]=all_marker_values[:,i]
+
+
+    #Merge
+    df_to_horvath_clock = pd.merge(horvath_markers,df_to_horvath_clock,on='Name',how='left')
+    #Drop unwanted cols
+    df_to_horvath_clock = df_to_horvath_clock.drop(columns={'Gene_ID', 'GenomeBuild', 'Chr', 'Accession', 'overallMeanByCpGacross50data', 'CoefficientHannum'})
 
     #Save df
     df_to_horvath_clock.to_csv(outdir+'df_to_horvath_clock.csv',index=False)
@@ -49,7 +55,9 @@ def rf_fit(sel_marker_values, ages, horvath_preds, outdir):
     kf = KFold(n_splits=5, random_state=42, shuffle=True)
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     errors = []
+    fold = 0
     for ti, vi in kf.split(sel_marker_values):
+        fold+=1 #Increase fold
         X_train = sel_marker_values[ti]
         y_train = ages[ti]
         X_valid = sel_marker_values[vi]
@@ -60,15 +68,21 @@ def rf_fit(sel_marker_values, ages, horvath_preds, outdir):
         regr.fit(X_train, y_train)
         pred = regr.predict(X_valid)
         errors.append(np.average(np.absolute(pred-y_valid)))
-        plt.scatter(y_valid,pred,s=1,color='cornflowerblue')
+        if fold ==5:
+            plt.scatter(y_valid,pred,s=1,color='cornflowerblue',label='FC '+str(np.round(np.average(errors),2)))
+        else:
+            plt.scatter(y_valid,pred,s=1,color='cornflowerblue')
     #Plot Horvath
-    plt.scatter(ages,horvath_preds,color='r',s=1,label='Horvath')
+    horvath_error = np.average(np.absolute(ages-horvath_preds))
+    plt.scatter(ages,horvath_preds,color='r',s=1,label='Horvath '+str(np.round(horvath_error,2)))
     #Plot diagonal line
     plt.plot([min(ages),max(ages)],[min(ages),max(ages)],color='k',linewidth=0.5)
     plt.xlabel('True age')
     plt.ylabel('Predicted age')
-    plt.title('Average error '+str(np.round(np.average(errors),2))+' +/- '+str(np.round(np.std(errors),2)))
-    #plt.legend()
+    plt.title('Cerebellum')
+    plt.legend(frameon = False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
     plt.tight_layout()
     plt.savefig(outdir+'cv_results.png', format='png', dpi=300)
     plt.close()
@@ -89,15 +103,15 @@ outdir = args.outdir[0]
 #Select marker values
 #the column Unnamed: 0_x contains the indx of the selected marker
 sel_marker_values = marker_values[selected_markers['Unnamed: 0_x'].values]
-#Select Horvath marker values
-horvath_markers =  pd.merge(horvath_markers,max_fold_change_df,left_on='Marker',right_on='Reporter Identifier', how='left')
-horvath_marker_values = marker_values[horvath_markers['Unnamed: 0'].values]
-#Format Horvath markers to run clock
-create_horvath_df(age_df, horvath_marker_values,horvath_markers['Marker'].values, outdir)
-#horvath_coefs = horvath_markers['Coefficient'].values
-#horvath_preds = np.dot(horvath_marker_values.T, horvath_coefs)
+
+try:
+    horvath_preds = pd.read_csv(outdir+'df_to_horvath_clock.output.csv')
+except:
+    #Format Horvath markers to run clock
+    create_horvath_df(age_df, marker_values,max_fold_change_df['Reporter Identifier'].values, horvath_markers,outdir)
+    raise IOError('No Horvath preds')
 
 #Select ages
 ages = age_df['Age'].values
 #Fit a rf model
-rf_fit(sel_marker_values.T, ages, horvath_preds, outdir)
+rf_fit(sel_marker_values.T, ages, horvath_preds['DNAmAge'].values, outdir)
