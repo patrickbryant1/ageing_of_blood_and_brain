@@ -1,0 +1,9 @@
+1	cellular process (GO:0009987)	9	42.9%	28.1%
+2	localization (GO:0051179)	4	19.0%	12.5%
+3	biological regulation (GO:0065007)	2	9.5%	6.3%
+4	response to stimulus (GO:0050896)	3	14.3%	9.4%
+5	signaling (GO:0023052)	2	9.5%	6.3%
+6	developmental process (GO:0032502)	3	14.3%	9.4%
+7	biological adhesion (GO:0022610)	1	4.8%	3.1%
+8	multicellular organismal process (GO:0032501)	3	14.3%	9.4%
+9	metabolic process (GO:0008152)	5	23.8%	15.6%
