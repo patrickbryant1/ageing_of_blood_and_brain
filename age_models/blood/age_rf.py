@@ -22,27 +22,11 @@ parser = argparse.ArgumentParser(description = '''Create a rf predictor for CA u
 parser.add_argument('--selected_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to df with selected markers.')
 parser.add_argument('--marker_values', nargs=1, type= str, default=sys.stdin, help = 'Path to marker values.')
 parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Path to sample ages.')
-parser.add_argument('--horvath_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to Horvath marker values.')
+parser.add_argument('--hannum_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to hannum marker values.')
 parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdin, help = 'Path to marker max fold changes and pvals. This df contains the marker ids in order.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
-def create_horvath_df(age_df, horvath_marker_values,horvath_marker_ids, outdir):
-    '''Get Horvath marker values
-    '''
-
-    samples = age_df['Sample'].values
-    df_to_horvath_clock = pd.DataFrame()
-    df_to_horvath_clock['ProbeID']=horvath_marker_ids
-    for i in range(len(samples)):
-        df_to_horvath_clock[samples[i]]=horvath_marker_values[:,i]
-
-    #Save df
-    df_to_horvath_clock.to_csv(outdir+'df_to_horvath_clock.csv',index=False)
-
-    return None
-
-
-def rf_fit(sel_marker_values, ages, horvath_preds, outdir):
+def rf_fit(sel_marker_values, ages, hannum_preds, outdir):
     '''5 fold CV
     '''
 
@@ -61,8 +45,8 @@ def rf_fit(sel_marker_values, ages, horvath_preds, outdir):
         pred = regr.predict(X_valid)
         errors.append(np.average(np.absolute(pred-y_valid)))
         plt.scatter(y_valid,pred,s=1,color='cornflowerblue')
-    #Plot Horvath
-    plt.scatter(ages,horvath_preds,color='r',s=1,label='Horvath')
+    #Plot hannum
+    plt.scatter(ages,hannum_preds,color='r',s=1,label='hannum')
     #Plot diagonal line
     plt.plot([min(ages),max(ages)],[min(ages),max(ages)],color='k',linewidth=0.5)
     plt.xlabel('True age')
@@ -82,22 +66,20 @@ args = parser.parse_args()
 selected_markers = pd.read_csv(args.selected_markers[0],low_memory=False)
 marker_values = np.load(args.marker_values[0], allow_pickle=True)
 age_df = pd.read_csv(args.ages[0])
-horvath_markers = pd.read_csv(args.horvath_markers[0])
+hannum_markers = pd.read_csv(args.hannum_markers[0])
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
 outdir = args.outdir[0]
 
 #Select marker values
 #the column Unnamed: 0_x contains the indx of the selected marker
 sel_marker_values = marker_values[selected_markers['Unnamed: 0_x'].values]
-#Select Horvath marker values
-horvath_markers =  pd.merge(horvath_markers,max_fold_change_df,left_on='Marker',right_on='Reporter Identifier', how='left')
-horvath_marker_values = marker_values[horvath_markers['Unnamed: 0'].values]
-#Format Horvath markers to run clock
-create_horvath_df(age_df, horvath_marker_values,horvath_markers['Marker'].values, outdir)
-#horvath_coefs = horvath_markers['Coefficient'].values
-#horvath_preds = np.dot(horvath_marker_values.T, horvath_coefs)
-
+#Select hannum marker values
+hannum_markers =  pd.merge(hannum_markers,max_fold_change_df,left_on='Marker',right_on='Reporter Identifier', how='left')
+hannum_marker_values = marker_values[hannum_markers['Unnamed: 0'].values]
+hannum_coefs = hannum_markers['Coefficient'].values
+hannum_preds = np.dot(hannum_marker_values.T, hannum_coefs)
+pdb.set_trace()
 #Select ages
 ages = age_df['Age'].values
 #Fit a rf model
-rf_fit(sel_marker_values.T, ages, horvath_preds, outdir)
+rf_fit(sel_marker_values.T, ages, hannum_preds, outdir)
