@@ -107,7 +107,7 @@ outdir = args.outdir[0]
 sel_marker_values = marker_values[selected_markers['Unnamed: 0_x'].values]
 
 try:
-    horvath_preds = pd.read_csv(outdir+'df_to_horvath_clock.output.csv')
+    horvath_preds = pd.read_csv(outdir+'norm_df_to_horvath_clock.output.csv')
 except:
     #Format Horvath markers to run clock
     create_horvath_df(age_df, marker_values,max_fold_change_df['Reporter Identifier'].values, horvath_markers,outdir)
