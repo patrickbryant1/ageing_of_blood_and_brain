@@ -81,7 +81,7 @@ def rf_fit(sel_marker_values, ages, horvath_preds, outdir):
     plt.plot([min(ages),max(ages)],[min(ages),max(ages)],color='k',linewidth=0.5)
     plt.xlabel('True age')
     plt.ylabel('Predicted age')
-    plt.title('FCTX')
+    plt.title('Frontal cortex')
     plt.legend(frameon = False)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
