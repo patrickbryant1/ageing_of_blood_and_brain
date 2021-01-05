@@ -42,12 +42,12 @@ def plot_GO(go_df,colors,all_categories,title,outname):
         sel_colors.append(colors[np.where(all_categories==key)[0]][0])
 
     #Plot
-    fig,ax = plt.subplots(figsize=(18/2.54, 12/2.54))
+    fig,ax = plt.subplots(figsize=(12/2.54, 12/2.54))
 
-    plt.bar(np.arange(len(go_df)),go_df[2],color=np.array(sel_colors))
-    ax.set_xticks(np.arange(len(go_df)))
-    ax.set_xticklabels(go_df[1], rotation='vertical')
-    plt.ylabel('Count')
+    plt.barh(np.arange(len(go_df)),go_df[2],color=np.array(sel_colors))
+    ax.set_yticks(np.arange(len(go_df)))
+    ax.set_yticklabels(go_df[1])
+    plt.xlabel('Count')
     plt.title(title)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -87,7 +87,7 @@ colors = pl.cm.tab20b(np.linspace(0,1,len(all_categories)))
 plot_GO(blood1,colors,all_categories,'Blood GO enrichment 1',outdir+'blood/genes/go1.png')
 plot_GO(blood2,colors,all_categories,'Blood GO enrichment 2',outdir+'blood/genes/go2.png')
 #FCTX
-plot_GO(frontal_cortex,colors,all_categories,'Frontal cortex GO enrichment',outdir+'brain/frontal_cortex/genes/go.png')
+plot_GO(frontal_cortex,colors,all_categories,'FCTX GO enrichment',outdir+'brain/frontal_cortex/genes/go.png')
 #Cerebellum
 plot_GO(cerebellum1,colors,all_categories,'Cerebellum GO enrichment 1',outdir+'brain/cerebellum/genes/go1.png')
 plot_GO(cerebellum2,colors,all_categories,'Cerebellum GO enrichment 2',outdir+'brain/cerebellum/genes/go2.png')
