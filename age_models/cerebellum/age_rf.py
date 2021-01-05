@@ -52,8 +52,12 @@ def rf_fit(sel_marker_values, ages, horvath_preds, outdir):
     '''5 fold CV
     '''
 
-    kf = KFold(n_splits=5, random_state=42, shuffle=True)
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    #Plot Horvath
+    horvath_error = np.average(np.absolute(ages-horvath_preds))
+    plt.scatter(ages,horvath_preds,color='cornflowerblue',s=1,label='Horvath err '+str(np.round(horvath_error,2)))
+    #5-fold CV
+    kf = KFold(n_splits=5, random_state=42, shuffle=True)
     errors = []
     fold = 0
     for ti, vi in kf.split(sel_marker_values):
@@ -69,12 +73,10 @@ def rf_fit(sel_marker_values, ages, horvath_preds, outdir):
         pred = regr.predict(X_valid)
         errors.append(np.average(np.absolute(pred-y_valid)))
         if fold ==5:
-            plt.scatter(y_valid,pred,s=1,color='cornflowerblue',label='FC '+str(np.round(np.average(errors),2)))
+            plt.scatter(y_valid,pred,s=1,color='darkgreen',label='FC err '+str(np.round(np.average(errors),2)),alpha=0.5)
         else:
-            plt.scatter(y_valid,pred,s=1,color='cornflowerblue')
-    #Plot Horvath
-    horvath_error = np.average(np.absolute(ages-horvath_preds))
-    plt.scatter(ages,horvath_preds,color='r',s=1,label='Horvath '+str(np.round(horvath_error,2)))
+            plt.scatter(y_valid,pred,s=1,color='darkgreen',alpha=0.5)
+
     #Plot diagonal line
     plt.plot([min(ages),max(ages)],[min(ages),max(ages)],color='k',linewidth=0.5)
     plt.xlabel('True age')
