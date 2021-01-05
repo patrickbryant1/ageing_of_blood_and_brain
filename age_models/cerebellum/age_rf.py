@@ -26,14 +26,29 @@ parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Pat
 
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
+def rf_fit(sel_marker_values, ages):
+    '''5 fold CV
+    '''
+
+    kf = KFold(n_splits=5, random_state=42, shuffle=True)
+    for ti, vi in kf.split(sel_marker_values):
+        X = sel_marker_values[ti]
+        y = ages[ti]
+        pdb.set_trace()
 
 ###########MAIN###########
 #Plt
 plt.rcParams.update({'font.size': 7})
 #Args
 args = parser.parse_args()
-selected_markers = pd.read_csv(args.selected_markers[0],low_memory=False)
+selected_markers = pd.read_csv(args.selected_markers[0],low_memory=False) #the column Unnamed: 0_x contains the indx of the selected marker
 marker_values = np.load(args.marker_values[0], allow_pickle=True)
 age_df = pd.read_csv(args.ages[0])
 outdir = args.outdir[0]
-pdb.set_trace()
+
+#Select marker values
+sel_marker_values = marker_values[selected_markers['Unnamed: 0_x'].values]
+#Select ages
+ages = age_df['Age'].values
+#Fit a rf model
+rf_fit(sel_marker_values.T, ages)
