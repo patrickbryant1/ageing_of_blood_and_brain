@@ -73,7 +73,7 @@ def rf_fit(sel_marker_values, ages, horvath_preds, outdir):
         pred = regr.predict(X_valid)
         errors.append(np.average(np.absolute(pred-y_valid)))
         if fold ==5:
-            plt.scatter(y_valid,pred,s=1,color='darkgreen',label='RM err '+str(np.round(np.average(errors),2)),alpha=0.5)
+            plt.scatter(y_valid,pred,s=1,color='darkgreen',label='RF err '+str(np.round(np.average(errors),2)),alpha=0.5)
         else:
             plt.scatter(y_valid,pred,s=1,color='darkgreen',alpha=0.5)
 
