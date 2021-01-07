@@ -30,10 +30,18 @@ def rf_fit(sel_marker_values, ages, hannum_preds, outdir):
     '''5 fold CV
     '''
 
-    kf = KFold(n_splits=5, random_state=42, shuffle=True)
+
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
+    #Plot hannum
+    hannum_error = np.average(np.absolute(ages-hannum_preds))
+    plt.scatter(ages,hannum_preds,color='cornflowerblue',s=1,label='Hannum err '+str(np.round(hannum_error,2)))
+
+    #5-fold CV
+    kf = KFold(n_splits=5, random_state=42, shuffle=True)
     errors = []
+    fold = 0
     for ti, vi in kf.split(sel_marker_values):
+        fold+=1 #Increase fold
         X_train = sel_marker_values[ti]
         y_train = ages[ti]
         X_valid = sel_marker_values[vi]
@@ -44,15 +52,19 @@ def rf_fit(sel_marker_values, ages, hannum_preds, outdir):
         regr.fit(X_train, y_train)
         pred = regr.predict(X_valid)
         errors.append(np.average(np.absolute(pred-y_valid)))
-        plt.scatter(y_valid,pred,s=1,color='cornflowerblue')
-    #Plot hannum
-    plt.scatter(ages,hannum_preds,color='r',s=1,label='hannum')
+        if fold ==5:
+            plt.scatter(y_valid,pred,s=1,color='darkgreen',label='RF err '+str(np.round(np.average(errors),2)),alpha=0.5)
+        else:
+            plt.scatter(y_valid,pred,s=1,color='darkgreen',alpha=0.5)
+
     #Plot diagonal line
     plt.plot([min(ages),max(ages)],[min(ages),max(ages)],color='k',linewidth=0.5)
     plt.xlabel('True age')
     plt.ylabel('Predicted age')
-    plt.title('Average error '+str(np.round(np.average(errors),2))+' +/- '+str(np.round(np.std(errors),2)))
-    #plt.legend()
+    plt.title('Blood')
+    plt.legend(frameon = False)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
     plt.tight_layout()
     plt.savefig(outdir+'cv_results.png', format='png', dpi=300)
     plt.close()
@@ -78,7 +90,7 @@ hannum_markers =  pd.merge(hannum_markers,max_fold_change_df,left_on='Marker',ri
 hannum_marker_values = marker_values[hannum_markers['Unnamed: 0'].values]
 hannum_coefs = hannum_markers['Coefficient'].values
 hannum_preds = np.dot(hannum_marker_values.T, hannum_coefs)
-pdb.set_trace()
+
 #Select ages
 ages = age_df['Age'].values
 #Fit a rf model
