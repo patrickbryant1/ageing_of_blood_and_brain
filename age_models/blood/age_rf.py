@@ -11,6 +11,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import KFold
+from scipy.stats import pearsonr
 
 import numpy as np
 
@@ -34,11 +35,13 @@ def rf_fit(sel_marker_values, ages, hannum_preds, outdir):
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     #Plot hannum
     hannum_error = np.average(np.absolute(ages-hannum_preds))
-    plt.scatter(ages,hannum_preds,color='cornflowerblue',s=1,label='Hannum err '+str(np.round(hannum_error,2)))
+    hannum_corr = pearsonr(ages,hannum_preds)[0]
+    plt.scatter(ages,hannum_preds,color='cornflowerblue',s=1,label='Hannum')
 
     #5-fold CV
     kf = KFold(n_splits=5, random_state=42, shuffle=True)
     errors = []
+    corrs = []
     fold = 0
     for ti, vi in kf.split(sel_marker_values):
         fold+=1 #Increase fold
@@ -52,8 +55,9 @@ def rf_fit(sel_marker_values, ages, hannum_preds, outdir):
         regr.fit(X_train, y_train)
         pred = regr.predict(X_valid)
         errors.append(np.average(np.absolute(pred-y_valid)))
+        corrs.append(pearsonr(pred,y_valid)[0])
         if fold ==5:
-            plt.scatter(y_valid,pred,s=1,color='darkgreen',label='RF err '+str(np.round(np.average(errors),2)),alpha=0.5)
+            plt.scatter(y_valid,pred,s=1,color='darkgreen',label='Random forest',alpha=0.5)
         else:
             plt.scatter(y_valid,pred,s=1,color='darkgreen',alpha=0.5)
 
@@ -69,6 +73,8 @@ def rf_fit(sel_marker_values, ages, hannum_preds, outdir):
     plt.savefig(outdir+'cv_results.png', format='png', dpi=300)
     plt.close()
 
+    print('Hannum',hannum_error,hannum_corr)
+    print('Random forest',np.average(errors),np.std(errors),np.average(corrs),np.std(corrs))
 
 ###########MAIN###########
 #Plt
