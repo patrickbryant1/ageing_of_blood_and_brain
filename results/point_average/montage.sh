@@ -1,12 +1,12 @@
-# #Figure 1
-# #Add labels
-# montage ./blood/Figure1.png ./brain/frontal_cortex/Figure1.png ./brain/cerebellum/Figure1.png -tile 3x1 -geometry +2+2 Figure1.png
-#
-# #Figure 2
-# montage ./blood/Figure2.png ./brain/frontal_cortex/Figure2.png ./brain/cerebellum/Figure2.png -tile 3x1 -geometry +2+2 Figure2.png
-#
-# #Figure 6
-# montage ./blood/Figure4.png ./brain/frontal_cortex/Figure4.png ./brain/cerebellum/Figure4.png -tile 3x1 -geometry +2+2 Figure6.png
+#Figure 1
+#Add labels
+montage ./blood/Figure1.png ./brain/frontal_cortex/Figure1.png ./brain/cerebellum/Figure1.png -tile 3x1 -geometry +2+2 Figure1.png
+
+#Figure 2
+montage ./blood/Figure2.png ./brain/frontal_cortex/Figure2.png ./brain/cerebellum/Figure2.png -tile 3x1 -geometry +2+2 Figure2.png
+
+#Figure 6
+montage ./blood/Figure4.png ./brain/frontal_cortex/Figure4.png ./brain/cerebellum/Figure4.png -tile 3x1 -geometry +2+2 Figure6.png
 
 #Figure 7
 convert ./blood/models/cv_results.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./blood/models/cv_results.png
