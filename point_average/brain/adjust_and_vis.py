@@ -108,7 +108,7 @@ def vis_age_distr(age_df, point_indices, median_range):
         y+=0.02/len(point_indices)
         age+=1
 
-    plt.title('Running average groups')
+    plt.title('Running median groups')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.ylabel('Density')

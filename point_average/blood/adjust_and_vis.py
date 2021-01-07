@@ -107,7 +107,7 @@ def vis_age_distr(ages, point_indices, sample_sheet, median_range):
         age+=1
 
 
-    plt.title('Running average groups')
+    plt.title('Running median groups')
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.ylabel('Density')
@@ -345,7 +345,7 @@ def analyze_hannum(hannum_markers,sel,outdir):
     print('These belong to the clusters:',Counter(overlap['cluster']))
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     sns.distplot(hannum_markers['Coefficient'],bins=30,label='Hannum', color='cornflowerblue')
-    sns.distplot(overlap['Coefficient'],bins=30,label='Running average',color='darkgreen')
+    sns.distplot(overlap['Coefficient'],bins=30,label='Running median',color='darkgreen')
     plt.legend()
     plt.xlabel('Hannum coeffecient')
     plt.ylabel('Density')
@@ -376,7 +376,7 @@ def correlation_overlap(correlation_results, sel):
     plt.close()
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
-    sns.distplot(sel['R'], color='darkgreen', label='Running average')
+    sns.distplot(sel['R'], color='darkgreen', label='Running median')
     plt.xlabel('Pearson R')
     plt.ylabel('Density')
     plt.title('Marker correlations')
