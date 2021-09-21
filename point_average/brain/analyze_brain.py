@@ -208,7 +208,6 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
 
         #Get tissue marker values
         X_tissue = X[:,tissue_indices]
-        pdb.set_trace()
         #Clean outliers
         remain_tissue_indices = clean_outliers(X_tissue, outdir, tissue)
         tissue_indices = tissue_indices[remain_tissue_indices]
@@ -235,7 +234,8 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         #Save running averages
         running_averages = np.zeros((X_tissue.shape[0],len(point_ages)))
         max_fold_changes = np.zeros(X_tissue.shape[0])
-        max_fold_change_pvals = np.zeros(X_tissue.shape[0])
+        max_abs_changes = np.zeros(X_tissue.shape[0])
+        max_abs_change_pvals = np.zeros(X_tissue.shape[0])
         #Calculate running point average
         #Get the median range
         median_range = median_ranges[tissue]
@@ -251,8 +251,9 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
             maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:][median_range[0]-1:median_range[1]]))[0][0] #[median_range[0]-1:median_range[1]]
             mini = np.where(running_averages[xi,:]==min(running_averages[xi,:][median_range[0]-1:median_range[1]]))[0][0]
             max_fold_changes[xi] = running_averages[xi,maxi]/running_averages[xi,mini]
-
+            max_abs_changes[xi] = running_averages[xi,maxi]-running_averages[xi,mini]
             #Calculate p-value between samples belonging to max/min fold change
+            #This p-val is also valid for the max abs changes
             xmax = Xsel[np.array(point_indices[maxi],dtype='int32')]
             xmin = Xsel[np.array(point_indices[mini],dtype='int32')]
             stat, pval = ttest_ind(xmax,xmin)
@@ -267,6 +268,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         df['Reporter Identifier']=markers
         df['p']=max_fold_change_pvals
         df['fold_change']=max_fold_changes
+        df['abs_change']=max_abs_changes
         #Save df
         df.to_csv(outdir+tissue+'_marker_max_FC_pval.csv')
 
