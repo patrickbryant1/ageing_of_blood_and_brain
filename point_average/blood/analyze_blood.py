@@ -191,6 +191,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, median_range, o
     running_averages = np.zeros((X.shape[0],len(point_ages)))
     max_fold_changes = np.zeros(X.shape[0])
     max_fold_change_pvals = np.zeros(X.shape[0])
+    max_abs_changes = np.zeros(X.shape[0])
     #Calculate running point average
     for xi in range(len(X)):
         if xi%1000==0: #Print if congruent with 1000
@@ -204,7 +205,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, median_range, o
         maxi = np.where(running_averages[xi,:]==max(running_averages[xi,:][median_range[0]-20:median_range[1]-19]))[0][0] #Starts at year 19 --> first index is age-20
         mini = np.where(running_averages[xi,:]==min(running_averages[xi,:][median_range[0]-20:median_range[1]-19]))[0][0]
         max_fold_changes[xi] = running_averages[xi,maxi]/running_averages[xi,mini]
-
+        max_abs_changes[xi] = running_averages[xi,maxi]-running_averages[xi,mini]
         #Calculate p-value between samples belonging to max/min fold change
         xmax = Xsel[np.array(point_indices[maxi],dtype='int32')]
         xmin = Xsel[np.array(point_indices[mini],dtype='int32')]
@@ -220,6 +221,7 @@ def compare_probes(joined_betas, sample_sheet, gene_annotations, median_range, o
     df['Reporter Identifier']=markers
     df['p']=max_fold_change_pvals
     df['fold_change']=max_fold_changes
+    df['abs_change']=max_abs_changes
     #Save df
     df.to_csv(outdir+'marker_max_FC_pval.csv')
 
