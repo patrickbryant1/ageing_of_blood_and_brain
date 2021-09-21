@@ -435,22 +435,16 @@ vis_age_distr(age_df, point_indices, median_range)
 max_fold_change_df = adjust_pvals(max_fold_change_df)
 #Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)
 sel = max_fold_change_df[max_fold_change_df['Rejection on 0.05']==True]
-sel = sel[np.absolute(sel['fold_change'])>2]
+sel_FC = sel[np.absolute(sel['fold_change'])>2]
+#Select abs change 2 stds away from all abs changes in set
+sel_abs = sel[sel['abs_change']>sel.abs_change.std()*2]
+#Select overlap
+sel_FC_abs_overlap = pd.merge(sel_FC, sel_abs, on='Reporter Identifier',how='inner')
+pdb.set_trace()
 
-#Get the gene annotations for the selected markers
-###NOTE!!! This resets the index!!!
-sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Name', how='left')
-#Calculate derivatives
-sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, point_indices,n_clusters,median_range)
-#Print the number selected
-print(len(sel),'selected markers out of', len(max_fold_change_df))
 #Group genes
 unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
 print(len(unique_genes_grouped.keys()),'unique genes')
-#Get the genes regulated by multiple markers
-multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
-#Plot
-plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'])
 
 #Analyze horvath markers
 #Get gene annotations
@@ -459,12 +453,30 @@ horvath_markers = pd.merge(horvath_markers, gene_annotations,left_on='Marker', r
 horvath_markers.to_csv(outdir+'genes/horvath/horvath_genes.csv')
 #Group horvath markers
 unique_genes_grouped = group_genes(horvath_markers['UCSC_RefGene_Name'].dropna().unique())
-analyze_horvath(horvath_markers,sel)
 
-#Analyze overlap with correlations
-correlation_overlap(correlation_results, sel)
 
-#Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
-#reg_feature_groups(sel)
-#Save sel
-sel.to_csv(outdir+'ra_sig_markers.csv')
+#Go through the different selections
+for sel in [sel_FC,sel_abs,sel_FC_abs_overlap]:
+    #Get the gene annotations for the selected markers
+    ###NOTE!!! This resets the index!!!
+    sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Name', how='left')
+    #Calculate derivatives
+    sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, point_indices,n_clusters,median_range)
+    #Print the number selected
+    print(len(sel),'selected markers out of', len(max_fold_change_df))
+
+    #Get the genes regulated by multiple markers
+    multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
+    #Plot
+    plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'])
+
+    #Analyze horvath markers
+    analyze_horvath(horvath_markers,sel)
+
+    #Analyze overlap with correlations
+    correlation_overlap(correlation_results, sel)
+
+    #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
+    #reg_feature_groups(sel)
+    #Save sel
+    #sel.to_csv(outdir+'ra_sig_markers.csv')
