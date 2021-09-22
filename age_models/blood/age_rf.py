@@ -25,9 +25,10 @@ parser.add_argument('--marker_values', nargs=1, type= str, default=sys.stdin, he
 parser.add_argument('--ages', nargs=1, type= str, default=sys.stdin, help = 'Path to sample ages.')
 parser.add_argument('--hannum_markers', nargs=1, type= str, default=sys.stdin, help = 'Path to hannum marker values.')
 parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdin, help = 'Path to marker max fold changes and pvals. This df contains the marker ids in order.')
+parser.add_argument('--mode', nargs=1, type= str, default=sys.stdin, help = 'Mode.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
-def rf_fit(sel_marker_values, ages, hannum_preds, outdir):
+def rf_fit(sel_marker_values, ages, hannum_preds, mode):
     '''5 fold CV
     '''
 
@@ -70,7 +71,7 @@ def rf_fit(sel_marker_values, ages, hannum_preds, outdir):
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.tight_layout()
-    plt.savefig(outdir+'cv_results.png', format='png', dpi=300)
+    plt.savefig(outdir+mode+'_cv_results.png', format='png', dpi=300)
     plt.close()
 
     print('Hannum',hannum_error,hannum_corr)
@@ -86,6 +87,7 @@ marker_values = np.load(args.marker_values[0], allow_pickle=True)
 age_df = pd.read_csv(args.ages[0])
 hannum_markers = pd.read_csv(args.hannum_markers[0])
 max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
+mode = args.mode[0]
 outdir = args.outdir[0]
 
 #Select marker values
@@ -100,4 +102,4 @@ hannum_preds = np.dot(hannum_marker_values.T, hannum_coefs)
 #Select ages
 ages = age_df['Age'].values
 #Fit a rf model
-rf_fit(sel_marker_values.T, ages, hannum_preds, outdir)
+rf_fit(sel_marker_values.T, ages, hannum_preds, mode)
