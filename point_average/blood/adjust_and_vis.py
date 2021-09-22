@@ -144,7 +144,7 @@ def group_genes(unique_genes):
     return unique_genes_grouped
 
 
-def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n_clusters, median_range):
+def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n_clusters, median_range, mode):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
@@ -183,8 +183,8 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         #Check that the fold change within the median range is large enough
         min_in_range = min(running_averages[si,:][median_range[0]-20:median_range[1]-19])
         max_in_range = max(running_averages[si,:][median_range[0]-20:median_range[1]-19])
-        if max_in_range/min_in_range<2:
-            pdb.set_trace()
+        # if max_in_range/min_in_range<2:
+        #     pdb.set_trace()
 
         keep_indices.append(i)
         #Calculate the maximal gradient difference
@@ -232,7 +232,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         ax.set_ylabel('Normalized beta value')
         ax.set_xlabel('Age')
         fig.tight_layout()
-        fig.savefig(outdir+'/clustering/'+str(cl+1)+'.png', format='png', dpi=300)
+        fig.savefig(outdir+'/clustering/'+mode+str(cl+1)+'.png', format='png', dpi=300)
 
         #unnormalized
         #Format plot
@@ -243,7 +243,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         ax1.set_xlabel('Age')
         ax1.set_xlim([19,101])
         fig1.tight_layout()
-        fig1.savefig(outdir+'/clustering/'+str(cl+1)+'_unnormalized.png', format='png', dpi=300)
+        fig1.savefig(outdir+'/clustering/'+mode+str(cl+1)+'_unnormalized.png', format='png', dpi=300)
 
     #Format plot
     ax2.set_title('Gradients')
@@ -255,7 +255,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     ax2.set_xlim([19,101])
     plt.legend()
     fig2.tight_layout()
-    fig2.savefig(outdir+'/clustering/gradients.png', format='png', dpi=300)
+    fig2.savefig(outdir+'/clustering/'+mode+'_gradients.png', format='png', dpi=300)
     plt.close()
     #Look at the clusters in tsne
     #Tsne
@@ -273,7 +273,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     plt.xlabel('Component 1')
     plt.legend()
     plt.tight_layout()
-    plt.savefig(outdir+'/clustering/tsne.png', format='png', dpi=300)
+    plt.savefig(outdir+'/clustering/'+mode+'_tsne.png', format='png', dpi=300)
     plt.close()
 
     #Select the keep indices
@@ -435,32 +435,47 @@ vis_age_distr(ages, point_indices, sample_sheet, median_range)
 max_fold_change_df = adjust_pvals(max_fold_change_df)
 #Select significant probes (FDR<0.05) with FC >2 (or less than 1/2)
 sel = max_fold_change_df[max_fold_change_df['Rejection on 0.05']==True]
-sel = sel[np.absolute(sel['fold_change'])>2]
-#Print the number selected
-print(len(sel),'selected markers out of', len(max_fold_change_df))
-#Get the gene annotations for the selected markers
-###NOTE!!! This resets the index!!!
-sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Unnamed: 0', how='left')
+#different selections
+sel_FC = sel[np.absolute(sel['fold_change'])>2]
+#Select abs change 2 stds away from all abs changes in set
+sel_abs = sel[sel['abs_change']>0.2]
+print('2xStd abs change:', 2*sel.abs_change.std())
+#Select overlap
+sel_FC_abs_overlap = pd.merge(sel_FC, sel_abs, on='Reporter Identifier',how='inner')
+print('#FC',len(sel_FC),'#Abs',len(sel_abs),'#Both',len(sel_FC_abs_overlap))
 
-#Calculate derivatives
-sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices,n_clusters,median_range)
-#Group genes
-unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-print(len(unique_genes_grouped.keys()),'unique genes')
-#Get the genes regulated by multiple markers
-multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped,outdir)
-#Plot
-plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
+#Go through the different selections
+selections = {'FC':sel_FC,'abs':sel_abs,'overlap':sel_FC_abs_overlap}
+n_clusters = {'FC':n_clusters,'abs':1,'overlap':1}
+for mode in selections:
+    sel = selections[mode]
+    #Get the gene annotations for the selected markers
+    ###NOTE!!! This resets the index!!!
+    sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Name', how='left')
+    #Calculate derivatives
+    sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices,n_clusters[mode],median_range,mode)
+    #Print the number selected
+    print(len(sel),'selected markers out of', len(max_fold_change_df))
+    continue
+    #Group genes
+    unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
+    print(len(unique_genes_grouped.keys()),'unique genes')
 
-#Analyze Hannum markers
-#Get gene annotations
-hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
-#Group hannum markers
-unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-analyze_hannum(hannum_markers,sel,outdir)
+    #Get the genes regulated by multiple markers
+    multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
+    #Plot
+    #plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'], outdir)
 
-#Analyze overlap with correlations
-correlation_overlap(correlation_results, sel)
+
+# #Analyze Hannum markers
+# #Get gene annotations
+# hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
+# #Group hannum markers
+# unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
+# analyze_hannum(hannum_markers,sel,outdir)
+#
+# #Analyze overlap with correlations
+# correlation_overlap(correlation_results, sel)
 
 #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
 #reg_feature_groups(sel)
