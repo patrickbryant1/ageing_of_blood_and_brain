@@ -1,21 +1,26 @@
 #!/usr/bin/env
 
 #Montage
-for mode in 'abs' 'FC' 'overlap'
-do
-convert  $mode'1.png' -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  $mode'1.png'
-convert  $mode'2.png' -pointsize 60 -gravity NorthWest -annotate +0+0 "B"  $mode'2.png'
-convert  $mode'3.png' -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  $mode'3.png'
-convert  $mode'4.png' -pointsize 60 -gravity NorthWest -annotate +0+0 "D"  $mode'4.png'
-convert  $mode'_tsne.png' -pointsize 60 -gravity NorthWest -annotate +0+0 "E" $mode'_tsne.png'
-convert $mode'_gradients.png' -pointsize 60 -gravity NorthWest -annotate +0+0 "F" $mode'_gradients.png'
-montage $mode'1.png' $mode'2.png' $mode'3.png' $mode'4.png' $mode'_tsne.png' $mode'_gradients.png' -tile 3x2 -geometry +2+2  $mode'_montage.png'
-#-title 'Cerebellum' -pointsize 30
+#Add labels
+convert FC1.png -pointsize 50 -gravity NorthWest -annotate +0+0 "A" FC1.png
+convert FC2.png -pointsize 50 -gravity NorthWest -annotate +0+0 "B" FC2.png
+convert FC3.png -pointsize 50 -gravity NorthWest -annotate +0+0 "C" FC3.png
+convert FC4.png -pointsize 50 -gravity NorthWest -annotate +0+0 "D" FC4.png
+convert FC_tsne.png -pointsize 50 -gravity NorthWest -annotate +0+0 "E" FC_tsne.png
+convert FC_gradients.png -pointsize 50 -gravity NorthWest -annotate +0+0 "F" FC_gradients.png
+montage 'FC1.png' 'FC2.png' 'FC3.png' 'FC4.png' 'FC_tsne.png' 'FC_gradients.png' -title "FC" -pointsize 30 -tile 3x2 -geometry +2+2  'FC_montage.png'
+#Add labels
+convert abs1.png -pointsize 50 -gravity NorthWest -annotate +0+0 "A" abs1.png
+convert abs2.png -pointsize 50 -gravity NorthWest -annotate +0+0 "B" abs2.png
+convert abs3.png -pointsize 50 -gravity NorthWest -annotate +0+0 "C" abs3.png
+convert abs_tsne.png -pointsize 50 -gravity NorthWest -annotate +0+0 "E" abs_tsne.png
+convert abs_gradients.png -pointsize 50 -gravity NorthWest -annotate +0+0 "F" abs_gradients.png
+montage 'abs1.png' 'abs2.png' 'abs3.png' 'abs_tsne.png' 'abs_gradients.png' -title "Absolute value" -pointsize 30 -tile 3x2 -geometry +2+2  'abs_montage.png'
+#Add labels
+convert overlap1.png -pointsize 50 -gravity NorthWest -annotate +0+0 "G" overlap1.png
+convert overlap2.png -pointsize 50 -gravity NorthWest -annotate +0+0 "H" overlap2.png
+convert overlap_tsne.png -pointsize 50 -gravity NorthWest -annotate +0+0 "I" overlap_tsne.png
+convert overlap_gradients.png -pointsize 50 -gravity NorthWest -annotate +0+0 "J" overlap_gradients.png
+montage 'overlap1.png' 'overlap2.png' 'overlap_tsne.png' 'overlap_gradients.png' -title "Overlap" -pointsize 30 -tile 3x2 -geometry +2+2  'overlap_montage.png'
 
-
-# convert  1_unnormalized.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  1_unnormalized.png
-# convert  2_unnormalized.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B"  2_unnormalized.png
-# convert  3_unnormalized.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  3_unnormalized.png
-# convert  4_unnormalized.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D"  4_unnormalized.png
-# montage 1_unnormalized.png 2_unnormalized.png 3_unnormalized.png 4_unnormalized.png -tile 2x2 -geometry +2+2  FigureS4.png
-done
+montage abs_montage.png overlap_montage.png -tile 1x3 -geometry +2+2 all_montage.png
