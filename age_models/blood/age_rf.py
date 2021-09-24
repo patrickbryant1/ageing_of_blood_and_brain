@@ -63,10 +63,11 @@ def rf_fit(sel_marker_values, ages, hannum_preds, mode):
             plt.scatter(y_valid,pred,s=1,color='darkgreen',alpha=0.5)
 
     #Plot diagonal line
+    titles = {'FC':'FC','abs':'Absolute value','overlap':'Overlap'}
     plt.plot([min(ages),max(ages)],[min(ages),max(ages)],color='k',linewidth=0.5)
     plt.xlabel('True age')
     plt.ylabel('Predicted age')
-    plt.title('Blood')
+    plt.title(titles[mode])
     plt.legend(frameon = False)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
