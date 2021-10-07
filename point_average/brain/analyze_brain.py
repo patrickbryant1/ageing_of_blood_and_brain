@@ -235,7 +235,7 @@ def compare_probes(joined_betas, sample_sheet1575, sample_sheet36194, gene_annot
         running_averages = np.zeros((X_tissue.shape[0],len(point_ages)))
         max_fold_changes = np.zeros(X_tissue.shape[0])
         max_abs_changes = np.zeros(X_tissue.shape[0])
-        max_abs_change_pvals = np.zeros(X_tissue.shape[0])
+        max_fold_change_pvals = np.zeros(X_tissue.shape[0])
         #Calculate running point average
         #Get the median range
         median_range = median_ranges[tissue]

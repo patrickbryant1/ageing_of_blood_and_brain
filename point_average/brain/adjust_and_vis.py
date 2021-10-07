@@ -144,7 +144,7 @@ def group_genes(unique_genes):
     return unique_genes_grouped
 
 
-def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n_clusters,median_range):
+def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n_clusters,median_range, mode):
     '''Calculate the derivatives for all significant probes
     with FC >2 (or less than 1/2)
     '''
@@ -181,10 +181,10 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         min_in_range = min(running_averages[si,:][median_range[0]-1:median_range[1]])
         max_in_range = max(running_averages[si,:][median_range[0]-1:median_range[1]])
 
-        if max_in_range/min_in_range<2:
-            print(max_in_range/min_in_range)
-            print(max_in_range,min_in_range)
-            pdb.set_trace()
+        #if max_in_range/min_in_range<2:
+            #print(max_in_range/min_in_range)
+            #print(max_in_range,min_in_range)
+            #pdb.set_trace()
 
         #Need to redo the t-test from the beginning wihtin the median range
         keep_indices.append(i)
@@ -233,7 +233,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         ax.set_ylabel('Normalized beta value')
         ax.set_xlabel('Age')
         fig.tight_layout()
-        fig.savefig(outdir+'/clustering/'+str(cl+1)+'.png', format='png', dpi=300)
+        fig.savefig(outdir+'/clustering/'+mode+str(cl+1)+'.png', format='png', dpi=300)
 
         #unnormalized
         #Format plot
@@ -244,7 +244,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         ax1.set_xlabel('Age')
         ax1.set_xlim([0,102])
         fig1.tight_layout()
-        fig1.savefig(outdir+'/clustering/'+str(cl+1)+'_unnormalized.png', format='png', dpi=300)
+        fig1.savefig(outdir+'/clustering/'+mode+str(cl+1)+'_unnormalized.png', format='png', dpi=300)
 
     #Format plot
     ax2.set_title('Gradients')
@@ -256,7 +256,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     ax2.set_xlim([0,102])
     fig2.legend()
     fig2.tight_layout()
-    fig2.savefig(outdir+'/clustering/gradients.png', format='png', dpi=300)
+    fig2.savefig(outdir+'/clustering/'+mode+'_gradients.png', format='png', dpi=300)
     plt.close()
     #Look at the clusters cin tsne
     #Tsne
@@ -274,7 +274,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     plt.xlabel('Component 1')
     plt.legend()
     plt.tight_layout()
-    plt.savefig(outdir+'/clustering/tsne.png', format='png', dpi=300)
+    plt.savefig(outdir+'/clustering/'+mode+'_tsne.png', format='png', dpi=300)
     plt.close()
 
     #Select the keep indices
@@ -305,7 +305,7 @@ def group_markers_by_gene(sel, unique_genes_grouped):
     return multi_marker_gene_df
 
 
-def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages):
+def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages, outdir):
     '''Plot the running averages of the genes regulated by multiple markers
     '''
 
@@ -334,12 +334,13 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         plt.savefig(outdir+'genes/'+gene+'.png', format='png', dpi=300)
         plt.close()
 
-def analyze_horvath(horvath_markers,sel):
+def analyze_horvath(horvath_markers,sel,mode):
     '''Analyze which of the significant markers are used in the horvath clock
     '''
     overlap = pd.merge(horvath_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
     #Save overlap
     overlap.to_csv(outdir+'overlap_with_horvath_markers.csv')
+    labels = {'FC':'FC','abs':'Absolute value','overlap':'Overlap'}
     print(len(overlap), 'of the selected markers overlap with the Horvath markers.')
     print('These belong to the clusters:',Counter(overlap['cluster']))
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
@@ -348,14 +349,14 @@ def analyze_horvath(horvath_markers,sel):
     plt.legend()
     plt.xlabel('Horvath coeffecient')
     plt.ylabel('Density')
-    plt.title('Horvath markers and coefficients')
+    plt.title(labels[mode])
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.tight_layout()
-    plt.savefig(outdir+'horvath_markers.png', format='png', dpi=300)
+    plt.savefig(outdir+mode+'_horvath_markers.png', format='png', dpi=300)
     plt.close()
 
-def correlation_overlap(correlation_results, sel):
+def correlation_overlap(correlation_results, sel,mode):
     '''Check the overlap with the markers that have sig correlations
     with age on FDR=0.05
     '''
@@ -373,17 +374,17 @@ def correlation_overlap(correlation_results, sel):
 
     #Plot
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
-
+    labels = {'FC':'FC','abs':'Absolute value','overlap':'Overlap'}
     sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
     sns.distplot(sel['R'], color='darkgreen', label='Running median')
     plt.xlabel('Pearson R')
     plt.ylabel('Density')
-    plt.title('Marker correlations')
+    plt.title(labels[mode])
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(outdir+'correlations.png', format='png', dpi=300)
+    plt.savefig(outdir+mode+'_correlations.png', format='png', dpi=300)
     plt.close()
 
 
@@ -437,14 +438,12 @@ max_fold_change_df = adjust_pvals(max_fold_change_df)
 sel = max_fold_change_df[max_fold_change_df['Rejection on 0.05']==True]
 sel_FC = sel[np.absolute(sel['fold_change'])>2]
 #Select abs change 2 stds away from all abs changes in set
-sel_abs = sel[sel['abs_change']>sel.abs_change.std()*2]
+sel_abs = sel[sel['abs_change']>0.2]
+print('2xStd abs change:', 2*sel.abs_change.std())
 #Select overlap
 sel_FC_abs_overlap = pd.merge(sel_FC, sel_abs, on='Reporter Identifier',how='inner')
-pdb.set_trace()
+print('#FC',len(sel_FC),'#Abs',len(sel_abs),'#Both',len(sel_FC_abs_overlap))
 
-#Group genes
-unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
-print(len(unique_genes_grouped.keys()),'unique genes')
 
 #Analyze horvath markers
 #Get gene annotations
@@ -452,31 +451,38 @@ horvath_markers = pd.merge(horvath_markers, gene_annotations,left_on='Marker', r
 #Save Horvath gene annotations
 horvath_markers.to_csv(outdir+'genes/horvath/horvath_genes.csv')
 #Group horvath markers
-unique_genes_grouped = group_genes(horvath_markers['UCSC_RefGene_Name'].dropna().unique())
+unique_genes_grouped_horvath = group_genes(horvath_markers['UCSC_RefGene_Name'].dropna().unique())
 
 
 #Go through the different selections
-for sel in [sel_FC,sel_abs,sel_FC_abs_overlap]:
+selections = {'FC':sel_FC,'abs':sel_abs,'overlap':sel_FC_abs_overlap}
+n_clusters = {'FC':n_clusters,'abs':3,'overlap':2}
+for mode in selections:
+    sel = selections[mode]
     #Get the gene annotations for the selected markers
     ###NOTE!!! This resets the index!!!
     sel = pd.merge(sel,gene_annotations,left_on='Reporter Identifier',right_on='Name', how='left')
     #Calculate derivatives
-    sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, point_indices,n_clusters,median_range)
+    sel = calc_derivatives(sel, age_df['Age'], running_averages, marker_values, point_indices,n_clusters[mode],median_range,mode)
     #Print the number selected
     print(len(sel),'selected markers out of', len(max_fold_change_df))
 
+    #Group genes
+    unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
+    print(len(unique_genes_grouped.keys()),'unique genes')
+
     #Get the genes regulated by multiple markers
-    multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
+    #multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
     #Plot
-    plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'])
+    #plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'], outdir)
 
     #Analyze horvath markers
-    analyze_horvath(horvath_markers,sel)
+    analyze_horvath(horvath_markers,sel,mode)
 
     #Analyze overlap with correlations
-    correlation_overlap(correlation_results, sel)
+    correlation_overlap(correlation_results, sel,mode)
 
     #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
     #reg_feature_groups(sel)
     #Save sel
-    #sel.to_csv(outdir+'ra_sig_markers.csv')
+    sel.to_csv(outdir+mode+'_ra_sig_markers.csv')
