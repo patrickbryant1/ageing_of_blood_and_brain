@@ -1,5 +1,5 @@
 # ageing_of_blood_and_brain
-Scripts for assessing the ageing of human blood.
+Scripts for assessing the relationship between ageing and changes in the human blood and brain methylomes.
 
 1. Download the necessary data E-GEOD-40279 (https://www.ebi.ac.uk/arrayexpress/experiments/E-GEOD-40279/), E-GEOD-36194 (https://www.ebi.ac.uk/arrayexpress/experiments/E-GEOD-36194/) and E-GEOD-15745 (https://www.ebi.ac.uk/arrayexpress/experiments/E-GEOD-15745/) from https://www.ebi.ac.uk/arrayexpress/.
 2. Run the scripts 
