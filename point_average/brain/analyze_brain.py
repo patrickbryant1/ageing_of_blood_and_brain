@@ -69,6 +69,17 @@ def get_ages(joined_betas, sample_sheet1575, sample_sheet36194):
                 pdb.set_trace()
     return sample_ages, sample_sexes, sample_tissues
 
+def remove_cr_snp_probes(cross_reactive_probes, snp_probes, joined_betas):
+    '''Remove all cross reactive probes and probes with underlying SNPs from
+    https://pubmed.ncbi.nlm.nih.gov/23314698/
+    '''
+    nprobes = len(joined_betas)
+    joined_betas = joined_betas[~joined_betas['Reporter Identifier'].isin(snp_probes[0].values)]
+    print(len(joined_betas),'out of',nprobes,'retained after underlying SNP probe removal')
+    joined_betas = joined_betas[~joined_betas['Reporter Identifier'].isin(cross_reactive_probes[0].values)]
+    print(len(joined_betas),'out of those retained after CR probe removal')
+    return joined_betas
+    
 def clean_outliers(X, outdir, tissue):
     '''Remove the outlier samples by investigating the entropy btw the mean beta value distribution
     and each sample's beta value distribution
@@ -308,7 +319,11 @@ sample_sheet36194 = pd.read_csv(args.sample_sheet36194[0], sep = '\t')
 #The sex annotation is screqed up, this fixes that
 sample_sheet36194['Characteristics[sex]'][470:]=np.array(sample_sheet36194['Characteristics[sex].1'][470:])
 sample_sheet1575 = pd.read_csv(args.sample_sheet1575[0], sep = '\t')
+cross_reactive_probes = pd.read_csv(args.cross_reactive_probes[0],header=None)
+snp_probes = pd.read_csv(args.snp_probes[0],header=None)
 outdir = args.outdir[0]
 
+#Remove cross reactive probes and probes with underlying SNPs
+joined_betas = remove_cr_snp_probes(cross_reactive_probes, snp_probes, joined_betas)
 #Compare probes btw age stratified samples
 compare_probes(joined_betas,  sample_sheet1575, sample_sheet36194, gene_annotations, outdir)
