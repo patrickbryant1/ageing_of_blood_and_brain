@@ -30,6 +30,8 @@ parser.add_argument('--sample_sheet36194', nargs=1, type= str, default=sys.stdin
 parser.add_argument('--sample_sheet1575', nargs=1, type= str, default=sys.stdin, help = 'Path to sample sheet with accession 1575.')
 parser.add_argument('--gene_annotations', nargs=1, type= str, default=sys.stdin, help = 'Path to gene annotations.')
 parser.add_argument('--median_range', nargs=1, type=str, default=sys.stdin, help = 'Range for which group median is the current age.')
+parser.add_argument('--cross_reactive_probes', nargs=1, type= str, default=sys.stdin, help = 'Cross reactive probes.')
+parser.add_argument('--snp_probes', nargs=1, type=str, default=sys.stdin, help = 'Probes with underlying SNPs.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -79,7 +81,7 @@ def remove_cr_snp_probes(cross_reactive_probes, snp_probes, joined_betas):
     joined_betas = joined_betas[~joined_betas['Reporter Identifier'].isin(cross_reactive_probes[0].values)]
     print(len(joined_betas),'out of those retained after CR probe removal')
     return joined_betas
-    
+
 def clean_outliers(X, outdir, tissue):
     '''Remove the outlier samples by investigating the entropy btw the mean beta value distribution
     and each sample's beta value distribution

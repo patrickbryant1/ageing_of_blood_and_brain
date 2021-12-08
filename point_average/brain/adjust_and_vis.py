@@ -472,9 +472,9 @@ for mode in selections:
     print(len(unique_genes_grouped.keys()),'unique genes')
 
     #Get the genes regulated by multiple markers
-    #multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
+    multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
     #Plot
-    #plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'], outdir)
+    plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'], outdir)
 
     #Analyze horvath markers
     analyze_horvath(horvath_markers,sel,mode)
@@ -485,4 +485,4 @@ for mode in selections:
     #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
     #reg_feature_groups(sel)
     #Save sel
-    sel.to_csv(outdir+mode+'_ra_sig_markers.csv')
+    #sel.to_csv(outdir+mode+'_ra_sig_markers.csv')
