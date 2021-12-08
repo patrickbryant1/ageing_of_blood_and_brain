@@ -51,11 +51,16 @@ def get_ages(sample_sheet, sample_names, agelabel):
 
     return np.array(sample_ages)
 
-def remove_cr_snp_probes(cross_reactive_probes, snp_probes):
+def remove_cr_snp_probes(cross_reactive_probes, snp_probes, joined_betas):
     '''Remove all cross reactive probes and probes with underlying SNPs from
     https://pubmed.ncbi.nlm.nih.gov/23314698/
     '''
-
+    nprobes = len(joined_betas)
+    joined_betas = joined_betas[~joined_betas['Reporter Identifier'].isin(snp_probes[0].values)]
+    print(len(joined_betas),'out of',nprobes,'retained after underlying SNP probe removal')
+    joined_betas = joined_betas[~joined_betas['Reporter Identifier'].isin(cross_reactive_probes[0].values)]
+    print(len(joined_betas),'out of those retained after CR probe removal')
+    return joined_betas
 
 def clean_outliers(X, outdir, tissue):
     '''Remove the outlier samples by investigating the entropy btw the mean beta value distribution
@@ -269,12 +274,12 @@ joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
 print('Read betas')
 sample_sheet = pd.read_csv(args.sample_sheet[0], sep = '\t')
 median_range = np.array(args.median_range[0].split(','),dtype='int32')
-cross_reactive_probes = pd.read_csv(args.cross_reactive_probes[0])
-snp_probes = pd.read_csv(args.snp_probes[0])
+cross_reactive_probes = pd.read_csv(args.cross_reactive_probes[0],header=None)
+snp_probes = pd.read_csv(args.snp_probes[0],header=None)
 outdir = args.outdir[0]
 
 #Remove cross reactive probes and probes with underlying SNPs
-pdb.set_trace()
+joined_betas = remove_cr_snp_probes(cross_reactive_probes, snp_probes, joined_betas)
 
 #Compare probes btw age stratified samples
 compare_probes(joined_betas, sample_sheet, gene_annotations, median_range, outdir)
