@@ -28,6 +28,8 @@ parser.add_argument('--sample_sheet', nargs=1, type= str, default=sys.stdin, hel
 parser.add_argument('--gene_annotations', nargs=1, type= str, default=sys.stdin, help = 'Path to gene annotations.')
 parser.add_argument('--agelabel', nargs=1, type= str, default=sys.stdin, help = 'Agelabel.')
 parser.add_argument('--median_range', nargs=1, type=str, default=sys.stdin, help = 'Range for which group median is the current age.')
+parser.add_argument('--cross_reactive_probes', nargs=1, type= str, default=sys.stdin, help = 'Cross reactive probes.')
+parser.add_argument('--snp_probes', nargs=1, type=str, default=sys.stdin, help = 'Probes with underlying SNPs.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
 
@@ -48,6 +50,12 @@ def get_ages(sample_sheet, sample_names, agelabel):
                 pdb.set_trace()
 
     return np.array(sample_ages)
+
+def remove_cr_snp_probes(cross_reactive_probes, snp_probes):
+    '''Remove all cross reactive probes and probes with underlying SNPs from
+    https://pubmed.ncbi.nlm.nih.gov/23314698/
+    '''
+
 
 def clean_outliers(X, outdir, tissue):
     '''Remove the outlier samples by investigating the entropy btw the mean beta value distribution
@@ -261,7 +269,12 @@ joined_betas = pd.read_csv(args.joined_betas[0], low_memory=False)
 print('Read betas')
 sample_sheet = pd.read_csv(args.sample_sheet[0], sep = '\t')
 median_range = np.array(args.median_range[0].split(','),dtype='int32')
+cross_reactive_probes = pd.read_csv(args.cross_reactive_probes[0])
+snp_probes = pd.read_csv(args.snp_probes[0])
 outdir = args.outdir[0]
+
+#Remove cross reactive probes and probes with underlying SNPs
+pdb.set_trace()
 
 #Compare probes btw age stratified samples
 compare_probes(joined_betas, sample_sheet, gene_annotations, median_range, outdir)
