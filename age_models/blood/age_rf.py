@@ -28,7 +28,7 @@ parser.add_argument('--max_fold_change_df', nargs=1, type= str, default=sys.stdi
 parser.add_argument('--mode', nargs=1, type= str, default=sys.stdin, help = 'Mode.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
 
-def rf_fit(sel_marker_values, ages, hannum_preds, mode):
+def rf_fit(sel_marker_values, ages, hannum_preds, horvath_preds, mode):
     '''5 fold CV
     '''
 
@@ -37,7 +37,11 @@ def rf_fit(sel_marker_values, ages, hannum_preds, mode):
     #Plot hannum
     hannum_error = np.average(np.absolute(ages-hannum_preds))
     hannum_corr = pearsonr(ages,hannum_preds)[0]
-    plt.scatter(ages,hannum_preds,color='cornflowerblue',s=1,label='Hannum')
+    plt.scatter(ages,hannum_preds,color='magenta',s=1,label='Hannum')
+    #Plot Horvath
+    horvath_error = np.average(np.absolute(ages-horvath_preds))
+    horvath_corr = pearsonr(ages,horvath_preds)[0]
+    plt.scatter(ages,horvath_preds,color='cornflowerblue',s=1,label='Horvath')
 
     #5-fold CV
     kf = KFold(n_splits=5, random_state=42, shuffle=True)
@@ -76,6 +80,7 @@ def rf_fit(sel_marker_values, ages, hannum_preds, mode):
     plt.close()
 
     print('Hannum',hannum_error,hannum_corr)
+    print('Horvath',horvath_error,horvath_corr)
     print('Random forest',np.average(errors),np.std(errors),np.average(corrs),np.std(corrs))
 
 ###########MAIN###########
@@ -91,16 +96,20 @@ max_fold_change_df = pd.read_csv(args.max_fold_change_df[0])
 mode = args.mode[0]
 outdir = args.outdir[0]
 
+#Get Horvath ages
+horvath_preds = pd.read_csv(outdir+'horvath_ages.csv')
+horvath_preds=pd.merge(age_df,horvath_preds,on='Sample',how='left')
 #Select marker values
 #the column Unnamed: 0_x contains the indx of the selected marker
 sel_marker_values = marker_values[selected_markers['Unnamed: 0_x'].values]
 #Select hannum marker values
-hannum_markers =  pd.merge(hannum_markers,max_fold_change_df,left_on='Marker',right_on='Reporter Identifier', how='left')
-hannum_marker_values = marker_values[hannum_markers['Unnamed: 0'].values]
+hannum_markers =  pd.merge(hannum_markers,max_fold_change_df,left_on='Marker',right_on='Reporter Identifier', how='left').dropna()
+hannum_marker_values = marker_values[np.array(hannum_markers['Unnamed: 0'].values,dtype='int')]
 hannum_coefs = hannum_markers['Coefficient'].values
 hannum_preds = np.dot(hannum_marker_values.T, hannum_coefs)
 
 #Select ages
 ages = age_df['Age'].values
 #Fit a rf model
-rf_fit(sel_marker_values.T, ages, hannum_preds, mode)
+
+rf_fit(sel_marker_values.T, ages, hannum_preds,horvath_preds.DNAmAge.values, mode)
