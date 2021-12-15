@@ -1,0 +1,13 @@
+1	cellular process (GO:0009987)	29	55.8%	28.4%
+2	biological phase (GO:0044848)	1	1.9%	1.0%
+3	reproductive process (GO:0022414)	1	1.9%	1.0%
+4	localization (GO:0051179)	5	9.6%	4.9%
+5	reproduction (GO:0000003)	1	1.9%	1.0%
+6	biological regulation (GO:0065007)	18	34.6%	17.6%
+7	response to stimulus (GO:0050896)	10	19.2%	9.8%
+8	signaling (GO:0023052)	8	15.4%	7.8%
+9	developmental process (GO:0032502)	2	3.8%	2.0%
+10	multicellular organismal process (GO:0032501)	2	3.8%	2.0%
+11	biological adhesion (GO:0022610)	1	1.9%	1.0%
+12	metabolic process (GO:0008152)	22	42.3%	21.6%
+13	immune system process (GO:0002376)	2	3.8%	2.0%

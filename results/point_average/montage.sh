@@ -36,20 +36,16 @@ convert ./brain/frontal_cortex/clustering/FC1_unnormalized.png -pointsize 60 -gr
 convert ./brain/cerebellum/clustering/FC1_unnormalized.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D" ./brain/cerebellum/clustering/FC1_unnormalized.png
 convert ./brain/cerebellum/clustering/FC2_unnormalized.png -pointsize 60 -gravity NorthWest -annotate +0+0 "E" ./brain/cerebellum/clustering/FC2_unnormalized.png
 montage ./blood/clustering/FC1_unnormalized.png ./blood/clustering/FC2_unnormalized.png ./brain/frontal_cortex/clustering/FC1_unnormalized.png ./brain/cerebellum/clustering/FC1_unnormalized.png  ./brain/cerebellum/clustering/FC2_unnormalized.png  -tile 3x2 -geometry +2+2 FigureS2.png
+
 # #Figure S6
-# convert  ./blood/genes/go1.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./blood/genes/go1.png
-# convert  ./blood/genes/go2.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./blood/genes/go2.png
-# convert  ./blood/genes/Hannum/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C" ./blood/genes/Hannum/go.png
-# montage ./blood/genes/go1.png ./blood/genes/go2.png ./blood/genes/Hannum/go.png  -tile 2x2 -geometry +2+2 FigureS6.png
+convert  ./blood/genes/go1.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./blood/genes/go1.png
+convert  ./blood/genes/go2.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./blood/genes/go2.png
+convert  ./blood/genes/Hannum/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C" ./blood/genes/Hannum/go.png
+montage ./blood/genes/go1.png ./blood/genes/go2.png ./blood/genes/Hannum/go.png  -tile 2x2 -geometry +2+2 FigureS6.png
 #
 # #Figure S7
-# convert  ./brain/frontal_cortex/genes/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./brain/frontal_cortex/genes/go.png
-# convert  ./brain/cerebellum/genes/go1.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./brain/cerebellum/genes/go1.png
-# convert  ./brain/cerebellum/genes/go2.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C" ./brain/cerebellum/genes/go2.png
-# convert  ./brain/cerebellum/genes/go3.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D" ./brain/cerebellum/genes/go3.png
-# montage ./brain/frontal_cortex/genes/go.png ./brain/cerebellum/genes/go1.png ./brain/cerebellum/genes/go2.png ./brain/cerebellum/genes/go3.png -tile 2x2 -geometry +2+2 FigureS7.png
-#
-# #Figure S8
-# convert  ./brain/cerebellum/genes/go4.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./brain/cerebellum/genes/go4.png
-# convert  ./brain/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./brain/go.png
-# montage ./brain/cerebellum/genes/go4.png ./brain/go.png -geometry +2+2  -tile 2x1 FigureS8.png
+convert  ./brain/frontal_cortex/genes/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A" ./brain/frontal_cortex/genes/go.png
+convert  ./brain/cerebellum/genes/go1.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" ./brain/cerebellum/genes/go1.png
+convert  ./brain/cerebellum/genes/go2.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C" ./brain/cerebellum/genes/go2.png
+convert  ./brain/go.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D" ./brain/go.png
+montage ./brain/frontal_cortex/genes/go.png ./brain/cerebellum/genes/go1.png ./brain/cerebellum/genes/go2.png ./brain/go.png -tile 2x2 -geometry +2+2 FigureS7.png

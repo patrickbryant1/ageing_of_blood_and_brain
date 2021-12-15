@@ -24,8 +24,6 @@ parser.add_argument('--blood2', nargs=1, type= str, default=sys.stdin, help = 'P
 parser.add_argument('--frontal_cortex', nargs=1, type= str, default=sys.stdin, help = 'Path to FCTX GO.')
 parser.add_argument('--cerebellum1', nargs=1, type= str, default=sys.stdin, help = 'Path to cerebellum GO1.')
 parser.add_argument('--cerebellum2', nargs=1, type= str, default=sys.stdin, help = 'Path to cerebellum GO2.')
-parser.add_argument('--cerebellum3', nargs=1, type= str, default=sys.stdin, help = 'Path to cerebellum GO3.')
-parser.add_argument('--cerebellum4', nargs=1, type= str, default=sys.stdin, help = 'Path to cerebellum GO4.')
 parser.add_argument('--horvath', nargs=1, type= str, default=sys.stdin, help = 'Path to Horvath GO.')
 parser.add_argument('--hannum', nargs=1, type= str, default=sys.stdin, help = 'Path to Hannum GO.')
 parser.add_argument('--outdir', nargs=1, type= str, default=sys.stdin, help = 'Path to outdir.')
@@ -65,8 +63,7 @@ blood2 = pd.read_csv(args.blood2[0],sep='\t', header=None)
 frontal_cortex = pd.read_csv(args.frontal_cortex[0],sep='\t', header=None)
 cerebellum1 = pd.read_csv(args.cerebellum1[0],sep='\t', header=None)
 cerebellum2 = pd.read_csv(args.cerebellum2[0],sep='\t', header=None)
-cerebellum3 = pd.read_csv(args.cerebellum3[0],sep='\t', header=None)
-cerebellum4 = pd.read_csv(args.cerebellum4[0],sep='\t', header=None)
+
 horvath = pd.read_csv(args.horvath[0],sep='\t', header=None)
 hannum = pd.read_csv(args.hannum[0],sep='\t', header=None)
 outdir = args.outdir[0]
@@ -75,8 +72,6 @@ all_categories = np.concatenate([np.array(blood1[1].unique()),np.array(blood2[1]
                 np.array(frontal_cortex[1].unique()),
                 np.array(cerebellum1[1].unique()),
                 np.array(cerebellum2[1].unique()),
-                np.array(cerebellum3[1].unique()),
-                np.array(cerebellum4[1].unique()),
                 np.array(horvath[1].unique()),np.array(hannum[1].unique())])
 all_categories = np.unique(all_categories)
 
@@ -91,8 +86,6 @@ plot_GO(frontal_cortex,colors,all_categories,'FCTX GO enrichment',outdir+'brain/
 #Cerebellum
 plot_GO(cerebellum1,colors,all_categories,'Cerebellum GO enrichment 1',outdir+'brain/cerebellum/genes/go1.png')
 plot_GO(cerebellum2,colors,all_categories,'Cerebellum GO enrichment 2',outdir+'brain/cerebellum/genes/go2.png')
-plot_GO(cerebellum3,colors,all_categories,'Cerebellum GO enrichment 3',outdir+'brain/cerebellum/genes/go3.png')
-plot_GO(cerebellum4,colors,all_categories,'Cerebellum GO enrichment 4',outdir+'brain/cerebellum/genes/go4.png')
 
 #Hannum
 plot_GO(hannum,colors,all_categories,'Hannum GO enrichment', outdir+'blood/genes/Hannum/go.png')
