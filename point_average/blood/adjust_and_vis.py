@@ -155,7 +155,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     #Save the corr in different lists
     sel_ra = []
     sel_marker_values = []
-
+    mean_std_norm = [] #subtract mean divide by std
     #Loop through the significant markers
     keep_indices = [] #keep the markers with sufficiently small std compared to the median
     norm=True
@@ -177,6 +177,10 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         running_std = np.array(running_std)
         rel_std_size = running_std/running_averages[si,:]
 
+        #Add to mean-std norm
+        msn = (running_averages[si,:]-np.average(running_averages[si,:]))/np.std(running_averages[si,:])
+        mean_std_norm.append(msn)
+
         if np.average(rel_std_size) >0.5:
             continue
 
@@ -185,6 +189,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
         max_in_range = max(running_averages[si,:][median_range[0]-20:median_range[1]-19])
         # if max_in_range/min_in_range<2:
         #     pdb.set_trace()
+
 
         keep_indices.append(i)
         #Calculate the maximal gradient difference
