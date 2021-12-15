@@ -1,13 +1,13 @@
 #Figure 1
 #Add labels
-convert  ag_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  ag_distribution.png
-convert  ag_point_cutoffs.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D"  ag_point_cutoffs.png
+convert  ag_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B"  ag_distribution.png
+# convert  ag_point_cutoffs.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D"  ag_point_cutoffs.png
 montage ag_distribution.png ag_point_cutoffs.png -tile 1x2 -geometry +2+2 -title 'Frontal cortex' -pointsize 30 Figure1.png
-
-
-#Figure 2
-#Add labels
-convert  pval_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" Figure2.png
+#
+#
+# #Figure 2
+# #Add labels
+# convert  pval_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "B" Figure2.png
 
 #Figure 3
 # convert  pos_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D" pos_ra.png
@@ -15,10 +15,19 @@ convert  pval_distribution.png -pointsize 60 -gravity NorthWest -annotate +0+0 "
 # convert  gradients.png -pointsize 60 -gravity NorthWest -annotate +0+0 "F"  gradients.png
 # montage pos_ra.png neg_ra.png gradients.png -tile 3x1 -geometry +2+2  -title 'Frontal cortex' -pointsize 30 Figure3.png
 
-#Figure 4
-convert  horvath_markers.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  horvath_markers.png
-convert  correlations.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D" correlations.png
-montage horvath_markers.png correlations.png -tile 1x2 -geometry +2+2 -title 'Frontal cortex' -pointsize 30 Figure4.png
+#Figure 7
+convert  FC_correlations.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  FC_correlations.png
+convert  abs_correlations.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D"  abs_correlations.png
+montage FC_correlations.png abs_correlations.png -tile 1x2 -geometry +2+2 -title 'Frontal cortex' -pointsize 30  Figure7.png
+
+# #Figure 8
+convert  FC_horvath_markers.png -pointsize 60 -gravity NorthWest -annotate +0+0 "C"  FC_horvath_markers.png
+convert  abs_horvath_markers.png -pointsize 60 -gravity NorthWest -annotate +0+0 "D"  abs_horvath_markers.png
+montage FC_horvath_markers.png abs_horvath_markers.png -tile 1x2 -geometry +2+2 -title 'Frontal cortex' -pointsize 30  Figure8.png
+
+#Figure 9
+montage ./models/FC_cv_results.png ./models/abs_cv_results.png ./models/overlap_cv_results.png -tile 3x1 -geometry +2+2 -title 'Frontal cortex' -pointsize 30 CV_frontal_cortex.png
+
 
 # #Figure 5
 # convert  ./genes/go_ra.png -pointsize 60 -gravity NorthWest -annotate +0+0 "A"  ./genes/go_ra.png

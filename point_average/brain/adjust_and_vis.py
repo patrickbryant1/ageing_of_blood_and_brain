@@ -289,6 +289,8 @@ def group_markers_by_gene(sel, unique_genes_grouped):
     '''
     multi_marker_gene_df = pd.DataFrame()
     unique_gene_file = open(outdir+'genes/unique_genes.txt','w')
+    genes_per_cluster = {}
+
     for gene_group in unique_genes_grouped:
         unique_gene_file.write(gene_group+',\n')
         gene_df = pd.DataFrame()
@@ -297,11 +299,23 @@ def group_markers_by_gene(sel, unique_genes_grouped):
                 gene = ';'.join(gene)
             gene_df = pd.concat([gene_df, sel[sel['UCSC_RefGene_Name']==gene]])
             gene_df['gene_group']=gene_group
+            #Save genes per cluster
+            if gene_df.cluster.values[0] in [*genes_per_cluster.keys()]:
+                genes_per_cluster[gene_df.cluster.values[0]].append(gene_group)
+            else:
+                genes_per_cluster[gene_df.cluster.values[0]] = [gene_group]
 
         if len(gene_df)>1:
             multi_marker_gene_df = pd.concat([multi_marker_gene_df,gene_df])
             print(gene_group)
     unique_gene_file.close()
+
+    #Save genes per cluster
+    for cluster in genes_per_cluster:
+        genes = np.unique(genes_per_cluster[cluster])
+        with open(outdir+'genes/unique_genes'+str(cluster+1)+'.txt','w') as file:
+            for gene in genes:
+                file.write(gene+',\n')
     return multi_marker_gene_df
 
 
@@ -313,6 +327,7 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages,
     for gene in u_genes:
         multi_markers = multi_marker_gene_df[multi_marker_gene_df['gene_group']==gene]
         multi_markers = multi_markers.reset_index()
+
         #Plot
         fig,ax = plt.subplots(figsize=(6/2.54, 5.5/2.54))
         #Colors
@@ -457,7 +472,7 @@ unique_genes_grouped_horvath = group_genes(horvath_markers['UCSC_RefGene_Name'].
 #Go through the different selections
 selections = {'FC':sel_FC,'abs':sel_abs,'overlap':sel_FC_abs_overlap}
 n_clusters = {'FC':n_clusters,'abs':3,'overlap':2}
-for mode in selections:
+for mode in ['FC']:
     sel = selections[mode]
     #Get the gene annotations for the selected markers
     ###NOTE!!! This resets the index!!!

@@ -162,7 +162,7 @@ def calc_derivatives(sel, ages, running_averages, marker_values, point_indices,n
     for i in range(len(sel)):
         si = sel_indices[i] #Get index
         if norm == True:
-            divider = max(marker_values[si,:])
+            divider = max(marker_values[si,:])-min(marker_values[si,:]) #Should be max-min
         else:
             divider=1
 
@@ -289,6 +289,7 @@ def group_markers_by_gene(sel, unique_genes_grouped, outdir):
     '''
     multi_marker_gene_df = pd.DataFrame()
     unique_gene_file = open(outdir+'genes/unique_genes.txt','w')
+    genes_per_cluster = {}
     for gene_group in unique_genes_grouped:
         unique_gene_file.write(gene_group+',\n')
         gene_df = pd.DataFrame()
@@ -297,12 +298,23 @@ def group_markers_by_gene(sel, unique_genes_grouped, outdir):
                 gene = ';'.join(gene)
             gene_df = pd.concat([gene_df, sel[sel['UCSC_RefGene_Name']==gene]])
             gene_df['gene_group']=gene_group
+            #Save genes per cluster
+            if gene_df.cluster.values[0] in [*genes_per_cluster.keys()]:
+                genes_per_cluster[gene_df.cluster.values[0]].append(gene_group)
+            else:
+                genes_per_cluster[gene_df.cluster.values[0]] = [gene_group]
 
         if len(gene_df)>1:
             multi_marker_gene_df = pd.concat([multi_marker_gene_df,gene_df])
             print(gene_group)
-
     unique_gene_file.close()
+
+    #Save genes per cluster
+    for cluster in genes_per_cluster:
+        genes = np.unique(genes_per_cluster[cluster])
+        with open(outdir+'genes/unique_genes'+str(cluster+1)+'.txt','w') as file:
+            for gene in genes:
+                file.write(gene+',\n')
     return multi_marker_gene_df
 
 
@@ -311,6 +323,7 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
     '''
 
     u_genes = multi_marker_gene_df['gene_group'].unique()
+
     for gene in u_genes:
         multi_markers = multi_marker_gene_df[multi_marker_gene_df['gene_group']==gene]
         multi_markers = multi_markers.reset_index()
@@ -335,12 +348,13 @@ def plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages)
         plt.savefig(outdir+'genes/'+gene+'.png', format='png', dpi=300)
         plt.close()
 
-def analyze_hannum(hannum_markers,sel,outdir):
+def analyze_hannum(hannum_markers,sel,mode):
     '''Analyze which of the significant markers are used in the Hannum clock
     '''
     overlap = pd.merge(hannum_markers,sel,left_on='Marker',right_on='Reporter Identifier', how='inner')
     #Save overlap
     overlap.to_csv(outdir+'overlap_with_hannum_markers.csv')
+    labels = {'FC':'FC','abs':'Absolute value','overlap':'Overlap'}
     print(len(overlap), 'of the selected markers overlap with the Hannum markers.')
     print('These belong to the clusters:',Counter(overlap['cluster']))
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
@@ -349,14 +363,14 @@ def analyze_hannum(hannum_markers,sel,outdir):
     plt.legend()
     plt.xlabel('Hannum coeffecient')
     plt.ylabel('Density')
-    plt.title('Hannum markers and coefficients')
+    plt.title(labels[mode])
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.tight_layout()
-    plt.savefig(outdir+'hannum_markers.png', format='png', dpi=300)
+    plt.savefig(outdir+mode+'_hannum_markers.png', format='png', dpi=300)
     plt.close()
 
-def correlation_overlap(correlation_results, sel):
+def correlation_overlap(correlation_results, sel, mode):
     '''Check the overlap with the markers that have sig correlations
     with age on FDR=0.05
     '''
@@ -373,18 +387,19 @@ def correlation_overlap(correlation_results, sel):
     print(len(sel[sel['Rejection on 0.05_y']==True]),'markers out of',len(sel),'were found in the correlation analysis')
 
     #Plot
+    labels = {'FC':'FC','abs':'Absolute value','overlap':'Overlap'}
     plt.close()
     fig,ax = plt.subplots(figsize=(6/2.54, 6/2.54))
     sns.distplot(sig_correlation_results['R'],color='cornflowerblue', label='Significant correlations')
     sns.distplot(sel['R'], color='darkgreen', label='Running median')
     plt.xlabel('Pearson R')
     plt.ylabel('Density')
-    plt.title('Marker correlations')
+    plt.title(labels[mode])
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(outdir+'correlations.png', format='png', dpi=300)
+    plt.savefig(outdir+mode+'_correlations.png', format='png', dpi=300)
     plt.close()
 
 
@@ -447,7 +462,7 @@ print('#FC',len(sel_FC),'#Abs',len(sel_abs),'#Both',len(sel_FC_abs_overlap))
 #Go through the different selections
 selections = {'FC':sel_FC,'abs':sel_abs,'overlap':sel_FC_abs_overlap}
 n_clusters = {'FC':n_clusters,'abs':1,'overlap':1}
-for mode in selections:
+for mode in ['FC']:
     sel = selections[mode]
     #Get the gene annotations for the selected markers
     ###NOTE!!! This resets the index!!!
@@ -456,28 +471,28 @@ for mode in selections:
     sel = calc_derivatives(sel, ages['Age'], running_averages, marker_values, point_indices,n_clusters[mode],median_range,mode)
     #Print the number selected
     print(len(sel),'selected markers out of', len(max_fold_change_df))
-    continue
+
     #Group genes
     unique_genes_grouped = group_genes(sel['UCSC_RefGene_Name'].dropna().unique())
     print(len(unique_genes_grouped.keys()),'unique genes')
 
     #Get the genes regulated by multiple markers
-    multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped)
+    multi_marker_gene_df = group_markers_by_gene(sel, unique_genes_grouped, outdir)
     #Plot
-    #plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,age_df['Age'], outdir)
+    plot_multi_markers(multi_marker_gene_df,running_averages,marker_values,ages['Age'])
 
 
-# #Analyze Hannum markers
-# #Get gene annotations
-# hannum_markers = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
-# #Group hannum markers
-# unique_genes_grouped = group_genes(hannum_markers['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
-# analyze_hannum(hannum_markers,sel,outdir)
-#
-# #Analyze overlap with correlations
-# correlation_overlap(correlation_results, sel)
+    #Analyze Hannum markers
+    #Get gene annotations
+    hannum_markers_sel = pd.merge(hannum_markers, gene_annotations,left_on='Marker', right_on='Unnamed: 0', how='left')
+    #Group hannum markers
+    unique_genes_grouped = group_genes(hannum_markers_sel['UCSC_RefGene_Name'].dropna().unique()) #The first is nan
+    analyze_hannum(hannum_markers_sel,sel,mode)
+
+    #Analyze overlap with correlations
+    correlation_overlap(correlation_results, sel, mode)
+    #Save sel
+    sel.to_csv(outdir+mode+'_ra_sig_markers.csv')
 
 #Analyze 'Regulatory_Feature_Group' in relation to pos/neg gradients, sel['pos_neg_grad']
 #reg_feature_groups(sel)
-#Save sel
-sel.to_csv(outdir+'ra_sig_markers.csv')

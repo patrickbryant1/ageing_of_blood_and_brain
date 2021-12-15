@@ -4,11 +4,9 @@
 #Add labels
 convert FC1.png -pointsize 50 -gravity NorthWest -annotate +0+0 "A" FC1.png
 convert FC2.png -pointsize 50 -gravity NorthWest -annotate +0+0 "B" FC2.png
-convert FC3.png -pointsize 50 -gravity NorthWest -annotate +0+0 "C" FC3.png
-convert FC4.png -pointsize 50 -gravity NorthWest -annotate +0+0 "D" FC4.png
-convert FC_tsne.png -pointsize 50 -gravity NorthWest -annotate +0+0 "E" FC_tsne.png
-convert FC_gradients.png -pointsize 50 -gravity NorthWest -annotate +0+0 "F" FC_gradients.png
-montage 'FC1.png' 'FC2.png' 'FC3.png' 'FC4.png' 'FC_tsne.png' 'FC_gradients.png' -title "FC" -pointsize 30 -tile 3x2 -geometry +2+2  'FC_montage.png'
+convert FC_tsne.png -pointsize 50 -gravity NorthWest -annotate +0+0 "C" FC_tsne.png
+convert FC_gradients.png -pointsize 50 -gravity NorthWest -annotate +0+0 "D" FC_gradients.png
+montage 'FC1.png' 'FC2.png' 'FC_tsne.png' 'FC_gradients.png' -title "FC" -pointsize 30 -tile 3x2 -geometry +2+2  'FC_montage.png'
 #Add labels
 convert abs1.png -pointsize 50 -gravity NorthWest -annotate +0+0 "A" abs1.png
 convert abs2.png -pointsize 50 -gravity NorthWest -annotate +0+0 "B" abs2.png

@@ -7,9 +7,9 @@ MEDIANRANGE='32,90'
 CRPROBES=../cross_reactive_probes.csv
 SNPPROBES=../snp_probes_minfi.csv
 OUTDIR=../../results/point_average/blood/
-./analyze_blood.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES \
---agelabel $AL --median_range $MEDIANRANGE --cross_reactive_probes $CRPROBES --snp_probes $SNPPROBES \
---outdir $OUTDIR
+# ./analyze_blood.py --gene_annotations $ANNO --joined_betas $BETAS --sample_sheet $SAMPLES \
+# --agelabel $AL --median_range $MEDIANRANGE --cross_reactive_probes $CRPROBES --snp_probes $SNPPROBES \
+# --outdir $OUTDIR
 
 #Adjust the pvals, select markers and and visualize
 RA=../../results/point_average/blood/running_averages.npy
@@ -21,4 +21,4 @@ HANNUM_MARKERS=./hannum_markers.csv
 CORRELATIONRESULTS=../../results/point_average/blood/correlation_results.csv
 NCLUSTERS=2
 MEDIANRANGE='32,90'
-#./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --point_indices $AGEPOINTS --sample_sheet $SAMPLES --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --n_clusters $NCLUSTERS --median_range $MEDIANRANGE --outdir $OUTDIR
+./adjust_and_vis.py --gene_annotations $ANNO --running_averages $RA --max_fold_change_df $FCDF --marker_values $MV --ages $AGES --point_indices $AGEPOINTS --sample_sheet $SAMPLES --hannum_markers $HANNUM_MARKERS --correlation_results $CORRELATIONRESULTS --n_clusters $NCLUSTERS --median_range $MEDIANRANGE --outdir $OUTDIR

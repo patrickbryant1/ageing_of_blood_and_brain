@@ -1,3 +1,4 @@
 results/point_average/blood/marker_values.npy
 results/point_average/brain/frontal cortex_marker_values.npy
 results/point_average/brain/cerebellum_marker_values.npy
+results/point_average/blood/running_averages.npy
